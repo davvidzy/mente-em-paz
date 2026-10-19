@@ -1,0 +1,143 @@
+import { useState } from "react";
+import { Check, ShieldCheck } from "lucide-react";
+import { landing } from "../../../config/landing";
+import { guarantee, plans, tracking, upgrade, type Plan } from "../../../config/site";
+import { track, trackOnce } from "../../../lib/analytics";
+import { checkoutUrl, goToCheckout, type CheckoutKind } from "../../../lib/checkout";
+import { priceParts } from "../../../lib/format";
+import { read, write } from "../../../lib/storage";
+import { useInView } from "../../../hooks/useReveal";
+import { Button } from "../../ui/Button";
+import type { NoticeMessage } from "../Notice";
+import { Reveal, Section, SectionHead, type Tone } from "../shared";
+import { UpgradeModal } from "../UpgradeModal";
+
+const DEV = import.meta.env.DEV;
+const DECLINED_KEY = "mp_upgrade_declined";
+
+const CONFIG_FIELD: Record<CheckoutKind, string> = {
+  essencial: "checkoutEssencialUrl",
+  completo: "checkoutCompletoUrl",
+  upgrade: "checkoutUpgradeUrl",
+};
+
+export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMessage) => void }) {
+  const c = landing.plans;
+  const [modalOpen, setModalOpen] = useState(false);
+  const sectionRef = useInView<HTMLDivElement>(() => trackOnce("plan_section_viewed"), 0.25);
+
+  /** Upgrade só é oferecido se habilitado, com URL real e ainda não recusado nesta visita. */
+  const upgradeAvailable = upgrade.enabled && checkoutUrl("upgrade") !== null;
+
+  const go = (kind: CheckoutKind) => {
+    if (goToCheckout(kind)) return;
+    // URL pendente: em desenvolvimento, aviso claro; em produção o botão nem fica ativo
+    onNotice({
+      title: "Integração de checkout pendente",
+      text: `Preencha checkout.${CONFIG_FIELD[kind]} em src/config/site.ts para ativar este botão.`,
+    });
+  };
+
+  const chooseEssencial = () => {
+    track("essencial_clicked", { value: plans.essencial.priceCents / 100, currency: tracking.currency });
+    const declined = read<boolean>(DECLINED_KEY) === true;
+    if ((upgradeAvailable || (DEV && upgrade.enabled)) && !declined) {
+      setModalOpen(true);
+      track("upgrade_popup_opened");
+      return;
+    }
+    go("essencial");
+  };
+
+  const chooseCompleto = () => {
+    track("completo_clicked", { value: plans.completo.priceCents / 100, currency: tracking.currency });
+    go("completo");
+  };
+
+  const accept = () => {
+    track("upgrade_accepted", { value: upgrade.priceCents / 100, currency: tracking.currency });
+    setModalOpen(false);
+    go("upgrade");
+  };
+
+  const decline = () => {
+    track("upgrade_declined", { value: plans.essencial.priceCents / 100, currency: tracking.currency });
+    write(DECLINED_KEY, true);
+    setModalOpen(false);
+    go("essencial");
+  };
+
+  /** Em produção, botão sem URL configurada fica desabilitado (nunca leva a endereço inexistente). */
+  const ready = (kind: CheckoutKind) => DEV || checkoutUrl(kind) !== null;
+
+  return (
+    <Section id="planos" tone={tone} labelledBy="planos-title">
+      <div ref={sectionRef} className="container-page">
+        <SectionHead id="planos-title" title={c.title} center />
+
+        <div className="mx-auto mt-12 grid max-w-[920px] gap-5 md:mt-14 md:grid-cols-2 md:items-stretch md:gap-6">
+          <PlanCard plan={plans.essencial} onChoose={chooseEssencial} enabled={ready("essencial")} />
+          <PlanCard plan={plans.completo} onChoose={chooseCompleto} enabled={ready("completo")} />
+        </div>
+      </div>
+
+      <UpgradeModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onAccept={accept}
+        onDecline={decline}
+      />
+    </Section>
+  );
+}
+
+function PlanCard({ plan, onChoose, enabled }: { plan: Plan; onChoose: () => void; enabled: boolean }) {
+  const price = priceParts(plan.priceCents);
+  const featured = plan.featured;
+  return (
+    <Reveal
+      className={`relative flex flex-col rounded-[20px] p-7 sm:p-8 md:p-9 ${
+        featured
+          ? "border-[1.5px] border-brand bg-white shadow-(--shadow-lift)"
+          : "border border-line bg-canvas/70"
+      }`}
+    >
+      {plan.tag && (
+        <p className="absolute -top-3.5 left-7 rounded-full bg-brand px-3.5 py-1 text-[12.5px] font-semibold tracking-wide text-white sm:left-8">
+          {plan.tag}
+        </p>
+      )}
+      <h3 className="t-h3" aria-label={plan.name}>{plan.shortName}</h3>
+      <p className="t-muted mt-1.5 text-[16px]">{plan.description}</p>
+
+      <p className="mt-6 flex items-baseline gap-1 font-serif text-brand" aria-label={`${price.currency} ${price.int}${price.dec}`}>
+        <span aria-hidden className="text-[20px] font-medium">{price.currency}</span>
+        <span aria-hidden className="text-[52px] font-semibold leading-none tracking-tight">{price.int}</span>
+        <span aria-hidden className="text-[24px] font-semibold">{price.dec}</span>
+      </p>
+      {plan.paymentNote && <p className="mt-2 text-[14px] font-medium text-sage-deep">{plan.paymentNote}</p>}
+      {plan.installmentsNote && <p className="mt-1 text-[14px] text-sage-deep">{plan.installmentsNote}</p>}
+
+      <ul className="mt-6 space-y-3 border-t border-line pt-6">
+        {plan.items.map((item) => (
+          <li key={item} className="flex items-start gap-3 text-[16px] leading-snug">
+            <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full ${featured ? "bg-brand text-white" : "bg-sage/40 text-brand"}`}>
+              <Check aria-hidden className="size-3" strokeWidth={3} />
+            </span>
+            {item}
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-auto pt-8">
+        <Button variant={featured ? "primary" : "secondary"} size="lg" arrow={enabled} full onClick={onChoose} disabled={!enabled} data-plan={plan.id}>
+          {enabled ? plan.cta : landing.plans.pendingCta}
+        </Button>
+        <p className="mt-3.5 flex items-center justify-center gap-2 text-[14px] font-medium text-brand" data-guarantee>
+          <ShieldCheck aria-hidden className="size-[18px] text-sage-deep" strokeWidth={1.7} />
+          Garantia de {guarantee.days} dias
+        </p>
+      </div>
+    </Reveal>
+  );
+}

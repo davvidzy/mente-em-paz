@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.local
+test-results/
+playwright-report/
+*.log
+.DS_Store
+
+# Local / interno (não publicar)
+.claude/
+Mente em Paz - Conteúdo para Claude/
