@@ -105,9 +105,9 @@ test.describe("Landing — ofertas (dev, checkout pendente)", () => {
     await essencial.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText("Por apenas R$ 10,00 a mais");
-    await expect(dialog).toContainText("R$ 37,90");
-    await expect(page.getByRole("button", { name: /Sim, quero o Completo por R\$ 29,90/ })).toBeFocused();
+    await expect(dialog).toContainText("Por apenas R$ 18,00 a mais");
+    await expect(dialog).toContainText("R$ 67,90");
+    await expect(page.getByRole("button", { name: /Sim, quero o Completo por R\$ 57,90/ })).toBeFocused();
     expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
 
     // foco preso
@@ -190,7 +190,7 @@ test.describe("Landing — ofertas (dev, checkout pendente)", () => {
     await page.locator('[data-plan="essencial"]').click();
     const dialog = page.getByRole("dialog");
     await expect(dialog.getByRole("heading")).toHaveText("Um desconto para você cuidar ainda mais de você.");
-    await expect(dialog).toContainText("Por apenas R$ 10,00 a mais, leve o Mente em Paz Completo.");
+    await expect(dialog).toContainText("Por apenas R$ 18,00 a mais, leve o Mente em Paz Completo.");
     await expect(dialog).not.toContainText("materiais extras para acompanhar");
   });
 

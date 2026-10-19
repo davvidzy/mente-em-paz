@@ -31,6 +31,13 @@ export const checkout = {
   checkoutEssencialUrl: "", // PENDENTE — Essencial, preço cheio
   checkoutCompletoUrl: "", // PENDENTE — Completo, preço cheio (clique direto no plano)
   checkoutUpgradeUrl: "", // PENDENTE — Completo com preço de upgrade (aceite no popup)
+  /**
+   * ⚠ TEMPORÁRIO — modo de visualização: com os links ainda vazios, deixa os botões
+   * de compra ativos (e o popup de upgrade abrindo) para revisar o fluxo no site
+   * publicado. Sem link, o clique mostra "Checkout em configuração" — nunca redireciona.
+   * Desligar (false) antes de anunciar, ou quando os links forem preenchidos.
+   */
+  previewCheckout: true,
   /** Parâmetros de campanha repassados do anúncio até o checkout. */
   forwardQueryParams: [
     "utm_source",
@@ -72,7 +79,7 @@ export const plans: Record<PlanId, Plan> = {
     name: "Mente em Paz Essencial",
     shortName: "Essencial",
     description: "Para dar o primeiro passo.",
-    priceCents: 1990, // hipótese comercial inicial — validar
+    priceCents: 3990,
     paymentNote: "Pagamento único · acesso vitalício",
     items: ["7 áudios guiados", "Guia de utilização", "Método noturno reutilizável"],
     cta: "Quero o Essencial",
@@ -83,7 +90,7 @@ export const plans: Record<PlanId, Plan> = {
     name: "Mente em Paz Completo",
     shortName: "Completo",
     description: "Mais apoio para a sua rotina.",
-    priceCents: 3790, // hipótese comercial inicial — validar
+    priceCents: 6790,
     paymentNote: "Pagamento único · acesso vitalício",
     items: [
       "Tudo do Essencial",
@@ -102,7 +109,7 @@ export const plans: Record<PlanId, Plan> = {
 // efetivamente praticada no checkout `checkoutUpgradeUrl`.
 export const upgrade = {
   enabled: true,
-  priceCents: 2990, // hipótese a testar
+  priceCents: 5790, // substitui o Essencial (R$ 39,90 → R$ 57,90)
   title: "Um desconto para você cuidar ainda mais de você.",
   /** {diferenca} = upgrade − Essencial (calculado). */
   description:

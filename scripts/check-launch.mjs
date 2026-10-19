@@ -26,6 +26,9 @@ for (const k of ["checkoutEssencialUrl", "checkoutCompletoUrl", "checkoutUpgrade
   else if (!v.startsWith("https://")) block.push(`checkout.${k} precisa começar com https://`);
 }
 
+if (/previewCheckout:\s*true/.test(site))
+  block.push("checkout.previewCheckout = true (modo de visualização) — desligue antes de anunciar.");
+
 // Rastreamento e domínio
 if (!envVal("VITE_META_PIXEL_ID")) warn.push("VITE_META_PIXEL_ID não definido — nenhum evento será enviado ao Meta.");
 if (!envVal("VITE_SITE_URL")) warn.push("VITE_SITE_URL não definido — sem canonical, og:url absoluto e sitemap.xml.");

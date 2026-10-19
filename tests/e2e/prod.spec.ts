@@ -1,7 +1,9 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { ANSWERS_PAIS, answerQuiz, collectErrors } from "./helpers";
 
 const WIDTHS = [320, 360, 375, 390, 430, 768, 1024, 1440];
+const PREVIEW = /previewCheckout:\s*true/.test(readFileSync("src/config/site.ts", "utf8"));
 
 test.describe("Build de produção", () => {
   test("sem rolagem horizontal em nenhuma largura (quiz, resultado, LP)", async ({ page }) => {
@@ -29,13 +31,23 @@ test.describe("Build de produção", () => {
     await expect(page.locator("[data-dev-placeholder]")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Placeholder");
 
-    for (const id of ["essencial", "completo"]) {
-      const btn = page.locator(`[data-plan="${id}"]`);
-      await expect(btn).toBeDisabled();
-      await expect(btn).toHaveText("Checkout em configuração");
+    if (PREVIEW) {
+      // modo de visualização: botões ativos, popup abre, nada redireciona
+      await page.locator('[data-plan="essencial"]').click();
+      const dialog = page.getByRole("dialog");
+      await expect(dialog).toContainText("De R$ 67,90 por R$ 57,90");
+      await page.getByRole("button", { name: /Sim, quero o Completo/ }).click();
+      await expect(page.locator("[data-notice]")).toContainText("Checkout em configuração");
+      await expect(page).toHaveURL(/\/mente-em-paz\/$/);
+    } else {
+      for (const id of ["essencial", "completo"]) {
+        const btn = page.locator(`[data-plan="${id}"]`);
+        await expect(btn).toBeDisabled();
+        await expect(btn).toHaveText("Checkout em configuração");
+      }
     }
-    await expect(page.locator("body")).toContainText("R$19,90".replace("R$", ""));
-    await expect(page.locator("body")).toContainText("37");
+    await expect(page.locator("#planos")).toContainText("39");
+    await expect(page.locator("#planos")).toContainText("67");
     // sem pixel configurado → sem banner de cookies e sem script do Meta
     await expect(page.getByRole("region", { name: "Aviso de cookies" })).toHaveCount(0);
     expect(await page.locator('script[src*="fbevents"]').count()).toBe(0);

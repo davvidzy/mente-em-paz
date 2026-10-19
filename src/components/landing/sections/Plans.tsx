@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, ShieldCheck } from "lucide-react";
 import { landing } from "../../../config/landing";
-import { guarantee, plans, tracking, upgrade, type Plan } from "../../../config/site";
+import { checkout, guarantee, plans, tracking, upgrade, type Plan } from "../../../config/site";
 import { track, trackOnce } from "../../../lib/analytics";
 import { checkoutUrl, goToCheckout, type CheckoutKind } from "../../../lib/checkout";
 import { priceParts } from "../../../lib/format";
@@ -13,6 +13,8 @@ import { Reveal, Section, SectionHead, type Tone } from "../shared";
 import { UpgradeModal } from "../UpgradeModal";
 
 const DEV = import.meta.env.DEV;
+/** Dev ou modo de visualização: botões ativos mesmo sem link (clique mostra aviso). */
+const PREVIEW = DEV || checkout.previewCheckout;
 const DECLINED_KEY = "mp_upgrade_declined";
 
 const CONFIG_FIELD: Record<CheckoutKind, string> = {
@@ -31,17 +33,21 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
 
   const go = (kind: CheckoutKind) => {
     if (goToCheckout(kind)) return;
-    // URL pendente: em desenvolvimento, aviso claro; em produção o botão nem fica ativo
-    onNotice({
-      title: "Integração de checkout pendente",
-      text: `Preencha checkout.${CONFIG_FIELD[kind]} em src/config/site.ts para ativar este botão.`,
-    });
+    // URL pendente: nunca redireciona. Dev → aviso técnico; visualização publicada → aviso neutro
+    onNotice(
+      DEV
+        ? {
+            title: "Integração de checkout pendente",
+            text: `Preencha checkout.${CONFIG_FIELD[kind]} em src/config/site.ts para ativar este botão.`,
+          }
+        : { title: "Checkout em configuração", text: "Em breve você poderá concluir sua compra por aqui." },
+    );
   };
 
   const chooseEssencial = () => {
     track("essencial_clicked", { value: plans.essencial.priceCents / 100, currency: tracking.currency });
     const declined = read<boolean>(DECLINED_KEY) === true;
-    if ((upgradeAvailable || (DEV && upgrade.enabled)) && !declined) {
+    if ((upgradeAvailable || (PREVIEW && upgrade.enabled)) && !declined) {
       setModalOpen(true);
       track("upgrade_popup_opened");
       return;
@@ -68,7 +74,7 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
   };
 
   /** Em produção, botão sem URL configurada fica desabilitado (nunca leva a endereço inexistente). */
-  const ready = (kind: CheckoutKind) => DEV || checkoutUrl(kind) !== null;
+  const ready = (kind: CheckoutKind) => PREVIEW || checkoutUrl(kind) !== null;
 
   return (
     <Section id="planos" tone={tone} labelledBy="planos-title">
