@@ -1,6 +1,6 @@
 import { useState, type RefObject } from "react";
 import { ChevronLeft, Check } from "lucide-react";
-import { questions } from "../../config/quiz";
+import { questions, quizIntro } from "../../config/quiz";
 import { QuizShell } from "./QuizShell";
 
 interface Props {
@@ -19,17 +19,22 @@ export function QuizQuestion({ index, selected, onAnswer, onBack, headingRef }: 
 
   const top = (
     <div className="container-page">
-      <div className="mx-auto flex w-full max-w-[560px] items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="-ml-2 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-[15px] font-medium text-sage-deep transition-colors hover:text-brand"
-        >
-          <ChevronLeft aria-hidden className="size-[18px]" strokeWidth={2} />
-          Voltar
-        </button>
-        <p className="text-[14px] font-medium tabular-nums text-sage-deep" aria-live="polite">
-          Pergunta {index + 1} de {total}
+      <div className="mx-auto flex min-h-11 w-full max-w-[560px] items-center justify-between gap-4">
+        {index > 0 ? (
+          <button
+            type="button"
+            onClick={onBack}
+            className="-ml-2 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-[15px] font-medium text-sage-deep transition-colors hover:text-brand"
+          >
+            <ChevronLeft aria-hidden className="size-[18px]" strokeWidth={2} />
+            Voltar
+          </button>
+        ) : (
+          <p className="whitespace-nowrap text-[14px] font-medium text-sage-deep">{quizIntro.info}</p>
+        )}
+        <p className="whitespace-nowrap text-[14px] font-medium tabular-nums text-sage-deep" aria-live="polite">
+          <span className="sr-only">Pergunta </span>
+          {index + 1} de {total}
         </p>
       </div>
       <div
@@ -54,7 +59,8 @@ export function QuizQuestion({ index, selected, onAnswer, onBack, headingRef }: 
         <h1 ref={headingRef} tabIndex={-1} className="t-h2 max-w-[22ch]">
           {q.title}
         </h1>
-        <fieldset className="mt-8 sm:mt-10">
+        <p className="mt-3 text-[15px] text-sage-deep">{q.hint}</p>
+        <fieldset className="mt-7 sm:mt-9">
           <legend className="sr-only">{q.title}</legend>
           <ul className="flex flex-col gap-3">
             {q.options.map((o) => {

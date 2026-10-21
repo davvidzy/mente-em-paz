@@ -1,15 +1,17 @@
 import { expect, test } from "@playwright/test";
-import { ANSWERS_CALM, ANSWERS_PAIS, answerQuiz, collectErrors, events } from "./helpers";
+import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, collectErrors, events } from "./helpers";
 
 test.describe("Quiz", () => {
-  test("fluxo completo: 5 perguntas, sem preços, resultado e CTA para a LP com UTMs", async ({ page }) => {
+  test("fluxo completo: abre direto na 1ª pergunta, 3 perguntas, sem preços, resultado e CTA para a LP com UTMs", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/?utm_source=facebook&utm_campaign=lancamento&fbclid=abc123");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Você cuida de quem ama");
-    await page.getByRole("button", { name: /Descobrir agora/ }).click();
+    // sem tela inicial
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Quando você finalmente deita, o que acontece?");
+    await expect(page.getByText("3 perguntas • sem cadastro")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Voltar" })).toHaveCount(0);
 
     for (const [i, label] of ANSWERS_PAIS.entries()) {
-      await expect(page.getByText(`Pergunta ${i + 1} de 5`)).toBeVisible();
+      await expect(page.getByText(`Pergunta ${i + 1} de ${TOTAL}`)).toBeVisible();
       await expect(page.locator("body")).not.toContainText("R$");
       await page.getByRole("button", { name: label, exact: true }).click();
     }
@@ -31,58 +33,55 @@ test.describe("Quiz", () => {
     expect(errors).toEqual([]);
   });
 
-  test("Voltar (botão e navegador) preserva respostas; Q1 volta ao início", async ({ page }) => {
+  test("Voltar (botão e navegador) preserva respostas", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /Descobrir agora/ }).click();
     await page.getByRole("button", { name: "Minha cabeça não para de pensar.", exact: true }).click();
-    await expect(page.getByText("Pergunta 2 de 5")).toBeVisible();
+    await expect(page.getByText("Pergunta 2 de 3")).toBeVisible();
 
     await page.getByRole("button", { name: "Voltar" }).click();
-    await expect(page.getByText("Pergunta 1 de 5")).toBeVisible();
+    await expect(page.getByText("Pergunta 1 de 3")).toBeVisible();
     await expect(page.getByRole("button", { name: "Minha cabeça não para de pensar.", exact: true })).toHaveAttribute("aria-pressed", "true");
 
-    await page.getByRole("button", { name: "Voltar" }).click();
-    await expect(page.getByRole("button", { name: /Descobrir agora/ })).toBeVisible();
-
     await page.goForward();
-    await expect(page.getByText("Pergunta 1 de 5")).toBeVisible();
-    await page.goForward();
-    await expect(page.getByText("Pergunta 2 de 5")).toBeVisible();
+    await expect(page.getByText("Pergunta 2 de 3")).toBeVisible();
     await page.goBack();
-    await expect(page.getByText("Pergunta 1 de 5")).toBeVisible();
+    await expect(page.getByText("Pergunta 1 de 3")).toBeVisible();
   });
 
   test("respostas diferentes geram resultados diferentes; positivas → tom preventivo", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /Descobrir agora/ }).click();
     await answerQuiz(page, ANSWERS_CALM);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seu descanso também merece um lugar na sua rotina.");
     await expect(page.getByText(/geralmente consegue relaxar ao deitar/)).toBeVisible();
 
     // refazer
     await page.getByRole("button", { name: /Refazer o quiz/ }).click();
-    await expect(page.getByRole("button", { name: /Descobrir agora/ })).toBeVisible();
-    await page.getByRole("button", { name: /Descobrir agora/ }).click();
+    await expect(page.getByText("Pergunta 1 de 3")).toBeVisible();
     await answerQuiz(page, [
       "Minha cabeça não para de pensar.",
       "Preocupação com o dia seguinte.",
-      "Quase nunca.",
       "Dificuldade de desligar os pensamentos.",
-      "Menos pensamentos e preocupações.",
     ]);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seu corpo está cansado, mas sua mente continua ocupada.");
+
+    await page.getByRole("button", { name: /Refazer o quiz/ }).click();
+    await answerQuiz(page, [
+      "Continuo pensando nos meus pais.",
+      "Sensação de ter responsabilidades demais.",
+      "Culpa por não estar ajudando.",
+    ]);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Você também merece descansar sem culpa.");
   });
 
   test("eventos do quiz na ordem, sem respostas nos parâmetros e sem Purchase", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /Descobrir agora/ }).click();
     await answerQuiz(page, ANSWERS_PAIS);
     await expect(page).toHaveURL(/\/resultado\/$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const evs = await events(page);
     expect(evs).toEqual([
       "quiz_started",
-      ...Array(5).fill("quiz_question_answered"),
+      ...Array(TOTAL).fill("quiz_question_answered"),
       "quiz_completed",
       "quiz_result_viewed",
     ]);
@@ -93,7 +92,7 @@ test.describe("Quiz", () => {
   test("acessar /resultado/ sem quiz volta ao início", async ({ page }) => {
     await page.goto("/resultado/");
     await expect(page).toHaveURL(/localhost:5173\/$/);
-    await expect(page.getByRole("button", { name: /Descobrir agora/ })).toBeVisible();
+    await expect(page.getByText("Pergunta 1 de 3")).toBeVisible();
   });
 });
 

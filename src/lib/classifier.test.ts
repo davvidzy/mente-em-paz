@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { classify, isComplete, joinPt } from "./classifier";
-import { profiles, questions, desires } from "../config/quiz";
+import { desires, profileDesire, profiles, questions } from "../config/quiz";
 
-/** Todas as 4×4×3×4×4 = 768 combinações possíveis. */
+/** Todas as 4×4×4 = 64 combinações possíveis. */
 function allCombos(): string[][] {
   return questions.reduce<string[][]>(
     (acc, q) => acc.flatMap((prefix) => q.options.map((o) => [...prefix, o.id])),
@@ -13,9 +13,9 @@ function allCombos(): string[][] {
 const combos = allCombos();
 
 describe("classifier", () => {
-  it("cobre as 768 combinações", () => {
-    expect(questions).toHaveLength(5);
-    expect(combos).toHaveLength(768);
+  it("3 perguntas, 64 combinações", () => {
+    expect(questions).toHaveLength(3);
+    expect(combos).toHaveLength(64);
   });
 
   it("toda combinação gera um resultado válido e completo", () => {
@@ -23,6 +23,7 @@ describe("classifier", () => {
       const r = classify(a);
       expect(profiles[r.profile]).toBeDefined();
       expect(desires[r.desire]).toBeDefined();
+      expect(r.desire).toBe(profileDesire[r.profile]);
       expect(r.mirrors.length).toBeGreaterThanOrEqual(1);
       expect(r.mirrors.length).toBeLessThanOrEqual(3);
       r.mirrors.forEach((m) => expect(m.trim()).not.toBe(""));
@@ -33,25 +34,20 @@ describe("classifier", () => {
     for (const a of combos) expect(classify(a)).toEqual(classify([...a]));
   });
 
-  it("não gera resultado com quiz incompleto ou inválido", () => {
-    expect(isComplete(["A", "A", "A", "A"])).toBe(false);
-    expect(() => classify(["A", "A", "A", "A"])).toThrow();
-    expect(() => classify(["A", "A", "D", "A", "A"])).toThrow(); // Q3 só tem A–C
-    expect(() => classify(["A", "A", undefined, "A", "A"])).toThrow();
-  });
-
-  it("o desejo vem sempre da pergunta 5", () => {
-    const map = { A: "fiz_o_possivel", B: "menos_pensamentos", C: "sem_culpa", D: "rotina_leve" };
-    for (const a of combos) expect(classify(a).desire).toBe(map[a[4] as keyof typeof map]);
+  it("não gera resultado com quiz incompleto, inválido ou no formato antigo (5 respostas)", () => {
+    expect(isComplete(["A", "A"])).toBe(false);
+    expect(() => classify(["A", "A"])).toThrow();
+    expect(() => classify(["A", "E", "A"])).toThrow();
+    expect(() => classify(["A", undefined, "A"])).toThrow();
+    expect(isComplete(["A", "A", "A", "A", "A"])).toBe(false);
   });
 
   it("respostas positivas não forçam um problema (tom preventivo)", () => {
     for (const a of combos) {
-      if (a[0] === "D" && a[2] === "C" && a[3] === "D") {
-        const r = classify(a);
-        expect(r.preventive).toBe(true);
-        expect(r.profile).toBe("sobrecarga");
-      }
+      const r = classify(a);
+      const allCalm = a[0] === "D" && a[2] === "D";
+      expect(r.preventive).toBe(allCalm);
+      if (allCalm) expect(r.profile).toBe("sobrecarga");
     }
   });
 
@@ -59,44 +55,42 @@ describe("classifier", () => {
     for (const a of combos) {
       const r = classify(a);
       if (r.preventive) continue;
-      const [q1, q2, , q4, q5] = a;
+      const [q1, q2, q3] = a;
       const supports = {
-        pais: q1 === "A" || q2 === "A" || q4 === "B",
-        culpa: q4 === "A" || q4 === "B" || q1 === "C" || q5 === "C",
-        pensamentos: q1 === "B" || q2 === "B" || q2 === "D" || q4 === "C",
-        sobrecarga: q1 === "C" || q2 === "B" || q2 === "C" || q5 === "D",
+        pais: q1 === "A" || q2 === "A" || q3 === "B",
+        culpa: q3 === "A" || q3 === "B" || q1 === "C",
+        pensamentos: q1 === "B" || q2 === "B" || q2 === "D" || q3 === "C",
+        sobrecarga: q1 === "C" || q2 === "B" || q2 === "C",
       }[r.profile];
       expect(supports, `${a.join("")} → ${r.profile}`).toBe(true);
     }
   });
 
-  it("todos os 4 perfis são alcançáveis e a distribuição não é degenerada", () => {
+  it("todos os 4 perfis são alcançáveis", () => {
     const count: Record<string, number> = {};
     for (const a of combos) count[classify(a).profile] = (count[classify(a).profile] ?? 0) + 1;
-    for (const p of Object.keys(profiles)) expect(count[p] ?? 0).toBeGreaterThan(40);
+    for (const p of Object.keys(profiles)) expect(count[p] ?? 0, p).toBeGreaterThan(5);
   });
 
   it("casos de referência", () => {
-    expect(classify(["A", "A", "A", "B", "A"]).profile).toBe("pais");
-    expect(classify(["C", "C", "B", "A", "C"]).profile).toBe("culpa");
-    expect(classify(["B", "B", "A", "C", "B"]).profile).toBe("pensamentos");
-    expect(classify(["C", "C", "B", "D", "D"]).profile).toBe("sobrecarga");
-    expect(classify(["D", "D", "C", "D", "B"]).preventive).toBe(true);
+    expect(classify(["A", "A", "B"]).profile).toBe("pais");
+    expect(classify(["C", "C", "A"]).profile).toBe("sobrecarga"); // empate 5×5 → causa da Q2 (sobrecarga)
+    expect(classify(["D", "C", "A"]).profile).toBe("culpa"); // culpa 4 > sobrecarga 3
+    expect(classify(["B", "B", "C"]).profile).toBe("pensamentos");
+    expect(classify(["D", "B", "D"]).preventive).toBe(true);
   });
 
-  it("empate é resolvido pelo desejo da pergunta 5", () => {
-    // Q1 A (pais 3) × Q4 A (culpa 3); Q2 C (sobrecarga 3); Q5 decide entre os empatados
-    expect(classify(["A", "C", "B", "A", "C"]).profile).toBe("culpa"); // culpa 4 vence
-    const r = classify(["A", "C", "B", "A", "D"]); // pais 3, culpa 3, sobrecarga 4
-    expect(r.profile).toBe("sobrecarga");
-    // empate triplo pais/culpa/sobrecarga = 3; desejo (pensamentos) não está no empate → prioridade fixa
-    expect(classify(["A", "C", "B", "A", "B"]).profile).toBe("pais");
+  it("empate é resolvido pela causa escolhida na pergunta 2", () => {
+    // Q1 A (pais 3) × Q2 C (sobrecarga 3) × Q3 C (pensamentos 2) → empate pais/sobrecarga → Q2 decide
+    expect(classify(["A", "C", "C"]).profile).toBe("sobrecarga");
+    // Q1 B (pensamentos 3) × Q2 A (pais 3) × Q3 D → empate → Q2 (pais)
+    expect(classify(["B", "A", "D"]).profile).toBe("pais");
   });
 
   it("frases-espelho são literais às respostas dadas", () => {
-    for (const a of combos.slice(0, 200)) {
+    for (const a of combos) {
       const r = classify(a);
-      const given = a.slice(0, 4).map((id, qi) => questions[qi].options.find((o) => o.id === id)!.mirror);
+      const given = a.map((id, qi) => questions[qi].options.find((o) => o.id === id)!.mirror);
       r.mirrors.forEach((m) => expect(given).toContain(m));
     }
   });

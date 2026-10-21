@@ -5,13 +5,11 @@ import { track } from "../../lib/analytics";
 import { routes } from "../../lib/routes";
 import { quizSession } from "../../lib/session";
 import { ConsentBanner } from "../ui/ConsentBanner";
-import { QuizStart } from "./QuizStart";
 import { QuizQuestion } from "./QuizQuestion";
 import { QuizLoading } from "./QuizLoading";
 import { QuizResult } from "./QuizResult";
 
 export type View =
-  | { kind: "start" }
   | { kind: "question"; index: number }
   | { kind: "loading" }
   | { kind: "result" };
@@ -24,13 +22,15 @@ interface HistState {
 
 const AUTO_ADVANCE_MS = 220;
 const LOADING_MS = 1100;
+/** O quiz começa direto na primeira pergunta (sem tela inicial). */
+const FIRST: View = { kind: "question", index: 0 };
 
 function initialView(): View {
   const page = document.documentElement.dataset.page;
   if (page === "result") return { kind: "result" };
   const st = history.state as HistState | null;
   if (st?.mp && st.view.kind === "question") return st.view;
-  return { kind: "start" };
+  return FIRST;
 }
 
 /**
@@ -62,14 +62,14 @@ export function QuizApp() {
       const st = e.state as HistState | null;
       busy.current = false;
       if (!st?.mp) {
-        setView({ kind: "start" });
+        setView(FIRST);
         depth.current = 0;
         return;
       }
       depth.current = st.depth;
       const saved = quizSession.getAnswers();
       setAnswers(saved);
-      if (st.view.kind === "result" && !isComplete(saved)) setView({ kind: "start" });
+      if (st.view.kind === "result" && !isComplete(saved)) setView(FIRST);
       else setView(st.view);
     };
     window.addEventListener("popstate", onPop);
@@ -89,21 +89,16 @@ export function QuizApp() {
     }
     // entrada direta (ex.: recarregou na pergunta 3): volta sem sair do site
     const prev: View =
-      view.kind === "question" && view.index > 0
-        ? { kind: "question", index: view.index - 1 }
-        : { kind: "start" };
+      view.kind === "question" && view.index > 0 ? { kind: "question", index: view.index - 1 } : FIRST;
     history.replaceState({ mp: true, view: prev, depth: 0 } satisfies HistState, "", routes.quiz());
     setView(prev);
   }, [view]);
 
-  const start = () => {
-    track("quiz_started");
-    go({ kind: "question", index: 0 }, routes.quiz());
-  };
-
   const answer = (index: number, optionId: string) => {
     if (busy.current) return;
     busy.current = true;
+    // sem tela inicial: o quiz "começa" na primeira interação real
+    if (index === 0 && !answers.some(Boolean)) track("quiz_started");
     const next = [...answers];
     next[index] = optionId;
     next.length = Math.max(next.length, index + 1);
@@ -137,21 +132,21 @@ export function QuizApp() {
   const retake = () => {
     quizSession.clear();
     setAnswers([]);
-    go({ kind: "start" }, routes.quiz());
+    go(FIRST, routes.quiz());
   };
 
   // Foco no título e topo da página a cada etapa (acessibilidade)
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     window.scrollTo({ top: 0 });
-    if (view.kind !== "start" || depth.current > 0) heading.current?.focus({ preventScroll: true });
+    // na entrada (primeira pergunta, sem navegação ainda) não rouba o foco
+    if (depth.current > 0 || view.kind !== "question" || view.index > 0) heading.current?.focus({ preventScroll: true });
   }, [view]);
 
   if (invalidResult) return null;
 
   return (
     <>
-      {view.kind === "start" && <QuizStart onStart={start} headingRef={heading} />}
       {view.kind === "question" && (
         <QuizQuestion
           key={view.index}

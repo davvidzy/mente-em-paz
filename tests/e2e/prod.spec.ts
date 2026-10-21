@@ -15,7 +15,8 @@ test.describe("Build de produção", () => {
         expect(overflow, `${path} @ ${w}px`).toBeLessThanOrEqual(0);
       }
       await page.goto("/");
-      await page.getByRole("button", { name: /Descobrir agora/ }).click();
+      await page.getByText("Continuo pensando nos meus pais.").click(); // vai para a pergunta 2
+      await page.getByText("Pergunta 2 de 3").waitFor();
       const overflowQ = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflowQ, `pergunta @ ${w}px`).toBeLessThanOrEqual(0);
     }
@@ -57,7 +58,6 @@ test.describe("Build de produção", () => {
   test("site em subpasta: quiz → resultado → LP", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("http://localhost:4174/promo/?utm_source=ig");
-    await page.getByRole("button", { name: /Descobrir agora/ }).click();
     await answerQuiz(page, ANSWERS_PAIS);
     await expect(page).toHaveURL("http://localhost:4174/promo/resultado/");
     await page.getByRole("button", { name: /Conhecer o Mente em Paz/ }).click();

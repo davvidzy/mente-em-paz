@@ -5,7 +5,7 @@ Identidade visual: design system **Refúgio Sereno** (`Mente em Paz - Conteúdo 
 
 | Rota | Página |
 |---|---|
-| `/` | Quiz (5 perguntas, sem preços) |
+| `/` | Quiz (3 perguntas, abre direto na 1ª; sem preços) |
 | `/resultado/` | Resultado personalizado |
 | `/mente-em-paz/` | Landing Page de vendas (vídeo dentro do hero) |
 | `/privacidade/`, `/termos/` | Páginas legais |
@@ -21,7 +21,7 @@ Identidade visual: design system **Refúgio Sereno** (`Mente em Paz - Conteúdo 
 npm install          # instalar dependências
 npm run dev          # desenvolvimento → http://localhost:5173
 npm run build        # checa tipos, gera dist/ e mostra o checklist de lançamento
-npm test             # testes do motor de resultados (768 combinações)
+npm test             # testes do motor de resultados (64 combinações)
 npm run test:e2e     # testes de navegador (rode npm run build antes)
 npm run check:launch # checklist estrito: falha se algo bloquear a publicação
 npm run images       # converte images-src/ → public/img/ (WebP 400/800)

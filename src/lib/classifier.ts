@@ -3,28 +3,29 @@
  * Não contém textos — lê pesos e conteúdos de src/config/quiz.ts.
  */
 import {
-  desireProfile,
+  profileDesire,
   profilePriority,
   questions,
+  tieBreakQuestion,
   type DesireId,
   type ProfileId,
 } from "../config/quiz";
 
-/** Respostas indexadas pela ordem das perguntas: ["A", "C", "B", "D", "A"]. */
+/** Respostas indexadas pela ordem das perguntas: ["A", "C", "B"]. */
 export type Answers = (string | undefined)[];
 
 export interface QuizResult {
   profile: ProfileId;
   desire: DesireId;
-  /** true quando as respostas indicam boas noites → mensagem preventiva. */
+  /** true quando as respostas indicam que ela já consegue descansar → mensagem preventiva. */
   preventive: boolean;
   scores: Record<ProfileId, number>;
   /** Frases-espelho (ordem de exibição) já filtradas para o perfil. */
   mirrors: string[];
 }
 
-const PROFILE_MIN_SIGNAL = 3;
-const MAX_MIRRORS = 3;
+/** Todas as respostas "calm" possíveis → tom preventivo. */
+const CALM_FOR_PREVENTIVE = questions.filter((q) => q.options.some((o) => o.calm)).length;
 
 export function isComplete(answers: Answers): answers is string[] {
   return (
@@ -39,53 +40,59 @@ function option(qIndex: number, id: string) {
   return opt;
 }
 
+/** Perfil com maior peso numa opção (para desempate). */
+function strongestProfile(weights: Partial<Record<ProfileId, number>> | undefined): ProfileId | null {
+  let best: ProfileId | null = null;
+  for (const p of profilePriority) {
+    if ((weights?.[p] ?? 0) > (best ? weights?.[best] ?? 0 : 0)) best = p;
+  }
+  return best;
+}
+
 export function classify(answers: Answers): QuizResult {
   if (!isComplete(answers)) throw new Error("Quiz incompleto: não é possível gerar resultado");
 
   const scores: Record<ProfileId, number> = { pais: 0, culpa: 0, pensamentos: 0, sobrecarga: 0 };
   let calm = 0;
-  let desire: DesireId = "rotina_leve";
 
   answers.forEach((id, qi) => {
     const opt = option(qi, id);
     for (const [p, w] of Object.entries(opt.weights ?? {})) scores[p as ProfileId] += w ?? 0;
     if (opt.calm) calm++;
-    if (opt.desire) desire = opt.desire;
   });
 
-  const top = Math.max(...Object.values(scores));
-  const preventive = calm >= 3 || (calm >= 2 && top < PROFILE_MIN_SIGNAL);
+  const preventive = calm >= CALM_FOR_PREVENTIVE;
 
   let profile: ProfileId;
   if (preventive) {
     profile = "sobrecarga";
   } else {
+    const top = Math.max(...Object.values(scores));
     const tied = profilePriority.filter((p) => scores[p] === top);
-    const byDesire = desireProfile[desire];
-    profile = tied.includes(byDesire) ? byDesire : tied[0];
+    const byCause = strongestProfile(option(tieBreakQuestion, answers[tieBreakQuestion]).weights);
+    profile = byCause && tied.includes(byCause) ? byCause : tied[0];
   }
 
-  return { profile, desire, preventive, scores, mirrors: pickMirrors(answers, profile, preventive) };
+  return {
+    profile,
+    desire: profileDesire[profile],
+    preventive,
+    scores,
+    mirrors: pickMirrors(answers, profile, preventive),
+  };
 }
 
 /**
- * Escolhe até 3 frases-espelho, sempre literais às respostas dadas
- * (nunca afirma algo que a visitante não disse):
- * Q1 (ao deitar) → respostas de Q2/Q4 que sustentam o perfil → Q3 (descanso).
+ * Frases-espelho, sempre literais às respostas dadas (nunca afirma algo que ela não disse):
+ * Q1 (a cena) + as demais respostas que sustentam o perfil (ou as "calm", no tom preventivo).
  */
 function pickMirrors(answers: string[], profile: ProfileId, preventive: boolean): string[] {
-  const q1 = option(0, answers[0]);
-  const q3 = option(2, answers[2]);
-  const supporting = [1, 3]
-    .map((qi) => option(qi, answers[qi]))
-    .filter((o) => preventive ? o.calm : (o.weights?.[profile] ?? 0) > 0);
-
-  const list = [q1.mirror, ...supporting.map((o) => o.mirror), q3.mirror].filter(Boolean);
-  if (list.length > MAX_MIRRORS) list.splice(MAX_MIRRORS - 1, list.length - MAX_MIRRORS);
-  return list;
+  const [first, ...rest] = answers.map((id, qi) => option(qi, id));
+  const supporting = rest.filter((o) => (preventive ? o.calm : (o.weights?.[profile] ?? 0) > 0));
+  return [first.mirror, ...supporting.map((o) => o.mirror)].filter(Boolean);
 }
 
-/** "a", "a e b", "a, b e c" */
+/** "a", "a e que b", "a, que b e que c" */
 export function joinPt(items: string[]): string {
   if (items.length <= 1) return items[0] ?? "";
   return `${items.slice(0, -1).join(", que ")} e que ${items[items.length - 1]}`;
