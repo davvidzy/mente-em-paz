@@ -2,21 +2,13 @@
  * Motor determinístico de resultados do quiz.
  * Não contém textos — lê pesos e conteúdos de src/config/quiz.ts.
  */
-import {
-  profileDesire,
-  profilePriority,
-  questions,
-  tieBreakQuestion,
-  type DesireId,
-  type ProfileId,
-} from "../config/quiz";
+import { profilePriority, questions, tieBreakQuestion, type ProfileId } from "../config/quiz";
 
 /** Respostas indexadas pela ordem das perguntas: ["A", "C", "B"]. */
 export type Answers = (string | undefined)[];
 
 export interface QuizResult {
   profile: ProfileId;
-  desire: DesireId;
   /** true quando as respostas indicam que ela já consegue descansar → mensagem preventiva. */
   preventive: boolean;
   scores: Record<ProfileId, number>;
@@ -75,7 +67,6 @@ export function classify(answers: Answers): QuizResult {
 
   return {
     profile,
-    desire: profileDesire[profile],
     preventive,
     scores,
     mirrors: pickMirrors(answers, profile, preventive),

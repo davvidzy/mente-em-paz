@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { classify, isComplete, joinPt } from "./classifier";
-import { desires, profileDesire, profiles, questions } from "../config/quiz";
+import { preventiveContent, profiles, questions } from "../config/quiz";
 
 /** Todas as 4×4×4 = 64 combinações possíveis. */
 function allCombos(): string[][] {
@@ -22,8 +22,6 @@ describe("classifier", () => {
     for (const a of combos) {
       const r = classify(a);
       expect(profiles[r.profile]).toBeDefined();
-      expect(desires[r.desire]).toBeDefined();
-      expect(r.desire).toBe(profileDesire[r.profile]);
       expect(r.mirrors.length).toBeGreaterThanOrEqual(1);
       expect(r.mirrors.length).toBeLessThanOrEqual(3);
       r.mirrors.forEach((m) => expect(m.trim()).not.toBe(""));
@@ -92,6 +90,13 @@ describe("classifier", () => {
       const r = classify(a);
       const given = a.map((id, qi) => questions[qi].options.find((o) => o.id === id)!.mirror);
       r.mirrors.forEach((m) => expect(given).toContain(m));
+    }
+  });
+
+  it("textos do resultado cabem no limite (título ≤ 36, solução ≤ 90 caracteres)", () => {
+    for (const c of [...Object.values(profiles), preventiveContent]) {
+      expect(c.title.length, c.title).toBeLessThanOrEqual(36);
+      expect(c.solution.length, c.solution).toBeLessThanOrEqual(90);
     }
   });
 

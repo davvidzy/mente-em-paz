@@ -129,12 +129,6 @@ export function QuizApp() {
     }, AUTO_ADVANCE_MS);
   };
 
-  const retake = () => {
-    quizSession.clear();
-    setAnswers([]);
-    go(FIRST, routes.quiz());
-  };
-
   // Foco no título e topo da página a cada etapa (acessibilidade)
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -159,7 +153,7 @@ export function QuizApp() {
       )}
       {view.kind === "loading" && <QuizLoading headingRef={heading} />}
       {view.kind === "result" && isComplete(answers) && (
-        <QuizResult result={classify(answers)} onRetake={retake} headingRef={heading} />
+        <QuizResult result={classify(answers)} headingRef={heading} />
       )}
       <ConsentBanner />
     </>

@@ -1,16 +1,19 @@
 import type { ReactNode } from "react";
 import { Logo } from "../ui/Logo";
 
-/** Moldura das telas do quiz: logo no topo, conteúdo centralizado, fundo sereno. */
-export function QuizShell({ children, top }: { children: ReactNode; top?: ReactNode }) {
+/**
+ * Moldura das telas do quiz: logo no topo, conteúdo centralizado, fundo sereno.
+ * `fit`: exatamente a altura da tela (100dvh), sem rolagem — usado no resultado.
+ */
+export function QuizShell({ children, top, fit }: { children: ReactNode; top?: ReactNode; fit?: boolean }) {
   return (
-    <div className="relative isolate flex min-h-dvh flex-col overflow-hidden">
+    <div className={`relative isolate flex flex-col overflow-hidden ${fit ? "h-dvh" : "min-h-dvh"}`}>
       <Backdrop />
-      <header className="container-page flex h-[72px] items-center justify-center sm:h-20">
+      <header className={`container-page flex shrink-0 items-center justify-center ${fit ? "h-16 sm:h-20" : "h-[72px] sm:h-20"}`}>
         <Logo height={30} className="h-[30px] w-auto sm:h-8" />
       </header>
       {top}
-      <main className="container-page flex flex-1 flex-col pb-12 sm:pb-16">
+      <main className={`container-page flex min-h-0 flex-1 flex-col ${fit ? "pb-[max(16px,env(safe-area-inset-bottom))]" : "pb-12 sm:pb-16"}`}>
         <div className="mx-auto flex w-full max-w-[560px] flex-1 flex-col">{children}</div>
       </main>
     </div>

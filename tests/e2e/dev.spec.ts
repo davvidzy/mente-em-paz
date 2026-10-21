@@ -7,7 +7,8 @@ test.describe("Quiz", () => {
     await page.goto("/?utm_source=facebook&utm_campaign=lancamento&fbclid=abc123");
     // sem tela inicial
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Quando você finalmente deita, o que acontece?");
-    await expect(page.getByText("3 perguntas • sem cadastro")).toBeVisible();
+    await expect(page.getByText("3 perguntas", { exact: true })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("sem cadastro");
     await expect(page.getByRole("button", { name: "Voltar" })).toHaveCount(0);
 
     for (const [i, label] of ANSWERS_PAIS.entries()) {
@@ -16,8 +17,8 @@ test.describe("Quiz", () => {
       await page.getByRole("button", { name: label, exact: true }).click();
     }
     await expect(page).toHaveURL(/\/resultado\/$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seu dia termina, mas suas preocupações continuam.");
-    await expect(page.getByText("Terminar o dia sabendo que fez o possível")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seus pais dormem.Sua mente, não.");
+    await expect(page.getByText("Como o Mente em Paz pode ajudar")).toBeVisible();
     await expect(page.locator("body")).not.toContainText("R$");
     // respostas não vão para a URL
     expect(page.url()).not.toMatch(/pais|perfil|answer/);
@@ -49,28 +50,42 @@ test.describe("Quiz", () => {
   });
 
   test("respostas diferentes geram resultados diferentes; positivas → tom preventivo", async ({ page }) => {
-    await page.goto("/");
-    await answerQuiz(page, ANSWERS_CALM);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seu descanso também merece um lugar na sua rotina.");
-    await expect(page.getByText(/geralmente consegue relaxar ao deitar/)).toBeVisible();
+    const cases: [string[], string][] = [
+      [ANSWERS_CALM, "Proteja o descanso que você tem."],
+      [
+        ["Minha cabeça não para de pensar.", "Preocupação com o dia seguinte.", "Dificuldade de desligar os pensamentos."],
+        "Seu corpo deita.Sua mente, não.",
+      ],
+      [
+        ["Continuo pensando nos meus pais.", "Sensação de ter responsabilidades demais.", "Culpa por não estar ajudando."],
+        "Você cuida de todos.Menos de você.",
+      ],
+    ];
+    for (const [answers, title] of cases) {
+      await page.goto("/");
+      await page.evaluate(() => sessionStorage.clear());
+      await page.goto("/");
+      await answerQuiz(page, answers);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+    }
+  });
 
-    // refazer
-    await page.getByRole("button", { name: /Refazer o quiz/ }).click();
-    await expect(page.getByText("Pergunta 1 de 3")).toBeVisible();
-    await answerQuiz(page, [
-      "Minha cabeça não para de pensar.",
-      "Preocupação com o dia seguinte.",
-      "Dificuldade de desligar os pensamentos.",
-    ]);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seu corpo está cansado, mas sua mente continua ocupada.");
-
-    await page.getByRole("button", { name: /Refazer o quiz/ }).click();
-    await answerQuiz(page, [
-      "Continuo pensando nos meus pais.",
-      "Sensação de ter responsabilidades demais.",
-      "Culpa por não estar ajudando.",
-    ]);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Você também merece descansar sem culpa.");
+  test("resultado cabe em uma tela (sem rolagem) do iPhone SE ao desktop", async ({ page }) => {
+    for (const [w, h] of [[320, 568], [375, 667], [390, 844], [1440, 900]]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.goto("/");
+      await answerQuiz(page, ANSWERS_PAIS);
+      await expect(page.locator("[data-result-title]")).toBeVisible();
+      const overflow = await page.evaluate(() => ({
+        y: document.documentElement.scrollHeight - innerHeight,
+        x: document.documentElement.scrollWidth - innerWidth,
+      }));
+      expect(overflow, `${w}x${h}`).toEqual({ y: 0, x: 0 });
+      // só título, "Seu resultado" e o card — sem refazer/espelho/desejo
+      await expect(page.getByRole("button", { name: /Refazer/ })).toHaveCount(0);
+      await expect(page.getByText("Pelo que você contou")).toHaveCount(0);
+      await page.evaluate(() => sessionStorage.clear());
+    }
   });
 
   test("eventos do quiz na ordem, sem respostas nos parâmetros e sem Purchase", async ({ page }) => {
