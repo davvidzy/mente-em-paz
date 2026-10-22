@@ -1,7 +1,7 @@
 import { landing } from "../../../config/landing";
-import { Button } from "../../ui/Button";
+import { ButtonLink } from "../../ui/Button";
 import { Logo } from "../../ui/Logo";
-import { Reveal, Section, scrollToId } from "../shared";
+import { jumpTo, Reveal, Section } from "../shared";
 
 export function FinalCta() {
   const c = landing.finalCta;
@@ -23,9 +23,9 @@ export function FinalCta() {
             {c.title}
           </h2>
           <div className="mx-auto mt-9 w-full max-w-[400px]">
-            <Button variant="light" size="lg" arrow full onClick={() => scrollToId("planos")}>
+            <ButtonLink href="#planos" variant="light" size="lg" arrow full onClick={jumpTo("planos")}>
               {c.cta}
-            </Button>
+            </ButtonLink>
           </div>
         </Reveal>
       </div>

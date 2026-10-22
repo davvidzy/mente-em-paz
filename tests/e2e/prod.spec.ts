@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { ANSWERS_PAIS, answerQuiz, collectErrors } from "./helpers";
 
@@ -75,9 +76,34 @@ test.describe("Build de produção", () => {
     await expect(page.locator("h1")).toHaveCount(1);
     const missingAlt = await page.locator("img:not([alt])").count();
     expect(missingAlt).toBe(0);
-    const small = await page.locator("main button:visible, header button:visible").evaluateAll((els) =>
+    const small = await page.locator("main :is(button, a.btn):visible, header :is(a, button):visible").evaluateAll((els) =>
       els.map((e) => e.getBoundingClientRect()).filter((r) => r.height < 44).length,
     );
     expect(small).toBe(0);
+  });
+
+  test("acessibilidade: axe sem violações WCAG 2.2 AA (LP com pergunta do FAQ aberta, quiz)", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    for (const path of ["/mente-em-paz/", "/"]) {
+      await page.goto(path);
+      const faq = page.locator("main button[aria-expanded]").first(); // abre uma pergunta (uma por vez)
+      if (await faq.count()) await faq.click();
+      const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+      expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(" | ")}`), path).toEqual([]);
+    }
+  });
+
+  test("LP pré-renderizada: oferta legível e navegável sem JavaScript", async ({ browser }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL: "http://localhost:4174" });
+    const page = await ctx.newPage();
+    await page.goto("/promo/mente-em-paz/"); // em subpasta: links e assets relativos
+    await expect(page.locator("h1")).toContainText("Agora é hora de cuidar de você");
+    await expect(page.locator("#planos")).toContainText("R$ 39,90");
+    const logoOk = await page.locator("header img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+    expect(logoOk).toBe(true);
+    await page.locator("header a[href='#planos']").click();
+    await expect(page).toHaveURL(/#planos$/);
+    await expect(page.locator("footer a", { hasText: "Termos de Uso" })).toHaveAttribute("href", "../termos/");
+    await ctx.close();
   });
 });

@@ -33,7 +33,8 @@ export function Footer() {
           </nav>
         </div>
         <p className="mt-10 max-w-[72ch] text-[13.5px] leading-relaxed text-white/60">{landing.footer.disclaimer}</p>
-        <p className="mt-6 border-t border-white/10 pt-6 text-[13px] text-white/50">
+        {/* o ano vem do pré-render; numa virada de ano o navegador corrige sem aviso */}
+        <p className="mt-6 border-t border-white/10 pt-6 text-[13px] text-white/50" suppressHydrationWarning>
           © {year} {brand.name}
           {brand.legalEntity && ` · ${brand.legalEntity}`}. Todos os direitos reservados.
         </p>

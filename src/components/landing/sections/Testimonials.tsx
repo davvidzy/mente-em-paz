@@ -1,4 +1,5 @@
-import { ImageIcon, UserRound } from "lucide-react";
+import { useState } from "react";
+import { ImageIcon, Pause, Play, UserRound } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { testimonials, type Testimonial } from "../../../config/site";
 import { fill } from "../../../lib/format";
@@ -23,6 +24,7 @@ const DEV_PLACEHOLDERS: (Testimonial & { placeholder: true })[] = [7, 15, 30, 45
  */
 export function Testimonials({ tone }: { tone: Tone }) {
   const c = landing.testimonials;
+  const [paused, setPaused] = useState(false);
   const items: (Testimonial & { placeholder?: true })[] = testimonials.length ? testimonials : DEV ? DEV_PLACEHOLDERS : [];
   if (!items.length) return null;
 
@@ -32,10 +34,21 @@ export function Testimonials({ tone }: { tone: Tone }) {
     <Section id="depoimentos" tone={tone} labelledBy="depo-title" className="overflow-hidden">
       <div className="container-page">
         <SectionHead id="depo-title" title={c.title} center />
+        {/* Movimento automático precisa poder ser pausado (WCAG 2.2.2) — no celular não há hover */}
+        <div className="mp-marquee-control mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setPaused((p) => !p)}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-4 text-[15px] font-medium text-brand hover:border-brand"
+          >
+            {paused ? <Play aria-hidden className="size-4" /> : <Pause aria-hidden className="size-4" />}
+            {paused ? "Continuar movimento" : "Pausar movimento"}
+          </button>
+        </div>
       </div>
 
-      <Reveal className="mp-marquee mt-10 md:mt-12">
-        <ul className="mp-marquee-track" style={{ ["--marquee-duration" as string]: `${duration}s` }} aria-label="Depoimentos de clientes">
+      <Reveal className="mp-marquee mt-6 md:mt-8">
+        <ul className="mp-marquee-track" data-paused={paused || undefined} style={{ ["--marquee-duration" as string]: `${duration}s` }} aria-label="Depoimentos de clientes">
           {[0, 1].map((copy) =>
             items.map((t, i) => (
               <li key={`${copy}-${i}`} aria-hidden={copy === 1 || undefined} className="mp-marquee-item">

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import { useReveal } from "../../hooks/useReveal";
 
 export type Tone = "canvas" | "surface" | "dark";
@@ -72,6 +72,15 @@ export function SectionHead({
     </Reveal>
   );
 }
+
+/**
+ * onClick de um link-âncora (href="#id"): sem JavaScript o navegador pula até a seção;
+ * com JavaScript, rola suave e move o foco para o título.
+ */
+export const jumpTo = (id: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+  e.preventDefault();
+  scrollToId(id);
+};
 
 /** Rola suavemente até uma seção (respeita prefers-reduced-motion via CSS). */
 export function scrollToId(id: string) {

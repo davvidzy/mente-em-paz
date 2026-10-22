@@ -228,7 +228,8 @@
   animation: mp-marquee var(--marquee-duration, 40s) linear infinite;
 }
 .mp-marquee:hover .mp-marquee-track,
-.mp-marquee:focus-within .mp-marquee-track {
+.mp-marquee:focus-within .mp-marquee-track,
+.mp-marquee-track[data-paused] {
   animation-play-state: paused;
 }
 .mp-marquee-item {
@@ -244,7 +245,8 @@
   .mp-marquee-track {
     animation: none;
   }
-  .mp-marquee-item[aria-hidden="true"] {
+  .mp-marquee-item[aria-hidden="true"],
+  .mp-marquee-control {
     display: none;
   }
 }
@@ -325,5 +327,17 @@
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Alto contraste do Windows: fundos somem, então botões e selos ganham borda para continuar visíveis */
+@media (forced-colors: active) {
+  .btn,
+  .rounded-full.bg-brand {
+    border: 1px solid ButtonText;
+  }
+  .em-mark {
+    background-image: none;
+    text-decoration: underline;
   }
 }

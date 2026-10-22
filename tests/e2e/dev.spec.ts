@@ -219,7 +219,7 @@ test.describe("Landing — ofertas (dev, checkout pendente)", () => {
 
   test("CTA do hero rola até os planos", async ({ page }) => {
     await page.goto("/mente-em-paz/");
-    await page.getByRole("button", { name: /Quero descansar melhor/ }).click();
+    await page.getByRole("link", { name: /Quero descansar melhor/ }).click();
     await expect(page.locator("#planos-title")).toBeInViewport();
   });
 });

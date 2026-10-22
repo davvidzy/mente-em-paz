@@ -20,7 +20,7 @@ Identidade visual: design system **Refúgio Sereno** (`Mente em Paz - Conteúdo 
 ```bash
 npm install          # instalar dependências
 npm run dev          # desenvolvimento → http://localhost:5173
-npm run build        # checa tipos, gera dist/ e mostra o checklist de lançamento
+npm run build        # checa tipos, gera dist/, pré-renderiza a LP e mostra o checklist de lançamento
 npm test             # testes do motor de resultados (64 combinações)
 npm run test:e2e     # testes de navegador (rode npm run build antes)
 npm run check:launch # checklist estrito: falha se algo bloquear a publicação
@@ -111,7 +111,7 @@ src/lib/           classifier, analytics, consent, checkout, params, routes, ses
 src/components/    quiz/, landing/sections/ (uma seção por arquivo), ui/, legal/
 src/assets/brand/  logos SVG (positiva, invertida, mono; horizontal, vertical, símbolo)
 public/            .htaccess, favicons, og-image.jpg, manifest, 404
-scripts/           build-logos.py, build-brand-assets.mjs, optimize-images.mjs, check-launch.mjs, static-server.mjs
+scripts/           build-logos.py, build-brand-assets.mjs, optimize-images.mjs, prerender.mjs, check-launch.mjs, static-server.mjs
 tests/e2e/         Playwright (dev e produção, raiz e subpasta, 320–1440 px)
 ```
 

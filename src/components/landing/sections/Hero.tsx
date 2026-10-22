@@ -3,11 +3,11 @@ import type { ProfileId } from "../../../config/quiz";
 import { landing } from "../../../config/landing";
 import { guarantee, media } from "../../../config/site";
 import { fill } from "../../../lib/format";
-import { Button } from "../../ui/Button";
+import { ButtonLink } from "../../ui/Button";
 import { DevPlaceholder } from "../../ui/DevPlaceholder";
 import { Emphasis } from "../../ui/Emphasis";
 import { VideoPlayer } from "../../ui/VideoPlayer";
-import { scrollToId } from "../shared";
+import { jumpTo } from "../shared";
 
 const benefitIcons: Record<(typeof landing.hero.benefits)[number]["icon"], LucideIcon> = {
   guarantee: ShieldCheck,
@@ -27,8 +27,8 @@ export function Hero({ profile }: { profile: ProfileId | null }) {
       <HeroArt />
       <div className="container-page pb-[clamp(72px,9vw,128px)] pt-14 sm:pt-[clamp(64px,7vw,104px)]">
         <div className="anim-enter mx-auto max-w-[680px] text-center">
-          {/* Uma linha só, também no mobile */}
-          <p className="t-eyebrow truncate whitespace-nowrap text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" data-eyebrow>
+          {/* Cabe em uma linha no mobile; com zoom ou fonte grande quebra em vez de cortar o texto */}
+          <p className="t-eyebrow text-balance text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" data-eyebrow>
             {profile ? landing.heroWelcome[profile] : h.eyebrow}
           </p>
 
@@ -41,9 +41,9 @@ export function Hero({ profile }: { profile: ProfileId | null }) {
           </p>
 
           <div className="mx-auto mt-10 w-full max-w-[400px] md:mt-12">
-            <Button size="lg" arrow full onClick={() => scrollToId("planos")}>
+            <ButtonLink href="#planos" size="lg" arrow full onClick={jumpTo("planos")}>
               {h.cta}
-            </Button>
+            </ButtonLink>
           </div>
 
           {benefits.length > 0 && (

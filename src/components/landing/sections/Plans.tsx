@@ -3,7 +3,7 @@ import { Check, ShieldCheck } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { checkout, guarantee, plans, tracking, upgrade, type Plan } from "../../../config/site";
 import { track, trackOnce } from "../../../lib/analytics";
-import { checkoutUrl, goToCheckout, type CheckoutKind } from "../../../lib/checkout";
+import { goToCheckout, hasCheckoutUrl, type CheckoutKind } from "../../../lib/checkout";
 import { priceParts } from "../../../lib/format";
 import { read, write } from "../../../lib/storage";
 import { useInView } from "../../../hooks/useReveal";
@@ -29,7 +29,7 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
   const sectionRef = useInView<HTMLDivElement>(() => trackOnce("plan_section_viewed"), 0.25);
 
   /** Upgrade só é oferecido se habilitado, com URL real e ainda não recusado nesta visita. */
-  const upgradeAvailable = upgrade.enabled && checkoutUrl("upgrade") !== null;
+  const upgradeAvailable = upgrade.enabled && hasCheckoutUrl("upgrade");
 
   const go = (kind: CheckoutKind) => {
     if (goToCheckout(kind)) return;
@@ -74,7 +74,7 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
   };
 
   /** Em produção, botão sem URL configurada fica desabilitado (nunca leva a endereço inexistente). */
-  const ready = (kind: CheckoutKind) => PREVIEW || checkoutUrl(kind) !== null;
+  const ready = (kind: CheckoutKind) => PREVIEW || hasCheckoutUrl(kind);
 
   return (
     <Section id="planos" tone={tone} labelledBy="planos-title">
@@ -116,7 +116,9 @@ function PlanCard({ plan, onChoose, enabled }: { plan: Plan; onChoose: () => voi
       <h3 className="t-h3" aria-label={plan.name}>{plan.shortName}</h3>
       <p className="t-muted mt-1.5 text-[16px]">{plan.description}</p>
 
-      <p className="mt-6 flex items-baseline gap-1 font-serif text-brand" aria-label={`${price.currency} ${price.int}${price.dec}`}>
+      <p className="mt-6 flex items-baseline gap-1 font-serif text-brand">
+        {/* Leitores de tela ouvem o valor inteiro, não "R$ / 39 / ,90" em pedaços */}
+        <span className="sr-only">{`${price.currency} ${price.int}${price.dec}`}</span>
         <span aria-hidden className="text-[20px] font-medium">{price.currency}</span>
         <span aria-hidden className="text-[52px] font-semibold leading-none tracking-tight">{price.int}</span>
         <span aria-hidden className="text-[24px] font-semibold">{price.dec}</span>

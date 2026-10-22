@@ -14,10 +14,14 @@ const URLS: Record<CheckoutKind, string> = {
   upgrade: checkout.checkoutUpgradeUrl,
 };
 
+/** Há URL válida configurada? (não lê a página — seguro no pré-render) */
+export function hasCheckoutUrl(kind: CheckoutKind): boolean {
+  return /^https:\/\//.test(URLS[kind]?.trim() ?? "");
+}
+
 export function checkoutUrl(kind: CheckoutKind): string | null {
-  const raw = URLS[kind]?.trim();
-  if (!raw || !/^https:\/\//.test(raw)) return null;
-  return withParams(raw);
+  if (!hasCheckoutUrl(kind)) return null;
+  return withParams(URLS[kind].trim());
 }
 
 export function checkoutValueCents(kind: CheckoutKind): number {
@@ -28,7 +32,7 @@ export function checkoutValueCents(kind: CheckoutKind): number {
 export function purchaseReady(): boolean {
   const needed: CheckoutKind[] = ["essencial", "completo"];
   if (upgrade.enabled) needed.push("upgrade");
-  return needed.every((k) => checkoutUrl(k) !== null);
+  return needed.every(hasCheckoutUrl);
 }
 
 /**

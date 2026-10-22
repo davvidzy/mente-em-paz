@@ -6,10 +6,9 @@ export function useReveal<T extends HTMLElement>() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (!("IntersectionObserver" in window)) {
-      el.classList.add("is-visible");
-      return;
-    }
+    if (!("IntersectionObserver" in window)) return;
+    // Já na tela quando o JS chega (HTML pré-renderizado): fica como está, sem piscar.
+    if (el.getBoundingClientRect().top < window.innerHeight) return;
     el.classList.add("reveal");
     const io = new IntersectionObserver(
       ([entry]) => {

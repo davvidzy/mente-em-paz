@@ -54,17 +54,25 @@ function seo(siteUrl: string): Plugin {
 
 // Multi-page: cada rota é uma pasta com index.html (funciona em qualquer servidor estático,
 // incluindo a Hostinger). `base: "./"` gera caminhos relativos → o site funciona na raiz ou em subpasta.
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, import.meta.dirname, "VITE_");
   return {
     base: "./",
-    plugins: [react(), tailwindcss(), seo(env.VITE_SITE_URL ?? "")],
-    build: {
-      target: "es2020",
-      rollupOptions: {
-        input: Object.fromEntries(Object.entries(PAGES).map(([k, v]) => [k, r(v)])),
-      },
+    plugins: [react(), tailwindcss(), ...(isSsrBuild ? [] : [seo(env.VITE_SITE_URL ?? "")])],
+    // Pré-render (`vite build --ssr`): assets apontam para a raiz da página gerada
+    // (__MP_ROOT__, definido por scripts/prerender.mjs), com os mesmos nomes do build do navegador.
+    experimental: {
+      renderBuiltUrl: (filename, { ssr }) =>
+        ssr ? { runtime: `globalThis.__MP_ROOT__ + ${JSON.stringify(filename)}` } : { relative: true },
     },
+    build: isSsrBuild
+      ? { target: "node20", outDir: ".prerender", emptyOutDir: true, copyPublicDir: false }
+      : {
+          target: "es2020",
+          rollupOptions: {
+            input: Object.fromEntries(Object.entries(PAGES).map(([k, v]) => [k, r(v)])),
+          },
+        },
     test: {
       include: ["src/**/*.test.ts"],
     },

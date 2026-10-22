@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 
 type Variant = "primary" | "secondary" | "ghost" | "light";
@@ -32,22 +32,14 @@ const sizes = {
   lg: "min-h-14 px-5 py-3.5 text-base rounded-[14px] sm:px-9",
 };
 
-export function Button({
-  variant = "primary",
-  arrow,
-  full,
-  size = "md",
-  className = "",
-  children,
-  type = "button",
-  ...rest
-}: Props) {
+type Look = Pick<Props, "variant" | "full" | "size" | "className">;
+
+const classes = ({ variant = "primary", full, size = "md", className = "" }: Look) =>
+  `btn ${base} ${variants[variant]} ${variant === "ghost" ? "min-h-11 px-2 text-[15px]" : sizes[size]} ${full ? "w-full" : ""} ${className}`;
+
+function Content({ arrow, children }: { arrow?: boolean; children: ReactNode }) {
   return (
-    <button
-      type={type}
-      className={`${base} ${variants[variant]} ${variant === "ghost" ? "min-h-11 px-2 text-[15px]" : sizes[size]} ${full ? "w-full" : ""} ${className}`}
-      {...rest}
-    >
+    <>
       <span className="min-w-0">{children}</span>
       {arrow && (
         <ArrowRight
@@ -56,6 +48,29 @@ export function Button({
           strokeWidth={2}
         />
       )}
+    </>
+  );
+}
+
+export function Button({ variant, arrow, full, size, className, children, type = "button", ...rest }: Props) {
+  return (
+    <button type={type} className={classes({ variant, full, size, className })} {...rest}>
+      <Content arrow={arrow}>{children}</Content>
     </button>
+  );
+}
+
+interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement>, Look {
+  href: string;
+  arrow?: boolean;
+  children: ReactNode;
+}
+
+/** Mesmo visual do Button, para navegação (ex.: âncora "#planos" — funciona até sem JavaScript). */
+export function ButtonLink({ variant, arrow, full, size, className, children, ...rest }: LinkProps) {
+  return (
+    <a className={classes({ variant, full, size, className })} {...rest}>
+      <Content arrow={arrow}>{children}</Content>
+    </a>
   );
 }

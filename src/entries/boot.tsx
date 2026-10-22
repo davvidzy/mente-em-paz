@@ -1,6 +1,6 @@
 import "../styles/index.css";
-import { StrictMode, type ReactNode } from "react";
-import { createRoot } from "react-dom/client";
+import { startTransition, StrictMode, type ReactNode } from "react";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import { initAnalytics } from "../lib/analytics";
 import { captureParams } from "../lib/params";
 
@@ -8,5 +8,10 @@ import { captureParams } from "../lib/params";
 export function boot(app: ReactNode) {
   captureParams();
   initAnalytics();
-  createRoot(document.getElementById("root")!).render(<StrictMode>{app}</StrictMode>);
+  const root = document.getElementById("root")!;
+  const tree = <StrictMode>{app}</StrictMode>;
+  // Página pré-renderizada no build (landing): reaproveita o HTML que já está na tela.
+  // Em transição, a hidratação é fatiada e não trava toques/rolagem em celular fraco.
+  if (root.hasChildNodes()) startTransition(() => void hydrateRoot(root, tree));
+  else createRoot(root).render(tree);
 }

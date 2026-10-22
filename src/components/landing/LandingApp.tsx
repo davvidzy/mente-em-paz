@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactElement } from "react";
+import type { ProfileId } from "../../config/quiz";
 import { expert, media, testimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
@@ -28,10 +29,12 @@ const DEV = import.meta.env.DEV;
  * O fundo alterna automaticamente entre as seções visíveis.
  */
 export function LandingApp() {
-  const profile = quizSession.getProfile();
+  // O HTML vem pré-renderizado sem perfil; a frase de acolhimento entra após a hidratação.
+  const [profile, setProfile] = useState<ProfileId | null>(null);
   const [notice, setNotice] = useState<NoticeMessage | null>(null);
 
   useEffect(() => {
+    setProfile(quizSession.getProfile());
     trackOnce("landing_page_viewed", { content_name: "Mente em Paz" });
   }, []);
 
@@ -61,7 +64,7 @@ export function LandingApp() {
         Pular para o conteúdo
       </a>
       <Header />
-      <main id="conteudo">
+      <main id="conteudo" tabIndex={-1}>
         <Hero profile={profile} />
         {sections
           .filter(([visible]) => visible)
