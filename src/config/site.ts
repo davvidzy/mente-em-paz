@@ -158,7 +158,7 @@ export const media = {
     captionsSrc: "", // opcional — arquivo .vtt de legendas
   },
   audioPreview: {
-    src: "", // PENDENTE — ex.: "audio/trecho-demonstracao.mp3"
+    src: "audio/trecho-demonstracao.mp3",
     title: "Trecho de um áudio guiado",
   },
 };

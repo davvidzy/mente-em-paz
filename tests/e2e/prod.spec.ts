@@ -29,8 +29,8 @@ test.describe("Build de produção", () => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
-    // áudio, especialista provisória, espaço de bônus e depoimentos sem conteúdo → ocultos; vídeo fica no hero
-    expect(order).toEqual(["identificacao", "produto", "bonus", "planos", "garantia", "faq", "cta-final"]);
+    // especialista provisória e depoimentos sem conteúdo → ocultos; vídeo fica no hero
+    expect(order).toEqual(["identificacao", "produto", "demonstracao", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
     await expect(page.locator("[data-dev-placeholder]")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Placeholder");
@@ -96,6 +96,16 @@ test.describe("Build de produção", () => {
       els.map((e) => e.getBoundingClientRect()).filter((r) => r.height < 44).length,
     );
     expect(small).toBe(0);
+  });
+
+  test("áudio de demonstração: carrega e toca", async ({ page }) => {
+    await page.goto("/mente-em-paz/");
+    const sec = page.locator("#demonstracao");
+    const audio = sec.locator("audio");
+    await expect.poll(() => audio.evaluate((a: HTMLAudioElement) => a.duration || 0)).toBeGreaterThan(5);
+    await sec.getByRole("button", { name: "Reproduzir áudio" }).click();
+    await expect(sec.getByRole("button", { name: "Pausar áudio" })).toBeVisible();
+    await expect.poll(() => audio.evaluate((a: HTMLAudioElement) => a.currentTime)).toBeGreaterThan(0);
   });
 
   test("bônus: 5 cards do Completo, textos curtos no celular, total e cronômetro", async ({ page }) => {
