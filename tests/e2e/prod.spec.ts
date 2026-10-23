@@ -60,12 +60,12 @@ test.describe("Build de produção", () => {
     }
     await expect(page.locator("#planos")).toContainText("39");
     await expect(page.locator("#planos")).toContainText("67");
-    // conteúdo dos planos: 4 itens no Essencial; Completo com "Tudo do Essencial +", 6 itens e resumo
+    // conteúdo dos planos (Completo primeiro): Completo com "Tudo do Essencial +", 6 itens e resumo; 4 itens no Essencial
     const items = page.locator("#planos [data-plan-items]");
-    await expect(items.nth(0).getByRole("listitem")).toHaveCount(4);
-    await expect(items.nth(1)).toContainText("Tudo do Essencial +");
-    await expect(items.nth(1).getByRole("listitem")).toHaveCount(6);
-    await expect(items.nth(1)).toContainText("10 áudios + 3 ferramentas práticas");
+    await expect(items.nth(1).getByRole("listitem")).toHaveCount(4);
+    await expect(items.nth(0)).toContainText("Tudo do Essencial +");
+    await expect(items.nth(0).getByRole("listitem")).toHaveCount(6);
+    await expect(items.nth(0)).toContainText("10 áudios + 3 ferramentas práticas");
     // sem pixel configurado → sem banner de cookies e sem script do Meta
     await expect(page.getByRole("region", { name: "Aviso de cookies" })).toHaveCount(0);
     expect(await page.locator('script[src*="fbevents"]').count()).toBe(0);

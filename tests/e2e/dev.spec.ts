@@ -197,12 +197,12 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     expect(anim).toBe("mp-marquee");
   });
 
-  test("planos: Essencial antes do Completo no mobile, garantia abaixo de cada CTA; popup com novo texto", async ({ page }) => {
+  test("planos: Completo acima do Essencial no mobile, garantia abaixo de cada CTA; popup com novo texto", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto("/mente-em-paz/");
     const ess = await page.locator('[data-plan="essencial"]').boundingBox();
     const comp = await page.locator('[data-plan="completo"]').boundingBox();
-    expect(ess!.y).toBeLessThan(comp!.y);
+    expect(comp!.y).toBeLessThan(ess!.y);
     await expect(page.locator("#planos [data-guarantee]")).toHaveCount(2);
     await page.locator('[data-plan="essencial"]').click();
     const dialog = page.getByRole("dialog");

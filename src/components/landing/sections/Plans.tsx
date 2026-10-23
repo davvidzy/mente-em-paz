@@ -82,8 +82,9 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
         <SectionHead id="planos-title" title={c.title} center />
 
         <div className="mx-auto mt-12 grid max-w-[920px] gap-5 md:mt-14 md:grid-cols-2 md:items-stretch md:gap-6">
-          <PlanCard plan={plans.essencial} onChoose={chooseEssencial} enabled={ready("essencial")} />
+          {/* Completo primeiro: em cima no celular, à esquerda no desktop */}
           <PlanCard plan={plans.completo} onChoose={chooseCompleto} enabled={ready("completo")} />
+          <PlanCard plan={plans.essencial} onChoose={chooseEssencial} enabled={ready("essencial")} />
         </div>
       </div>
 
