@@ -190,6 +190,11 @@ export interface Bonus {
   description: string;
   /** Soma exibida riscada no box final (com `showValues: true`). */
   valueCents: number;
+  /**
+   * Capa quadrada, sem sufixo: "img/bonus/nome" → usa nome-400.webp e nome-800.webp.
+   * Original em images-src/bonus/nome.jpg → `npm run images`. Vazio = ícone de presente.
+   */
+  image?: string;
 }
 
 export const bonuses = {
@@ -211,26 +216,31 @@ export const bonuses = {
       name: "Descansar Não É Abandonar",
       description: "Áudio e exercício para acolher a culpa de tirar um tempo para você.",
       valueCents: 2990,
+      image: "img/bonus/descansar-nao-e-abandonar",
     },
     {
       name: "Plano da Noite Organizada",
       description: "Organize pendências e cuidados para encerrar o dia com clareza.",
       valueCents: 2490,
+      image: "img/bonus/plano-da-noite-organizada",
     },
     {
       name: "SOS Mente Acelerada",
       description: "Pausa guiada de 5 minutos para quando a mente não para.",
       valueCents: 1990,
+      image: "img/bonus/sos-mente-acelerada",
     },
     {
       name: "Diário do Descarrego Mental",
       description: "Registre as preocupações e tire as pendências da cabeça.",
       valueCents: 2490,
+      image: "img/bonus/diario-do-descarrego-mental",
     },
     {
       name: "Quando Acordo no Meio da Noite",
       description: "Áudio acolhedor para quando você desperta inquieta de madrugada.",
       valueCents: 2490,
+      image: "img/bonus/quando-acordo-no-meio-da-noite",
     },
   ] as Bonus[],
 };

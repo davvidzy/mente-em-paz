@@ -3,6 +3,7 @@ import { Clock, Gift } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { bonuses, plans, type Bonus as BonusItem } from "../../../config/site";
 import { fill, formatBRL } from "../../../lib/format";
+import { routes } from "../../../lib/routes";
 import { Reveal, Section, SectionHead, type Tone } from "../shared";
 
 /**
@@ -57,21 +58,46 @@ export function Bonus({ tone }: { tone: Tone }) {
   );
 }
 
+/**
+ * Mobile: capa à esquerda do título; descrição na largura toda, abaixo (cabe em ≤ 3 linhas).
+ * ≥ 640px: capa ocupa as duas linhas à esquerda.
+ */
 function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; tag: string }) {
   return (
-    <article className="card flex gap-3 p-4 shadow-(--shadow-soft) min-[380px]:gap-4 transition-[transform,box-shadow] duration-300 ease-(--ease-calm) sm:gap-5 sm:p-5 md:hover:-translate-y-0.5 md:hover:shadow-(--shadow-lift)">
-      <div className="grid size-16 shrink-0 content-center justify-items-center gap-1 rounded-xl bg-sage/20 min-[380px]:size-[72px] sm:size-20">
-        <Gift aria-hidden className="size-6 text-sage-deep" strokeWidth={1.6} />
-        <span className="text-[12.5px] font-semibold text-brand">Bônus {number}</span>
+    <article className="card grid grid-cols-[88px_minmax(0,1fr)] gap-x-3.5 gap-y-4 p-4 shadow-(--shadow-soft) transition-[transform,box-shadow] duration-300 ease-(--ease-calm) [grid-template-areas:'cover_head'_'desc_desc'] min-[380px]:grid-cols-[96px_minmax(0,1fr)] sm:grid-cols-[128px_minmax(0,1fr)] sm:gap-x-5 sm:gap-y-1 sm:p-5 sm:[grid-template-areas:'cover_head'_'cover_desc'] md:hover:-translate-y-0.5 md:hover:shadow-(--shadow-lift)">
+      <div className="relative self-start [grid-area:cover]">
+        {bonus.image ? (
+          // capa repete o nome do título ao lado → decorativa para leitores de tela
+          <img
+            src={routes.asset(`${bonus.image}-400.webp`)}
+            srcSet={`${routes.asset(`${bonus.image}-400.webp`)} 400w, ${routes.asset(`${bonus.image}-800.webp`)} 800w`}
+            sizes="(min-width: 640px) 128px, 96px"
+            width={400}
+            height={400}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="aspect-square w-full rounded-xl border border-line object-cover"
+          />
+        ) : (
+          <div className="grid aspect-square w-full place-items-center rounded-xl bg-sage/20">
+            <Gift aria-hidden className="size-7 text-sage-deep" strokeWidth={1.6} />
+          </div>
+        )}
+        <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-2.5 py-0.5 text-[12px] font-semibold text-white">
+          Bônus {number}
+        </span>
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 self-center [grid-area:head] sm:self-end">
         <p className="inline-flex rounded-full border border-sage px-2.5 py-0.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-brand">
           {tag}
         </p>
         <h3 className="mt-2 font-serif text-[19px] font-semibold leading-snug text-brand sm:text-[20px]">{bonus.name}</h3>
-        <p className="mt-1 text-[14.5px] leading-normal text-brand/80">{bonus.description}</p>
       </div>
+      <p className="text-[14.5px] leading-normal text-brand/80 [grid-area:desc] sm:self-start" data-bonus-desc>
+        {bonus.description}
+      </p>
     </article>
   );
 }

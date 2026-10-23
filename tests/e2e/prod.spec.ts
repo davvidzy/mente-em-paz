@@ -105,12 +105,19 @@ test.describe("Build de produção", () => {
       await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
       expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
       expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
-      expect(Math.max(...(await lines("#bonus article h3 + p"))), `descrições @ ${width}px`).toBeLessThanOrEqual(3);
+      expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(3);
       const overflow = await sec.evaluate((s) => [...s.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth).length);
       expect(overflow, `estouro @ ${width}px`).toBe(0);
     }
     const sec = page.locator("#bonus");
     await expect(sec).not.toContainText("estão incluídos no");
+    // capas carregadas (também em subpasta, ver teste sem JS)
+    const covers = sec.locator("article img");
+    await expect(covers).toHaveCount(5);
+    for (const img of await covers.all()) {
+      await img.scrollIntoViewIfNeeded();
+      await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
+    }
     // card do Completo lista os mesmos 5 bônus da seção
     const planBonuses = page.locator("#planos [data-plan-bonuses]");
     await expect(planBonuses).toContainText("+ 5 bônus exclusivos");
@@ -151,6 +158,9 @@ test.describe("Build de produção", () => {
     await expect(page.locator("#planos")).toContainText("R$ 39,90");
     const logoOk = await page.locator("header img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
     expect(logoOk).toBe(true);
+    const cover = page.locator("#bonus article img").first();
+    await cover.scrollIntoViewIfNeeded();
+    await expect.poll(() => cover.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     await page.locator("header a[href='#planos']").click();
     await expect(page).toHaveURL(/#planos$/);
     await expect(page.locator("footer a", { hasText: "Termos de Uso" })).toHaveAttribute("href", "../termos/");
