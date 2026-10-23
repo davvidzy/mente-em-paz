@@ -123,8 +123,8 @@ function PlanCard({ plan, onChoose, enabled }: { plan: Plan; onChoose: () => voi
         <span aria-hidden className="text-[52px] font-semibold leading-none tracking-tight">{price.int}</span>
         <span aria-hidden className="text-[24px] font-semibold">{price.dec}</span>
       </p>
-      {plan.paymentNote && <p className="mt-2 text-[14px] font-medium text-sage-deep">{plan.paymentNote}</p>}
-      {plan.installmentsNote && <p className="mt-1 text-[14px] text-sage-deep">{plan.installmentsNote}</p>}
+      {plan.installmentsNote && <p className="mt-2 text-[15px] font-semibold text-brand">{plan.installmentsNote}</p>}
+      {plan.paymentNote && <p className="mt-1 text-[14px] text-sage-deep">{plan.paymentNote}</p>}
 
       <ul className="mt-6 space-y-3 border-t border-line pt-6">
         {plan.items.map((item) => (

@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { ANSWERS_PAIS, answerQuiz, collectErrors } from "./helpers";
+import { ANSWERS_PAIS, answerQuiz, collectErrors, stubCheckout } from "./helpers";
 
 const WIDTHS = [320, 360, 375, 390, 430, 768, 1024, 1440];
-const PREVIEW = /previewCheckout:\s*true/.test(readFileSync("src/config/site.ts", "utf8"));
+const SITE = readFileSync("src/config/site.ts", "utf8");
+const PREVIEW = /previewCheckout:\s*true/.test(SITE);
+const READY = ["checkoutEssencialUrl", "checkoutCompletoUrl", "checkoutUpgradeUrl"].every((k) => new RegExp(`${k}:\\s*"https://`).test(SITE));
 
 test.describe("Build de produção", () => {
   test("sem rolagem horizontal em nenhuma largura (quiz, resultado, LP)", async ({ page }) => {
@@ -23,7 +25,7 @@ test.describe("Build de produção", () => {
     }
   });
 
-  test("LP: ordem das seções, opcionais ocultas, sem placeholders, botões sem checkout desabilitados", async ({ page }) => {
+  test("LP: ordem das seções, opcionais ocultas, sem placeholders, botões de compra conforme o checkout", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
@@ -33,7 +35,15 @@ test.describe("Build de produção", () => {
     await expect(page.locator("[data-dev-placeholder]")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Placeholder");
 
-    if (PREVIEW) {
+    if (READY) {
+      // links reais: popup do Essencial e aceite levam ao checkout de upgrade (Wiapy simulada)
+      await stubCheckout(page);
+      await page.locator('[data-plan="essencial"]').click();
+      await expect(page.getByRole("dialog")).toContainText("De R$ 67,90 por R$ 57,90");
+      await page.getByRole("button", { name: /Sim, quero o Completo/ }).click();
+      await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\//);
+      await page.goBack();
+    } else if (PREVIEW) {
       // modo de visualização: botões ativos, popup abre, nada redireciona
       await page.locator('[data-plan="essencial"]').click();
       const dialog = page.getByRole("dialog");
@@ -82,25 +92,44 @@ test.describe("Build de produção", () => {
     expect(small).toBe(0);
   });
 
-  test("bônus: 5 cards do Completo; preço riscado só com valores confirmados", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/mente-em-paz/");
+  test("bônus: 5 cards do Completo, textos curtos no celular, total e cronômetro", async ({ page }) => {
+    const lines = (sel: string) =>
+      page.locator(sel).evaluateAll((els) =>
+        els.map((e) => Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight))),
+      );
+    for (const width of [320, 390, 430]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/mente-em-paz/");
+      const sec = page.locator("#bonus");
+      await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(5);
+      await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
+      expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
+      expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
+      expect(Math.max(...(await lines("#bonus article h3 + p"))), `descrições @ ${width}px`).toBeLessThanOrEqual(3);
+      const overflow = await sec.evaluate((s) => [...s.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth).length);
+      expect(overflow, `estouro @ ${width}px`).toBe(0);
+    }
     const sec = page.locator("#bonus");
-    await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(5);
-    await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
-    await expect(sec).toContainText("Os 5 bônus estão incluídos no Mente em Paz Completo.");
-    const showValues = /^\s*showValues:\s*true/m.test(readFileSync("src/config/site.ts", "utf8"));
-    if (showValues) await expect(sec).toContainText("R$ 0,00");
-    else {
+    await expect(sec).not.toContainText("estão incluídos no");
+    if (/^\s*showValues:\s*true/m.test(SITE)) {
+      await expect(sec.locator("s")).toHaveText("R$ 124,50");
+      await expect(sec).toContainText("R$ 0,00");
+    } else {
       await expect(sec.locator("s")).toHaveCount(0);
       await expect(sec).toContainText("5 bônus inclusos sem custo adicional");
     }
-    const overflow = await sec.evaluate((s) => [...s.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth).length);
-    expect(overflow).toBe(0);
+    if (/countdownSeconds:\s*(?!0\b)\d/.test(SITE)) {
+      const timer = sec.getByRole("timer");
+      const first = await timer.innerText();
+      await expect(timer).not.toHaveText(first, { timeout: 3000 }); // diminuindo
+      expect(await timer.innerText()).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+    }
   });
 
   test("acessibilidade: axe sem violações WCAG 2.2 AA (LP com pergunta do FAQ aberta, quiz)", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 800 });
+    // sem a animação de entrada: o axe mede as cores finais (e não blocos ainda em opacidade 0)
+    await page.emulateMedia({ reducedMotion: "reduce" });
     for (const path of ["/mente-em-paz/", "/"]) {
       await page.goto(path);
       const faq = page.locator("main button[aria-expanded]").first(); // abre uma pergunta (uma por vez)

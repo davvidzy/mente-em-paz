@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, collectErrors, events } from "./helpers";
+import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, collectErrors, events, recordEvents, stubCheckout } from "./helpers";
 
 test.describe("Quiz", () => {
   test("fluxo completo: abre direto na 1ª pergunta, 3 perguntas, sem preços, resultado e CTA para a LP com UTMs", async ({ page }) => {
@@ -111,8 +111,10 @@ test.describe("Quiz", () => {
   });
 });
 
-test.describe("Landing — ofertas (dev, checkout pendente)", () => {
-  test("Essencial abre o popup; Esc fecha; foco preso; recusar → aviso do Essencial e não reabre", async ({ page }) => {
+test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
+  test("Essencial abre o popup; Esc fecha; foco preso; recusar → checkout do Essencial e não reabre", async ({ page }) => {
+    const evs = await recordEvents(page);
+    await stubCheckout(page);
     await page.goto("/mente-em-paz/");
     const essencial = page.locator('[data-plan="essencial"]');
     await essencial.scrollIntoViewIfNeeded();
@@ -134,27 +136,28 @@ test.describe("Landing — ofertas (dev, checkout pendente)", () => {
 
     await essencial.click();
     await page.getByRole("button", { name: "Prefiro continuar com o Essencial." }).click();
-    await expect(page.locator("[data-notice]")).toContainText("checkoutEssencialUrl");
+    await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\/RRmfu6Uf2RK/);
 
-    await essencial.click(); // não reabre de forma insistente
-    await expect(dialog).toBeHidden();
+    await page.goBack();
+    await page.locator('[data-plan="essencial"]').click(); // não reabre de forma insistente: vai direto
+    await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\/RRmfu6Uf2RK/);
 
-    const evs = await events(page);
-    expect(evs).toContain("upgrade_popup_opened");
     expect(evs).toContain("upgrade_declined");
     expect(evs.filter((e) => e === "upgrade_popup_opened")).toHaveLength(2);
-    expect(evs).not.toContain("checkout_redirect");
+    expect(evs).toContain("checkout_redirect");
   });
 
-  test("aceitar upgrade → aviso do checkout de upgrade; Completo → aviso do Completo", async ({ page }) => {
-    await page.goto("/mente-em-paz/");
+  test("aceitar upgrade → checkout de R$ 57,90; Completo → checkout de R$ 67,90; UTMs repassadas", async ({ page }) => {
+    const evs = await recordEvents(page);
+    await stubCheckout(page);
+    await page.goto("/mente-em-paz/?utm_source=ig");
     await page.locator('[data-plan="essencial"]').click();
     await page.getByRole("button", { name: /Sim, quero o Completo/ }).click();
-    await expect(page.locator("[data-notice]")).toContainText("checkoutUpgradeUrl");
-    await page.getByRole("button", { name: "Fechar aviso" }).click();
+    await expect(page).toHaveURL("https://pay.wiapy.com/HWF_wPkMAg7?utm_source=ig");
+    await page.goBack();
     await page.locator('[data-plan="completo"]').click();
-    await expect(page.locator("[data-notice]")).toContainText("checkoutCompletoUrl");
-    expect(await events(page)).toEqual(expect.arrayContaining(["upgrade_accepted", "completo_clicked"]));
+    await expect(page).toHaveURL("https://pay.wiapy.com/4U-4VtXIgz-e?utm_source=ig");
+    expect(evs).toEqual(expect.arrayContaining(["upgrade_accepted", "completo_clicked", "checkout_redirect"]));
   });
 
   test("FAQ abre uma pergunta por vez", async ({ page }) => {

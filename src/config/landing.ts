@@ -62,13 +62,16 @@ export const landing = {
 
   /** Bônus do Completo (itens e valores em site.ts). {n} = nº de bônus; {plano} = nome do Completo. */
   bonus: {
-    title: "E para cuidar ainda mais de você, preparamos {n} bônus especiais.",
-    text: "Recursos extras para acolher suas preocupações, organizar a mente e encontrar pequenos momentos de tranquilidade, mesmo nos dias mais difíceis.",
-    includedNote: "Os {n} bônus estão incluídos no {plano}.",
+    /** Até 2 linhas no celular. */
+    title: "E mais {n} bônus para cuidar de você.",
+    /** Até 3 linhas no celular. */
+    text: "Recursos extras para acolher preocupações, organizar a mente e ter calma nos dias difíceis.",
     tag: "Incluso no Completo",
     // com bonuses.showValues = true
     totalLabel: "Valor dos {n} bônus:",
     totalNote: "Incluídos no {plano}, sem custo adicional.",
+    /** Com bonuses.countdownSeconds > 0. */
+    countdownLabel: "O desconto nos bônus termina em",
     // com bonuses.showValues = false
     noValuesHighlight: "{n} bônus inclusos sem custo adicional",
     noValuesNote: "Incluídos no {plano}.",

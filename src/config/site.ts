@@ -28,16 +28,16 @@ export const brand = {
 // ── Checkout (plataforma externa) ───────────────────────────────────
 // Links fornecidos pela plataforma de pagamento. Deixe "" até ter o link real.
 export const checkout = {
-  checkoutEssencialUrl: "", // PENDENTE — Essencial, preço cheio
-  checkoutCompletoUrl: "", // PENDENTE — Completo, preço cheio (clique direto no plano)
-  checkoutUpgradeUrl: "", // PENDENTE — Completo com preço de upgrade (aceite no popup)
+  checkoutEssencialUrl: "https://pay.wiapy.com/RRmfu6Uf2RK", // Essencial, R$ 39,90
+  checkoutCompletoUrl: "https://pay.wiapy.com/4U-4VtXIgz-e", // Completo, R$ 67,90 (clique direto no plano)
+  checkoutUpgradeUrl: "https://pay.wiapy.com/HWF_wPkMAg7", // Completo com preço de upgrade, R$ 57,90 (aceite no popup)
   /**
    * ⚠ TEMPORÁRIO — modo de visualização: com os links ainda vazios, deixa os botões
    * de compra ativos (e o popup de upgrade abrindo) para revisar o fluxo no site
    * publicado. Sem link, o clique mostra "Checkout em configuração" — nunca redireciona.
    * Desligar (false) antes de anunciar, ou quando os links forem preenchidos.
    */
-  previewCheckout: true,
+  previewCheckout: false,
   /** Parâmetros de campanha repassados do anúncio até o checkout. */
   forwardQueryParams: [
     "utm_source",
@@ -62,9 +62,9 @@ export interface Plan {
   shortName: string;
   description: string;
   priceCents: number;
-  /** Ex.: "ou 3x de R$ 6,99". Só preencher com a condição REAL do checkout. */
+  /** Ex.: "até 12x de R$ 8,06" (logo abaixo do preço). Só preencher com a condição REAL do checkout. */
   installmentsNote?: string;
-  /** Condição de pagamento exibida abaixo do preço (confirmada: pagamento único). */
+  /** Linha discreta abaixo do parcelamento (ex.: "Acesso vitalício"). */
   paymentNote?: string;
   items: string[];
   cta: string;
@@ -80,7 +80,8 @@ export const plans: Record<PlanId, Plan> = {
     shortName: "Essencial",
     description: "Para dar o primeiro passo.",
     priceCents: 3990,
-    paymentNote: "Pagamento único · acesso vitalício",
+    installmentsNote: "até 10x de R$ 5,36",
+    paymentNote: "Acesso vitalício",
     items: ["7 áudios guiados", "Guia de utilização", "Método noturno reutilizável"],
     cta: "Quero o Essencial",
     featured: false,
@@ -91,7 +92,8 @@ export const plans: Record<PlanId, Plan> = {
     shortName: "Completo",
     description: "Mais apoio para a sua rotina.",
     priceCents: 6790,
-    paymentNote: "Pagamento único · acesso vitalício",
+    installmentsNote: "até 12x de R$ 8,06",
+    paymentNote: "Acesso vitalício",
     items: [
       "Tudo do Essencial",
       "Caderno digital",
@@ -186,43 +188,50 @@ export const testimonials: Testimonial[] = [];
 // ── Bônus (exclusivos do Plano Completo) ────────────────────────────
 export interface Bonus {
   name: string;
+  /** Curta: até 3 linhas no celular (≈ 70 caracteres). */
   description: string;
-  /** Valor individual — só aparece com `showValues: true`. */
+  /** Soma exibida riscada no box final (com `showValues: true`). */
   valueCents: number;
 }
 
 export const bonuses = {
   /**
-   * ⚠ Preço riscado ("R$ 29,90 → GRÁTIS", "Valor dos 5 bônus: R$ 124,50 → R$ 0,00")
-   * SÓ com `true` se cada bônus for de fato vendido separadamente por esse valor.
-   * Valor de referência inventado é âncora enganosa (CDC). Com `false`, a seção
+   * ⚠ Mostra "Valor dos 5 bônus: R$ 124,50" riscado → "R$ 0,00" no box final.
+   * SÓ com `true` se cada bônus for de fato vendido separadamente por esse valor
+   * (valor de referência inventado é âncora enganosa — CDC). Com `false`, o box
    * mostra apenas "5 bônus inclusos sem custo adicional".
    */
-  showValues: false,
+  showValues: true, // ⚠ TESTE — revisar antes de anunciar
+  /**
+   * ⚠ TESTE — cronômetro do desconto no box final, em segundos (12:30:32).
+   * Reinicia a cada carregamento da página. 0 = sem cronômetro.
+   * Remover antes de anunciar (contagem que reinicia é urgência falsa).
+   */
+  countdownSeconds: 12 * 3600 + 30 * 60 + 32,
   items: [
     {
       name: "Descansar Não É Abandonar",
-      description: "Um áudio e exercício para acolher a culpa de reservar um momento só para você.",
+      description: "Áudio e exercício para acolher a culpa de tirar um tempo para você.",
       valueCents: 2990,
     },
     {
       name: "Plano da Noite Organizada",
-      description: "Organize pendências e cuidados para encerrar o dia com mais clareza.",
+      description: "Organize pendências e cuidados para encerrar o dia com clareza.",
       valueCents: 2490,
     },
     {
       name: "SOS Mente Acelerada",
-      description: "Uma pausa guiada de 5 minutos para quando os pensamentos não param.",
+      description: "Pausa guiada de 5 minutos para quando a mente não para.",
       valueCents: 1990,
     },
     {
       name: "Diário do Descarrego Mental",
-      description: "Um espaço para registrar preocupações e tirar as pendências da cabeça.",
+      description: "Registre as preocupações e tire as pendências da cabeça.",
       valueCents: 2490,
     },
     {
       name: "Quando Acordo no Meio da Noite",
-      description: "Um áudio acolhedor para momentos de despertar e inquietação durante a madrugada.",
+      description: "Áudio acolhedor para quando você desperta inquieta de madrugada.",
       valueCents: 2490,
     },
   ] as Bonus[],

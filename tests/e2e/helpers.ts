@@ -25,6 +25,28 @@ export async function events(page: Page): Promise<string[]> {
   return page.evaluate(() => (window.__mpEvents ?? []).map((e) => e.name));
 }
 
+/** Eventos registrados pelo teste — sobrevivem ao redirecionamento para o checkout. */
+export async function recordEvents(page: Page): Promise<string[]> {
+  const names: string[] = [];
+  await page.exposeFunction("__recordEvent", (name: string) => names.push(name));
+  await page.addInitScript(() => {
+    const list: { name: string }[] = [];
+    list.push = (...items) => {
+      for (const e of items) (window as unknown as { __recordEvent: (n: string) => void }).__recordEvent(e.name);
+      return Array.prototype.push.apply(list, items);
+    };
+    (window as unknown as { __mpEvents: unknown }).__mpEvents = list;
+  });
+  return names;
+}
+
+/** Responde no lugar da Wiapy: o teste confere o destino sem abrir o checkout real. */
+export async function stubCheckout(page: Page) {
+  await page.route("https://pay.wiapy.com/**", (route) =>
+    route.fulfill({ contentType: "text/html", body: "<!doctype html><title>Checkout (teste)</title>" }),
+  );
+}
+
 export function collectErrors(page: Page) {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
