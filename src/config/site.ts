@@ -183,37 +183,50 @@ export interface Testimonial {
 
 export const testimonials: Testimonial[] = [];
 
-// ── Bônus / materiais do kit ─────────────────────────────────────────
-export type BonusIcon = "notebook" | "checklist" | "guide";
-
+// ── Bônus (exclusivos do Plano Completo) ────────────────────────────
 export interface Bonus {
-  title: string;
+  name: string;
   description: string;
-  icon: BonusIcon;
-  /** false = oculto (ex.: material ainda não pronto para entrega). */
-  available: boolean;
+  /** Valor individual — só aparece com `showValues: true`. */
+  valueCents: number;
 }
 
-export const bonuses: Bonus[] = [
-  {
-    title: "Caderno de Desaceleração",
-    description: "Um espaço para organizar os pensamentos antes de descansar.",
-    icon: "notebook",
-    available: true,
-  },
-  {
-    title: "Checklist de Encerramento do Dia",
-    description: "Um passo a passo para diminuir a sensação de que ainda há mil coisas a fazer.",
-    icon: "checklist",
-    available: true,
-  },
-  {
-    title: "Guia da Pausa Noturna",
-    description: "Orientações simples para transformar alguns minutos em um hábito de autocuidado.",
-    icon: "guide",
-    available: true,
-  },
-];
+export const bonuses = {
+  /**
+   * ⚠ Preço riscado ("R$ 29,90 → GRÁTIS", "Valor dos 5 bônus: R$ 124,50 → R$ 0,00")
+   * SÓ com `true` se cada bônus for de fato vendido separadamente por esse valor.
+   * Valor de referência inventado é âncora enganosa (CDC). Com `false`, a seção
+   * mostra apenas "5 bônus inclusos sem custo adicional".
+   */
+  showValues: false,
+  items: [
+    {
+      name: "Descansar Não É Abandonar",
+      description: "Um áudio e exercício para acolher a culpa de reservar um momento só para você.",
+      valueCents: 2990,
+    },
+    {
+      name: "Plano da Noite Organizada",
+      description: "Organize pendências e cuidados para encerrar o dia com mais clareza.",
+      valueCents: 2490,
+    },
+    {
+      name: "SOS Mente Acelerada",
+      description: "Uma pausa guiada de 5 minutos para quando os pensamentos não param.",
+      valueCents: 1990,
+    },
+    {
+      name: "Diário do Descarrego Mental",
+      description: "Um espaço para registrar preocupações e tirar as pendências da cabeça.",
+      valueCents: 2490,
+    },
+    {
+      name: "Quando Acordo no Meio da Noite",
+      description: "Um áudio acolhedor para momentos de despertar e inquietação durante a madrugada.",
+      valueCents: 2490,
+    },
+  ] as Bonus[],
+};
 
 // ── FAQ ──────────────────────────────────────────────────────────────
 export const faq: { q: string; a: string }[] = [

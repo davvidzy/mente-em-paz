@@ -28,7 +28,7 @@ test.describe("Build de produção", () => {
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
     // áudio, especialista provisória, espaço de bônus e depoimentos sem conteúdo → ocultos; vídeo fica no hero
-    expect(order).toEqual(["identificacao", "produto", "planos", "garantia", "faq", "cta-final"]);
+    expect(order).toEqual(["identificacao", "produto", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
     await expect(page.locator("[data-dev-placeholder]")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Placeholder");
@@ -80,6 +80,23 @@ test.describe("Build de produção", () => {
       els.map((e) => e.getBoundingClientRect()).filter((r) => r.height < 44).length,
     );
     expect(small).toBe(0);
+  });
+
+  test("bônus: 5 cards do Completo; preço riscado só com valores confirmados", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/mente-em-paz/");
+    const sec = page.locator("#bonus");
+    await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(5);
+    await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
+    await expect(sec).toContainText("Os 5 bônus estão incluídos no Mente em Paz Completo.");
+    const showValues = /^\s*showValues:\s*true/m.test(readFileSync("src/config/site.ts", "utf8"));
+    if (showValues) await expect(sec).toContainText("R$ 0,00");
+    else {
+      await expect(sec.locator("s")).toHaveCount(0);
+      await expect(sec).toContainText("5 bônus inclusos sem custo adicional");
+    }
+    const overflow = await sec.evaluate((s) => [...s.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth).length);
+    expect(overflow).toBe(0);
   });
 
   test("acessibilidade: axe sem violações WCAG 2.2 AA (LP com pergunta do FAQ aberta, quiz)", async ({ page }) => {

@@ -56,7 +56,7 @@ npm run images       # converte images-src/ → public/img/ (WebP 400/800)
 | **Depoimentos** (carrossel infinito) | Itens reais e autorizados em `testimonials`: `name`, `daysAsClient`, `avatar`, `print` (print do WhatsApp) e `printAlt`. Imagens em `images-src/depoimentos/` → `npm run images` | Seção oculta |
 | **Especialista** (abaixo do áudio) | Dados reais em `expert` (`src/config/site.ts`): nome, profissão, registro (CRP, se psicóloga), foto 4:5 e bio. Depois mude `verified: true` | Seção oculta |
 | **Benefícios do hero** | `landing.hero.benefits` em `src/config/landing.ts`. "Acesso vitalício" está desativado até ser confirmado | — |
-| **Nova seção de bônus** | Espaço reservado em `src/components/landing/sections/BonusSlot.tsx` (marcador `BONUS-SLOT`) | Só aparece em dev |
+| **Preços individuais dos bônus** | Só se cada bônus for vendido separadamente por esse valor: confirme `valueCents` em `bonuses.items` e mude `bonuses.showValues: true` (`src/config/site.ts`) | Seção mostra "5 bônus inclusos sem custo adicional", sem preço riscado |
 | **Domínio** | `VITE_SITE_URL=https://...` | Sem canonical absoluto e sem sitemap.xml |
 | **Legal** | Campos `[PENDENTE]` em `src/config/legal.ts` + `brand.contactEmail` / `legalEntity` | `check:launch` bloqueia |
 

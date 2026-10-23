@@ -54,7 +54,7 @@ export function SectionHead({
   light = false,
 }: {
   id: string;
-  title: string;
+  title: ReactNode;
   text?: string;
   center?: boolean;
   light?: boolean;

@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import type { ProfileId } from "../../config/quiz";
-import { expert, media, testimonials } from "../../config/site";
+import { bonuses, expert, media, testimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
 import { ConsentBanner } from "../ui/ConsentBanner";
@@ -11,7 +11,7 @@ import { Identification } from "./sections/Identification";
 import { Product } from "./sections/Product";
 import { AudioDemo } from "./sections/AudioDemo";
 import { Expert } from "./sections/Expert";
-import { BonusSlot } from "./sections/BonusSlot";
+import { Bonus } from "./sections/Bonus";
 import { Testimonials } from "./sections/Testimonials";
 import { Plans } from "./sections/Plans";
 import { Guarantee } from "./sections/Guarantee";
@@ -47,7 +47,7 @@ export function LandingApp() {
     [true, (t) => <Product key="product" tone={t} />],
     [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} />],
     [expert.verified || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com dados confirmados
-    [DEV, (t) => <BonusSlot key="bonus" tone={t} />], // espaço reservado — nova seção de bônus
+    [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],
     [true, (t) => <Plans key="plans" tone={t} onNotice={setNotice} />],
     [true, (t) => <Guarantee key="guarantee" tone={t} />],

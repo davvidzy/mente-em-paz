@@ -60,7 +60,19 @@ export const landing = {
     title: "Ouça um trecho",
   },
 
-  // Seção de bônus: aguardando novas instruções (ver BonusSlot.tsx)
+  /** Bônus do Completo (itens e valores em site.ts). {n} = nº de bônus; {plano} = nome do Completo. */
+  bonus: {
+    title: "E para cuidar ainda mais de você, preparamos {n} bônus especiais.",
+    text: "Recursos extras para acolher suas preocupações, organizar a mente e encontrar pequenos momentos de tranquilidade, mesmo nos dias mais difíceis.",
+    includedNote: "Os {n} bônus estão incluídos no {plano}.",
+    tag: "Incluso no Completo",
+    // com bonuses.showValues = true
+    totalLabel: "Valor dos {n} bônus:",
+    totalNote: "Incluídos no {plano}, sem custo adicional.",
+    // com bonuses.showValues = false
+    noValuesHighlight: "{n} bônus inclusos sem custo adicional",
+    noValuesNote: "Incluídos no {plano}.",
+  },
 
   testimonials: {
     title: "O que dizem nossas clientes",
