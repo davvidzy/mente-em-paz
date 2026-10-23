@@ -32,6 +32,8 @@ test.describe("Build de produção", () => {
     // especialista provisória e depoimentos sem conteúdo → ocultos; vídeo fica no hero
     expect(order).toEqual(["identificacao", "produto", "demonstracao", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
+    // sem vídeo: espaço reservado discreto só com media.video.showPlaceholder
+    await expect(page.locator("[data-hero] [data-video-soon]")).toHaveCount(/showPlaceholder:\s*true/.test(SITE) ? 1 : 0);
     await expect(page.locator("[data-dev-placeholder]")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Placeholder");
 

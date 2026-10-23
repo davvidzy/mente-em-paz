@@ -1,4 +1,4 @@
-import { BadgeCheck, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, type LucideIcon } from "lucide-react";
+import { BadgeCheck, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, Video, type LucideIcon } from "lucide-react";
 import type { ProfileId } from "../../../config/quiz";
 import { landing } from "../../../config/landing";
 import { guarantee, media } from "../../../config/site";
@@ -81,17 +81,39 @@ export function Hero({ profile }: { profile: ProfileId | null }) {
               />
             </div>
           ) : (
+            (import.meta.env.DEV || v.showPlaceholder) && (
             <div className={`mx-auto mt-14 md:mt-16 ${v.aspect === "9/16" ? "max-w-[360px]" : ""}`}>
               <DevPlaceholder
                 title="Vídeo de apresentação (hero)"
-                hint="Adicione os arquivos em public/video/ e preencha media.video em src/config/site.ts. Em produção o espaço fica oculto até lá."
+                hint="Adicione os arquivos em public/video/ e preencha media.video em src/config/site.ts. Em produção aparece o espaço reservado (media.video.showPlaceholder) ou nada."
                 className={v.aspect === "9/16" ? "aspect-[9/16]" : "aspect-video"}
               />
+              {!import.meta.env.DEV && v.showPlaceholder && <VideoSoon aspect={v.aspect} />}
             </div>
+            )
           )}
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Espaço reservado do vídeo no site publicado (enquanto não há vídeo).
+ * Sem botão de play: nada ali é clicável, então nada deve parecer clicável.
+ */
+function VideoSoon({ aspect }: { aspect: "9/16" | "16/9" }) {
+  return (
+    <div
+      data-video-soon
+      className={`flex flex-col items-center justify-center gap-3 rounded-(--radius-card) border border-line bg-surface p-6 text-center ${aspect === "9/16" ? "aspect-[9/16]" : "aspect-video"}`}
+    >
+      <span className="grid size-14 place-items-center rounded-full bg-sage/30 text-sage-deep">
+        <Video aria-hidden className="size-6" strokeWidth={1.6} />
+      </span>
+      <p className="font-serif text-[19px] font-semibold text-brand">Vídeo de apresentação</p>
+      <p className="text-[15px] text-sage-ink">Em breve</p>
+    </div>
   );
 }
 

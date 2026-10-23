@@ -156,6 +156,11 @@ export const media = {
     /** Bloquear avanço (não deixa pular para frente do ponto já assistido). */
     preventSeekForward: true,
     captionsSrc: "", // opcional — arquivo .vtt de legendas
+    /**
+     * ⚠ TEMPORÁRIO — sem vídeo, mostra no site publicado um espaço reservado discreto
+     * ("Vídeo de apresentação em breve") no lugar do vídeo. false = espaço oculto.
+     */
+    showPlaceholder: true,
   },
   audioPreview: {
     src: "audio/trecho-demonstracao.mp3",

@@ -34,7 +34,12 @@ if (!envVal("VITE_META_PIXEL_ID")) warn.push("VITE_META_PIXEL_ID não definido �
 if (!envVal("VITE_SITE_URL")) warn.push("VITE_SITE_URL não definido — sem canonical, og:url absoluto e sitemap.xml.");
 
 // Mídia e prova social (seções ficam ocultas — só informativo)
-if (/sources:\s*\[\]/.test(site)) warn.push("Vídeo de apresentação não configurado — seção oculta.");
+if (/sources:\s*\[\]/.test(site))
+  warn.push(
+    /showPlaceholder:\s*true/.test(site)
+      ? 'Vídeo de apresentação não configurado — o hero mostra "Vídeo de apresentação em breve" (media.video.showPlaceholder).'
+      : "Vídeo de apresentação não configurado — seção oculta.",
+  );
 if (/audioPreview:\s*\{\s*src:\s*""/.test(site)) warn.push("Trecho de áudio não configurado — seção oculta.");
 if (/testimonials:\s*Testimonial\[\]\s*=\s*\[\]/.test(site)) warn.push("Sem depoimentos — seção oculta.");
 
