@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Check, ShieldCheck } from "lucide-react";
+import { Check, Gift, ShieldCheck } from "lucide-react";
 import { landing } from "../../../config/landing";
-import { checkout, guarantee, plans, tracking, upgrade, type Plan } from "../../../config/site";
+import { bonuses, checkout, guarantee, plans, tracking, upgrade, type Plan } from "../../../config/site";
 import { track, trackOnce } from "../../../lib/analytics";
 import { goToCheckout, hasCheckoutUrl, type CheckoutKind } from "../../../lib/checkout";
-import { priceParts } from "../../../lib/format";
+import { fill, priceParts } from "../../../lib/format";
 import { read, write } from "../../../lib/storage";
 import { useInView } from "../../../hooks/useReveal";
 import { Button } from "../../ui/Button";
@@ -136,6 +136,25 @@ function PlanCard({ plan, onChoose, enabled }: { plan: Plan; onChoose: () => voi
           </li>
         ))}
       </ul>
+
+      {plan.includesBonuses && bonuses.items.length > 0 && (
+        <div className="mt-5 rounded-xl border border-line bg-canvas p-4 sm:p-5" data-plan-bonuses>
+          <p className="flex items-center gap-2 text-[15.5px] font-semibold text-brand">
+            <Gift aria-hidden className="size-[18px] text-sage-deep" strokeWidth={1.8} />
+            {fill(landing.plans.bonusesTitle, { n: bonuses.items.length })}
+          </p>
+          <ul className="mt-3 space-y-2.5">
+            {bonuses.items.map((b) => (
+              <li key={b.name} className="flex items-start gap-3 text-[15.5px] leading-snug">
+                <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full ${featured ? "bg-brand text-white" : "bg-sage/40 text-brand"}`}>
+                  <Check aria-hidden className="size-3" strokeWidth={3} />
+                </span>
+                {b.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mt-auto pt-8">
         <Button variant={featured ? "primary" : "secondary"} size="lg" arrow={enabled} full onClick={onChoose} disabled={!enabled} data-plan={plan.id}>

@@ -67,6 +67,8 @@ export interface Plan {
   /** Linha discreta abaixo do parcelamento (ex.: "Acesso vitalício"). */
   paymentNote?: string;
   items: string[];
+  /** Lista os bônus (`bonuses.items`) no card, abaixo dos itens. */
+  includesBonuses?: boolean;
   cta: string;
   featured: boolean;
   /** Rótulo discreto (sem apelo falso de popularidade). */
@@ -94,12 +96,8 @@ export const plans: Record<PlanId, Plan> = {
     priceCents: 6790,
     installmentsNote: "até 12x de R$ 8,06",
     paymentNote: "Acesso vitalício",
-    items: [
-      "Tudo do Essencial",
-      "Caderno digital",
-      "Checklist noturno",
-      "Materiais complementares",
-    ],
+    items: ["Tudo do Essencial"],
+    includesBonuses: true,
     cta: "Quero o Completo",
     featured: true,
     tag: "Recomendado",

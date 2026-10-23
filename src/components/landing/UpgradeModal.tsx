@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { plans, upgrade } from "../../config/site";
+import { bonuses, plans, upgrade } from "../../config/site";
 import { fill, formatBRL } from "../../lib/format";
 import { Button } from "../ui/Button";
 import { Logo } from "../ui/Logo";
@@ -19,7 +19,10 @@ export function UpgradeModal({ open, onClose, onAccept, onDecline }: Props) {
     de: formatBRL(plans.completo.priceCents),
     por: formatBRL(upgrade.priceCents),
   };
-  const extras = plans.completo.items.filter((i) => !/^tudo do/i.test(i));
+  const extras = [
+    ...plans.completo.items.filter((i) => !/^tudo do/i.test(i)),
+    ...(plans.completo.includesBonuses ? bonuses.items.map((b) => b.name) : []),
+  ];
 
   return (
     <Modal open={open} onClose={onClose} labelledBy="upgrade-title" describedBy="upgrade-desc">

@@ -111,6 +111,10 @@ test.describe("Build de produção", () => {
     }
     const sec = page.locator("#bonus");
     await expect(sec).not.toContainText("estão incluídos no");
+    // card do Completo lista os mesmos 5 bônus da seção
+    const planBonuses = page.locator("#planos [data-plan-bonuses]");
+    await expect(planBonuses).toContainText("+ 5 bônus exclusivos");
+    expect(await planBonuses.getByRole("listitem").allInnerTexts()).toEqual(await sec.getByRole("heading", { level: 3 }).allInnerTexts());
     if (/^\s*showValues:\s*true/m.test(SITE)) {
       await expect(sec.locator("s")).toHaveText("R$ 124,50");
       await expect(sec).toContainText("R$ 0,00");
