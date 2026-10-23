@@ -85,10 +85,7 @@ export const landing = {
 
   plans: {
     title: "Escolha seu momento de paz.",
-    pendingCta: "Checkout em configuração",
-    /** Bloco de bônus no card do Completo. {n} = nº de bônus. */
-    bonusesTitle: "+ {n} bônus exclusivos",
-  },
+    pendingCta: "Checkout em configuração",  },
 
   finalCta: {
     title: "Você já faz tanto por quem ama. Reserve alguns minutos para você.",

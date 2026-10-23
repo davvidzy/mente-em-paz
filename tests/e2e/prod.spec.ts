@@ -60,6 +60,12 @@ test.describe("Build de produção", () => {
     }
     await expect(page.locator("#planos")).toContainText("39");
     await expect(page.locator("#planos")).toContainText("67");
+    // conteúdo dos planos: 4 itens no Essencial; Completo com "Tudo do Essencial +", 6 itens e resumo
+    const items = page.locator("#planos [data-plan-items]");
+    await expect(items.nth(0).getByRole("listitem")).toHaveCount(4);
+    await expect(items.nth(1)).toContainText("Tudo do Essencial +");
+    await expect(items.nth(1).getByRole("listitem")).toHaveCount(6);
+    await expect(items.nth(1)).toContainText("10 áudios + 3 ferramentas práticas");
     // sem pixel configurado → sem banner de cookies e sem script do Meta
     await expect(page.getByRole("region", { name: "Aviso de cookies" })).toHaveCount(0);
     expect(await page.locator('script[src*="fbevents"]').count()).toBe(0);
@@ -118,10 +124,6 @@ test.describe("Build de produção", () => {
       await img.scrollIntoViewIfNeeded();
       await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     }
-    // card do Completo lista os mesmos 5 bônus da seção
-    const planBonuses = page.locator("#planos [data-plan-bonuses]");
-    await expect(planBonuses).toContainText("+ 5 bônus exclusivos");
-    expect(await planBonuses.getByRole("listitem").allInnerTexts()).toEqual(await sec.getByRole("heading", { level: 3 }).allInnerTexts());
     if (/^\s*showValues:\s*true/m.test(SITE)) {
       await expect(sec.locator("s")).toHaveText("R$ 124,50");
       await expect(sec).toContainText("R$ 0,00");

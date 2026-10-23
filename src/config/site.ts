@@ -66,9 +66,11 @@ export interface Plan {
   installmentsNote?: string;
   /** Linha discreta abaixo do parcelamento (ex.: "Acesso vitalício"). */
   paymentNote?: string;
+  /** Linha em destaque acima da lista (ex.: "Tudo do Essencial +"). */
+  itemsLead?: string;
   items: string[];
-  /** Lista os bônus (`bonuses.items`) no card, abaixo dos itens. */
-  includesBonuses?: boolean;
+  /** Resumo em destaque abaixo da lista (ex.: "10 áudios + 3 ferramentas práticas"). */
+  itemsSummary?: string;
   cta: string;
   featured: boolean;
   /** Rótulo discreto (sem apelo falso de popularidade). */
@@ -83,8 +85,12 @@ export const plans: Record<PlanId, Plan> = {
     description: "Para dar o primeiro passo.",
     priceCents: 3990,
     installmentsNote: "até 10x de R$ 5,36",
-    paymentNote: "Acesso vitalício",
-    items: ["7 áudios guiados", "Guia de utilização", "Método noturno reutilizável"],
+    items: [
+      "4 áudios para desacelerar a mente",
+      "Práticas para relaxar antes de dormir",
+      "Acesso pelo celular",
+      "Acesso vitalício",
+    ],
     cta: "Quero o Essencial",
     featured: false,
   },
@@ -95,9 +101,16 @@ export const plans: Record<PlanId, Plan> = {
     description: "Mais apoio para a sua rotina.",
     priceCents: 6790,
     installmentsNote: "até 12x de R$ 8,06",
-    paymentNote: "Acesso vitalício",
-    items: ["Tudo do Essencial"],
-    includesBonuses: true,
+    itemsLead: "Tudo do Essencial +",
+    items: [
+      "Programa completo de 7 noites",
+      "3 áudios SOS para noites difíceis",
+      "Diário para aliviar a mente",
+      "Plano para noites sem preocupações",
+      "Exercício para descansar sem culpa",
+      "Acesso vitalício a tudo",
+    ],
+    itemsSummary: "10 áudios + 3 ferramentas práticas",
     cta: "Quero o Completo",
     featured: true,
     tag: "Recomendado",
