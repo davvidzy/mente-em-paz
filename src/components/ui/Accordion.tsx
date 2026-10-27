@@ -1,8 +1,8 @@
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { Plus } from "lucide-react";
 
 /** Accordion acessível — uma pergunta aberta por vez. */
-export function Accordion({ items }: { items: { q: string; a: string }[] }) {
+export function Accordion({ items }: { items: { q: string; a: ReactNode }[] }) {
   const [open, setOpen] = useState<number | null>(null);
   const base = useId();
 

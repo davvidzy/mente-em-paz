@@ -1,5 +1,6 @@
 import { landing } from "../../../config/landing";
 import { brand } from "../../../config/site";
+import { whatsappUrl } from "../../../lib/contact";
 import { routes } from "../../../lib/routes";
 import { Logo } from "../../ui/Logo";
 
@@ -22,6 +23,13 @@ export function Footer() {
                   Termos de Uso
                 </a>
               </li>
+              {whatsappUrl() && (
+                <li>
+                  <a className="inline-flex min-h-11 items-center hover:text-white" href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                    Suporte no WhatsApp
+                  </a>
+                </li>
+              )}
               {brand.contactEmail && (
                 <li>
                   <a className="inline-flex min-h-11 items-center hover:text-white" href={`mailto:${brand.contactEmail}`}>

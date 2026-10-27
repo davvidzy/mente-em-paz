@@ -23,6 +23,10 @@ export const brand = {
   /** Domínio final (sem barra no fim). Usado em canonical/OG/sitemap. */
   siteUrl: (import.meta.env.VITE_SITE_URL as string | undefined) ?? "", // PENDENTE — definir VITE_SITE_URL no .env
   contactEmail: "", // PENDENTE — e-mail de contato exibido no rodapé
+  /** WhatsApp de suporte, só dígitos com DDI (rodapé e FAQ). Vazio = oculto. */
+  whatsapp: "5561996727795",
+  /** Mensagem já escrita ao abrir o WhatsApp. */
+  whatsappMessage: "Olá! Comprei o Mente em Paz e preciso de ajuda com o acesso.",
   /** Razão social / CNPJ do responsável, se houver. Nunca inventar. */
   legalEntity: "", // PENDENTE
 };
@@ -285,46 +289,52 @@ export const bonuses = {
 };
 
 // ── FAQ ──────────────────────────────────────────────────────────────
+// Ordem: ceticismo e medos primeiro, logística no meio, segurança no fim.
+// {whatsapp} vira um link para o WhatsApp de suporte (brand.whatsapp).
 export const faq: { q: string; a: string }[] = [
+  {
+    q: "Já tentei meditar e não funcionou. Isso é diferente?",
+    a: "É. Você não precisa saber meditar nem esvaziar a mente. São relaxamentos guiados por voz: é só deitar, ouvir e seguir. Se os pensamentos vierem, tudo bem, a voz te ajuda a voltar para o descanso.",
+  },
+  {
+    q: "Tenho pouco tempo. Quanto dura cada áudio?",
+    a: "Os áudios do programa têm de 10 a 17 minutos, e você ouve já deitada, na hora de dormir: não precisa encontrar tempo extra no seu dia. O SOS Mente Acelerada tem 5 minutos, para quando você precisa de uma pausa rápida.",
+  },
+  {
+    q: "E se precisarem de mim no meio do áudio?",
+    a: "Pause e vá. O portal guarda o ponto em que você parou, e você continua quando voltar. O Mente em Paz foi feito para caber na rotina de quem cuida, não para competir com ela.",
+  },
+  {
+    q: "E se eu dormir no meio do áudio?",
+    a: "Ótimo, esse é o objetivo. Os áudios foram feitos para acompanhar você até o descanso. Na noite seguinte, continue de onde parou ou ouça de novo.",
+  },
+  {
+    q: "Qual plano escolher?",
+    a: "Se você quer começar pelo básico, o Essencial traz as 4 primeiras noites. Se costuma acordar de madrugada ou ter noites em que a mente dispara, o Completo traz as 7 noites e os áudios SOS para esses momentos.",
+  },
   {
     q: "Como recebo o acesso?",
     a: "Logo após a confirmação do pagamento, você recebe um e-mail com o link e as instruções para entrar no portal. Ele abre no navegador do celular ou do computador, sem instalar aplicativo.",
   },
   {
-    q: "Quanto tempo dura cada áudio?",
-    a: "Os áudios do programa têm de 10 a 17 minutos. O SOS Mente Acelerada tem 5 minutos, para quando você precisa de uma pausa rápida.",
+    q: "E se o e-mail de acesso não chegar?",
+    a: "Confira as pastas de spam e promoções. Se não estiver lá, fale com a gente no {whatsapp} que resolvemos para você.",
   },
   {
-    q: "E se eu dormir no meio do áudio?",
-    a: "Ótimo, esse é o objetivo. Os áudios foram feitos para acompanhar você até o descanso. Se quiser, ouça de novo na noite seguinte.",
-  },
-  {
-    q: "Funciona mesmo se minha rotina for muito corrida?",
-    a: "Sim. Você ouve já deitada, na hora de dormir, então não precisa encontrar um tempo extra no seu dia.",
+    q: "Preciso de internet boa para ouvir?",
+    a: "Não. Você pode baixar os áudios no celular e ouvir offline, sem depender da internet na hora de dormir.",
   },
   {
     q: "Posso ouvir sem incomodar quem dorme perto de mim?",
     a: "Sim. Ouça com fone ou em volume baixo: os áudios são calmos e suaves.",
   },
   {
-    q: "Quais são as formas de pagamento?",
-    a: "Pix, com 5% de desconto, ou cartão de crédito parcelado: em até 12x no Completo e em até 10x no Essencial.",
-  },
-  {
     q: "Como funciona a garantia?",
-    a: "Você tem 7 dias para experimentar. Se não for para você, peça o reembolso pelo link que chega no e-mail de confirmação da compra.",
+    a: "Você tem 7 dias para experimentar. Se não for para você, peça o reembolso pelo link que chega no e-mail de confirmação da compra, sem precisar explicar o motivo.",
   },
   {
-    q: "Por quanto tempo terei acesso?",
-    a: "Para sempre. O pagamento é único e o acesso é vitalício, sem mensalidades.",
-  },
-  {
-    q: "Preciso ter problemas para dormir?",
-    a: "Não. O Mente em Paz também é para quem deseja desacelerar e construir uma rotina de descanso mais tranquila.",
-  },
-  {
-    q: "Posso ouvir os áudios mais de uma vez?",
-    a: "Sim! O material foi pensado para ser reutilizado sempre que você desejar.",
+    q: "Quais são as formas de pagamento? Tem mensalidade?",
+    a: "Pix, com 5% de desconto, ou cartão de crédito em até 12x no Completo e em até 10x no Essencial. O pagamento é único, sem mensalidades, e o acesso é vitalício: ouça quantas vezes quiser.",
   },
   {
     q: "Substitui terapia ou acompanhamento médico?",

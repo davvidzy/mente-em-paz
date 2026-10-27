@@ -164,13 +164,15 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
 
   test("FAQ abre uma pergunta por vez", async ({ page }) => {
     await page.goto("/mente-em-paz/");
-    const q1 = page.getByRole("button", { name: "Preciso ter problemas para dormir?" });
-    const q2 = page.getByRole("button", { name: "Posso ouvir os áudios mais de uma vez?" });
+    const q1 = page.getByRole("button", { name: "Qual plano escolher?" });
+    const q2 = page.getByRole("button", { name: "E se o e-mail de acesso não chegar?" });
     await q1.click();
     await expect(q1).toHaveAttribute("aria-expanded", "true");
     await q2.click();
     await expect(q2).toHaveAttribute("aria-expanded", "true");
     await expect(q1).toHaveAttribute("aria-expanded", "false");
+    // suporte: link do WhatsApp com a mensagem pronta
+    await expect(page.locator("#faq a", { hasText: "WhatsApp" })).toHaveAttribute("href", /^https:\/\/wa\.me\/5561996727795\?text=/);
     await q2.click();
     await expect(q2).toHaveAttribute("aria-expanded", "false");
   });
