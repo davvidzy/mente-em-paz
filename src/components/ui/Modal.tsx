@@ -7,6 +7,8 @@ interface Props {
   onClose: () => void;
   labelledBy: string;
   describedBy?: string;
+  /** Celular: painel com altura fixa de 80% da tela (o conteúdo se distribui nela). */
+  tall?: boolean;
   children: ReactNode;
 }
 
@@ -14,7 +16,7 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
 
 /** Modal acessível: foco preso, Esc fecha, scroll de fundo bloqueado, foco devolvido ao fechar. */
-export function Modal({ open, onClose, labelledBy, describedBy, children }: Props) {
+export function Modal({ open, onClose, labelledBy, describedBy, tall, children }: Props) {
   const panel = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -74,7 +76,9 @@ export function Modal({ open, onClose, labelledBy, describedBy, children }: Prop
         aria-modal="true"
         aria-labelledby={labelledBy}
         aria-describedby={describedBy}
-        className="anim-enter relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[24px] bg-canvas shadow-(--shadow-lift) sm:max-w-[540px] sm:rounded-[24px]"
+        className={`anim-enter relative w-full overflow-y-auto rounded-t-[24px] bg-canvas shadow-(--shadow-lift) sm:max-w-[540px] sm:rounded-[24px] ${
+          tall ? "flex h-[80dvh] flex-col sm:h-auto sm:max-h-[92dvh]" : "max-h-[92dvh]"
+        }`}
       >
         <button
           type="button"

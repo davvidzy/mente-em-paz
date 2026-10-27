@@ -125,7 +125,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(dialog).toBeVisible();
     await expect(dialog).toContainText("Por apenas R$ 18,00 a mais");
     await expect(dialog).toContainText("R$ 67,90");
-    await expect(page.getByRole("button", { name: /Sim, quero o Completo por R\$ 57,90/ })).toBeFocused();
+    await expect(dialog.getByRole("button", { name: "Quero o Completo" })).toBeFocused();
     expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
 
     // foco preso
@@ -137,7 +137,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(essencial).toBeFocused();
 
     await essencial.click();
-    await page.getByRole("button", { name: "Prefiro continuar com o Essencial." }).click();
+    await page.getByRole("button", { name: "Prefiro continuar com o Essencial" }).click();
     await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\/RRmfu6Uf2RK/);
 
     await page.goBack();
@@ -154,7 +154,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await stubCheckout(page);
     await page.goto("/mente-em-paz/?utm_source=ig");
     await page.locator('[data-plan="essencial"]').click();
-    await page.getByRole("button", { name: /Sim, quero o Completo/ }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Quero o Completo" }).click();
     await expect(page).toHaveURL("https://pay.wiapy.com/HWF_wPkMAg7?utm_source=ig");
     await page.goBack();
     await page.locator('[data-plan="completo"]').click();
@@ -208,9 +208,28 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(page.locator("#planos [data-guarantee]")).toHaveCount(2);
     await page.locator('[data-plan="essencial"]').click();
     const dialog = page.getByRole("dialog");
-    await expect(dialog.getByRole("heading")).toHaveText("Um desconto para você cuidar ainda mais de você.");
-    await expect(dialog).toContainText("Por apenas R$ 18,00 a mais, leve o Mente em Paz Completo.");
+    await expect(dialog.getByRole("heading")).toHaveText("Por apenas R$ 18,00 a mais, leve o Completo.");
+    await expect(dialog).toContainText("De R$ 67,90 por R$ 57,90");
     await expect(dialog).not.toContainText("materiais extras para acompanhar");
+  });
+
+  test("popup de upgrade no celular: ~80% da tela, sem rolagem, botão em 1 linha, recusa sublinhada", async ({ page }) => {
+    for (const [w, h] of [[320, 568], [360, 640], [375, 667], [390, 844], [430, 932]]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.goto("/mente-em-paz/");
+      await page.evaluate(() => sessionStorage.clear()); // recusa anterior não reabre o popup
+      await page.locator('[data-plan="essencial"]').click();
+      const dialog = page.getByRole("dialog");
+      await expect(dialog).toBeVisible();
+      const box = await dialog.evaluate((d) => ({ h: d.clientHeight, sh: d.scrollHeight }));
+      expect(box.sh, `rolagem @ ${w}x${h}`).toBeLessThanOrEqual(box.h);
+      expect(Math.abs(box.h / h - 0.8), `altura @ ${w}x${h}`).toBeLessThan(0.02);
+      const accept = dialog.getByRole("button", { name: "Quero o Completo" });
+      expect(await accept.evaluate((b) => b.clientHeight), `botão em 1 linha @ ${w}`).toBeLessThanOrEqual(60);
+      const decline = dialog.getByRole("button", { name: "Prefiro continuar com o Essencial" });
+      expect(await decline.evaluate((b) => getComputedStyle(b).textDecorationLine)).toContain("underline");
+      await page.keyboard.press("Escape");
+    }
   });
 
   test("especialista logo abaixo da demonstração de áudio, marcada como provisória (dev)", async ({ page }) => {

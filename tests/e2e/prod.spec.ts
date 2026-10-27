@@ -44,7 +44,7 @@ test.describe("Build de produção", () => {
       await stubCheckout(page);
       await page.locator('[data-plan="essencial"]').click();
       await expect(page.getByRole("dialog")).toContainText("De R$ 67,90 por R$ 57,90");
-      await page.getByRole("button", { name: /Sim, quero o Completo/ }).click();
+      await page.getByRole("dialog").getByRole("button", { name: "Quero o Completo" }).click();
       await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\//);
       await page.goBack();
     } else if (PREVIEW) {
@@ -52,7 +52,7 @@ test.describe("Build de produção", () => {
       await page.locator('[data-plan="essencial"]').click();
       const dialog = page.getByRole("dialog");
       await expect(dialog).toContainText("De R$ 67,90 por R$ 57,90");
-      await page.getByRole("button", { name: /Sim, quero o Completo/ }).click();
+      await page.getByRole("dialog").getByRole("button", { name: "Quero o Completo" }).click();
       await expect(page.locator("[data-notice]")).toContainText("Checkout em configuração");
       await expect(page).toHaveURL(/\/mente-em-paz\/$/);
     } else {

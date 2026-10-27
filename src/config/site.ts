@@ -106,7 +106,7 @@ export const plans: Record<PlanId, Plan> = {
     installmentsNote: "até 12x de R$ 8,06",
     itemsLead: "Tudo do Essencial +",
     items: [
-      "Noites 5, 6 e 7: o programa completo",
+      "Noites 5, 6 e 7 do programa",
       "SOS Mente Acelerada (5 min)",
       "Quando Acordo no Meio da Noite",
       "Diário do Descarrego Mental",
@@ -151,13 +151,13 @@ export const program = {
 export const upgrade = {
   enabled: true,
   priceCents: 5790, // substitui o Essencial (R$ 39,90 → R$ 57,90)
-  title: "Um desconto para você cuidar ainda mais de você.",
-  /** {diferenca} = upgrade − Essencial (calculado). */
-  description:
-    "Por apenas {diferenca} a mais, leve o Mente em Paz Completo.",
-  /** {por} = preço de upgrade (calculado). O "De … por …" do popup também é calculado. */
-  acceptCta: "Sim, quero o Completo por {por}",
-  declineCta: "Prefiro continuar com o Essencial.",
+  /** {diferenca} = upgrade − Essencial (calculado). Até 3 linhas no celular. */
+  title: "Por apenas {diferenca} a mais, leve o Completo.",
+  /** Acima da lista do que o Completo acrescenta. */
+  extrasLabel: "Você ganha também:",
+  /** Uma linha no celular (≤ 20 caracteres). {por} disponível. O "De … por …" é calculado. */
+  acceptCta: "Quero o Completo",
+  declineCta: "Prefiro continuar com o Essencial",
 };
 
 // ── Garantia ─────────────────────────────────────────────────────────

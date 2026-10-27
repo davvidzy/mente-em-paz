@@ -55,9 +55,10 @@ function seo(siteUrl: string): Plugin {
 
 /**
  * Meta Pixel no <head> de cada página (código oficial do Meta, com uma mudança): a fila
- * `fbq` e o PageView são registrados na entrada, mas o fbevents.js (~200 KB) só é baixado
- * no DOMContentLoaded, depois do JavaScript do site. Em 3G ele disputava a banda com a
- * página e atrasava em segundos o quiz e os botões. Os eventos ficam na fila até lá.
+ * `fbq` e o init são registrados na entrada, mas o fbevents.js (~200 KB) e o PageView só
+ * saem no DOMContentLoaded, com a página carregada (HTML e JavaScript do site). Assim o
+ * PageView conta quem de fato viu o conteúdo, e o pixel não disputa a banda com a página
+ * em 3G. Eventos anteriores ficam na fila até lá.
  * Só sem consentimento obrigatório (config/pixel.ts); com consentimento, lib/analytics.ts
  * carrega o pixel depois do "Aceitar".
  */
@@ -73,7 +74,7 @@ function metaPixel(id: string): Plugin {
             {
               tag: "script",
               injectTo: "head",
-              children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];s=function(){t=b.createElement(e);t.async=!0;t.src=v;b.head.appendChild(t)};b.readyState==='loading'?b.addEventListener('DOMContentLoaded',s):s()}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${id}');fbq('track','PageView');`,
+              children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];s=function(){t=b.createElement(e);t.async=!0;t.src=v;b.head.appendChild(t);f.fbq('track','PageView')};b.readyState==='loading'?b.addEventListener('DOMContentLoaded',s):s()}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${id}');`,
             },
             {
               tag: "noscript",
