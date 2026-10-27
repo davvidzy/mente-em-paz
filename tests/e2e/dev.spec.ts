@@ -162,6 +162,22 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     expect(evs).toEqual(expect.arrayContaining(["upgrade_accepted", "completo_clicked", "checkout_redirect"]));
   });
 
+  test("checkout recebe as UTMs remontadas pela Utmify (ID da visita)", async ({ page }) => {
+    await stubCheckout(page);
+    await page.goto("/mente-em-paz/?utm_source=FB&utm_campaign=camp1");
+    // o que o script de UTMs da Utmify deixa em window.utmParams (simulado; o real é bloqueado nos testes)
+    await page.evaluate(() => {
+      window.utmParams = new URLSearchParams("utm_source=FBjLj6712abc&utm_campaign=camp1&utm_medium=&sck=xyz");
+    });
+    await page.locator('[data-plan="completo"]').click();
+    await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\/4U-4VtXIgz-e\?/);
+    const params = new URL(page.url()).searchParams;
+    expect(params.get("utm_source")).toBe("FBjLj6712abc"); // a versão da Utmify prevalece
+    expect(params.get("utm_campaign")).toBe("camp1");
+    expect(params.get("sck")).toBe("xyz");
+    expect(params.has("utm_medium")).toBe(false); // vazios não entram
+  });
+
   test("FAQ abre uma pergunta por vez", async ({ page }) => {
     await page.goto("/mente-em-paz/");
     const q1 = page.getByRole("button", { name: "Preciso ter problemas para dormir?" });

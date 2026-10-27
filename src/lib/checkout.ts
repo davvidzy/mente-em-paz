@@ -19,9 +19,27 @@ export function hasCheckoutUrl(kind: CheckoutKind): boolean {
   return /^https:\/\//.test(URLS[kind]?.trim() ?? "");
 }
 
+declare global {
+  interface Window {
+    /** Montado pelo script de UTMs da Utmify (scripts/utms/latest.js). */
+    utmParams?: URLSearchParams;
+  }
+}
+
 export function checkoutUrl(kind: CheckoutKind): string | null {
   if (!hasCheckoutUrl(kind)) return null;
-  return withParams(URLS[kind].trim());
+  const url = new URL(withParams(URLS[kind].trim()));
+  // A Utmify remonta as UTMs com o ID da visita (utm_source=…jLj<id>) e só aplica isso
+  // a links <a>; os botões de compra navegam por código, então a mesclagem é feita aqui.
+  // Sem isso a venda chega à Utmify sem ligação com a visita/anúncio.
+  try {
+    window.utmParams?.forEach((value, key) => {
+      if (value) url.searchParams.set(key, value);
+    });
+  } catch {
+    /* script da Utmify ausente ou bloqueado: seguem as UTMs da própria URL */
+  }
+  return url.toString();
 }
 
 export function checkoutValueCents(kind: CheckoutKind): number {
