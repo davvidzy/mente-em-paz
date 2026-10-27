@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, stubCheckout } from "./helpers";
 
@@ -240,7 +241,11 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     expect(order.indexOf("especialista")).toBe(order.indexOf("demonstracao") + 1);
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
-    await expect(sec).toContainText("Provisório");
+    await expect(sec).toContainText("Psicóloga");
+    await expect(sec).toContainText("mulheres cuidadoras");
+    await expect(sec.locator("blockquote")).toBeVisible();
+    // sem CRP: marcada como provisória (e oculta no site publicado — ver prod.spec)
+    if (/credential:\s*""/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Provisório");
   });
 
   test("CTA do hero rola até os planos", async ({ page }) => {

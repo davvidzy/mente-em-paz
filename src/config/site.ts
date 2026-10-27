@@ -201,19 +201,29 @@ export const media = {
 };
 
 // ── Especialista (quem está por trás do Mente em Paz) ───────────────
-// ⚠ Conteúdo PROVISÓRIO. Enquanto `verified` for false, a seção aparece só em
-// desenvolvimento (com etiqueta "provisório") e fica OCULTA no site publicado.
-// Ao preencher os dados reais: nunca atribuir formação/registro não comprovado.
-// Se for psicóloga, o registro no CRP é obrigatório na divulgação (Resolução CFP).
+// Psicóloga: o CRP é OBRIGATÓRIO na divulgação (Código de Ética / resoluções do CFP).
+// A seção só aparece no site publicado com `verified: true` E `credential` preenchido;
+// em desenvolvimento aparece sempre (com etiqueta "provisório" enquanto faltar algo).
+// Nunca atribuir formação, números ou resultados não comprovados.
 export const expert = {
-  verified: false, // PENDENTE — mudar para true só com dados reais confirmados
+  verified: true, // nome e profissão confirmados
+  eyebrow: "Quem criou o Mente em Paz",
   name: "Clara Martins",
-  role: "Psicóloga · Criadora do Mente em Paz", // PROVISÓRIO — confirmar profissão
-  credential: "", // PENDENTE — ex.: "CRP 00/000000"
-  photo: "", // PENDENTE — ex.: "img/clara-martins-800.webp" (retrato vertical 4:5)
-  /** Uma frase curta (até ~2 linhas no mobile). */
-  bio: "Criou o Mente em Paz para mulheres que cuidam de quem amam e chegam à noite sem espaço para si.", // PROVISÓRIO
+  role: "Psicóloga",
+  credential: "", // PENDENTE — ex.: "CRP 01/12345" (sem ele a seção fica oculta)
+  /** Retrato vertical 4:5 (ex.: "img/clara-martins-800.webp"). Vazio = espaço reservado. */
+  photo: "", // PENDENTE
+  /** Área de atuação, logo abaixo do nome. */
+  focus: "Bem-estar emocional, autocuidado e descanso de mulheres cuidadoras",
+  /** Fala em primeira pessoa (validar o texto com ela). Até ~5 linhas no celular. */
+  quote:
+    "Eu acompanho mulheres que cuidam de todo mundo e chegam ao fim do dia sem espaço para si. Criei o Mente em Paz para que esse espaço exista: poucos minutos, à noite, só para você.",
+  /** Linha de apoio abaixo da fala. */
+  bio: "Os áudios foram pensados para a rotina real de quem cuida: curtos, simples de seguir e feitos para ouvir já deitada.",
 };
+
+/** Pode aparecer no site publicado? (profissão confirmada + registro). */
+export const expertPublished = expert.verified && Boolean(expert.credential.trim());
 
 // ── Depoimentos ──────────────────────────────────────────────────────
 // SOMENTE depoimentos reais, com autorização de nome, foto e print.

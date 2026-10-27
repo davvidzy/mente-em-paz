@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import type { ProfileId } from "../../config/quiz";
-import { bonuses, expert, media, program, testimonials } from "../../config/site";
+import { bonuses, expertPublished, media, program, testimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
 import { ConsentBanner } from "../ui/ConsentBanner";
@@ -47,7 +47,7 @@ export function LandingApp() {
     [true, (t) => <Identification key="ident" tone={t} profile={profile} />],
     [true, (t) => <Product key="product" tone={t} />],
     [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} />],
-    [expert.verified || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com dados confirmados
+    [expertPublished || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com profissão e CRP
     [program.nights.length > 0, (t) => <Program key="program" tone={t} />],
     [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],
