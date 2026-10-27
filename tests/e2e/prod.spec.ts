@@ -68,7 +68,7 @@ test.describe("Build de produção", () => {
     await expect(items.nth(0)).toContainText("Tudo do Essencial +");
     await expect(items.nth(0).getByRole("listitem")).toHaveCount(6);
     await expect(items.nth(0)).toContainText("10 áudios + 3 ferramentas práticas");
-    // sem pixel configurado → sem banner de cookies e sem script do Meta
+    // cookies recusados (estado padrão dos testes) → sem aviso e sem script do Meta
     await expect(page.getByRole("region", { name: "Aviso de cookies" })).toHaveCount(0);
     expect(await page.locator('script[src*="fbevents"]').count()).toBe(0);
     expect(errors).toEqual([]);
@@ -98,6 +98,29 @@ test.describe("Build de produção", () => {
       els.map((e) => e.getBoundingClientRect()).filter((r) => r.height < 44).length,
     );
     expect(small).toBe(0);
+  });
+
+  test("Meta Pixel: só carrega depois de aceitar os cookies (LGPD)", async ({ browser }) => {
+    const ctx = await browser.newContext({ storageState: undefined, baseURL: "http://localhost:4173" });
+    const page = await ctx.newPage();
+    const hits: string[] = [];
+    // responde no lugar do Meta: nenhum evento de teste chega ao pixel real
+    await page.route(/facebook\.(net|com)/, (route) => {
+      hits.push(route.request().url());
+      return route.fulfill({ contentType: "text/javascript", body: "" });
+    });
+    await page.goto("/mente-em-paz/");
+    const banner = page.getByRole("region", { name: "Aviso de cookies" });
+    await expect(banner).toBeVisible();
+    expect(await page.locator('script[src*="fbevents"]').count()).toBe(0);
+    expect(hits).toEqual([]);
+    await banner.getByRole("button", { name: "Aceitar" }).click();
+    await expect(banner).toHaveCount(0);
+    await expect(page.locator('script[src*="fbevents"]')).toHaveCount(1);
+    expect(await page.evaluate(() => (window.fbq?.queue ?? []).map((c) => (c as unknown[]).slice(0, 2).join(" ")))).toEqual(
+      expect.arrayContaining(["init 4617173178570579", "track PageView", "track ViewContent"]),
+    );
+    await ctx.close();
   });
 
   test("áudio de demonstração: carrega e toca", async ({ page }) => {

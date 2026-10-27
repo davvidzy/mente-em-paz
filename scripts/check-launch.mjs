@@ -30,7 +30,7 @@ if (/previewCheckout:\s*true/.test(site))
   block.push("checkout.previewCheckout = true (modo de visualização) — desligue antes de anunciar.");
 
 // Rastreamento e domínio
-if (!envVal("VITE_META_PIXEL_ID")) warn.push("VITE_META_PIXEL_ID não definido — nenhum evento será enviado ao Meta.");
+if (!envVal("VITE_META_PIXEL_ID") && !/metaPixelId:[^\n]*"\d{6,}"/.test(site)) warn.push("VITE_META_PIXEL_ID não definido — nenhum evento será enviado ao Meta.");
 if (!envVal("VITE_SITE_URL")) warn.push("VITE_SITE_URL não definido — sem canonical, og:url absoluto e sitemap.xml.");
 
 // Mídia e prova social (seções ficam ocultas — só informativo)

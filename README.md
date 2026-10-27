@@ -49,7 +49,7 @@ npm run images       # converte images-src/ → public/img/ (WebP 400/800)
 | Material | Como ativar | Sem ele |
 |---|---|---|
 | **Checkouts** | Preencher `checkoutEssencialUrl`, `checkoutCompletoUrl` e `checkoutUpgradeUrl` (https://) | Botão desabilitado ("Checkout em configuração"); em dev, aviso de integração pendente |
-| **Meta Pixel** | `VITE_META_PIXEL_ID` no `.env` (ou nas Variables do GitHub) | Nada é rastreado; o aviso de cookies não aparece |
+| **Meta Pixel** | ID `4617173178570579` já configurado em `tracking.metaPixelId` (`src/config/site.ts`); `VITE_META_PIXEL_ID` no `.env`/Variables do GitHub tem prioridade. Só carrega depois que a visitante aceita os cookies (`tracking.requireConsent`) | — |
 | **Utmify** | `VITE_UTMIFY_PIXEL_ID` e/ou `tracking.utmifyUtmsScript: true`. Confira os scripts com os do painel da Utmify | Desativada |
 | **Vídeo** (no hero, abaixo dos benefícios) | Arquivos em `public/video/` + `media.video.sources` e `poster` | Espaço oculto |
 | **Áudio** | Arquivo em `public/audio/` + `media.audioPreview.src` | Seção de demonstração de áudio oculta |

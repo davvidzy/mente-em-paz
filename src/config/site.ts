@@ -292,9 +292,11 @@ export const faq: { q: string; a: string }[] = [
 ];
 
 // ── Rastreamento ─────────────────────────────────────────────────────
-// IDs também podem vir de variáveis de ambiente (.env): VITE_META_PIXEL_ID.
+// IDs também podem vir de variáveis de ambiente (.env): VITE_META_PIXEL_ID tem prioridade.
+// `||` (e não `??`): no GitHub Actions uma variável não cadastrada chega como "".
 export const tracking = {
-  metaPixelId: (import.meta.env.VITE_META_PIXEL_ID as string | undefined) ?? "", // PENDENTE
+  /** Meta Pixel (público — aparece no código de qualquer página com pixel). */
+  metaPixelId: (import.meta.env.VITE_META_PIXEL_ID as string | undefined) || "4617173178570579",
   /** Utmify: cole o pixelId fornecido pelo painel. Vazio = desativado. */
   utmifyPixelId: (import.meta.env.VITE_UTMIFY_PIXEL_ID as string | undefined) ?? "", // PENDENTE
   /** Script de UTMs da Utmify (repasse automático de UTMs para o checkout). */
