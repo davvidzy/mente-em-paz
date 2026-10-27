@@ -101,20 +101,22 @@ test.describe("Build de produção", () => {
     expect(small).toBe(0);
   });
 
-  test("Meta Pixel: PageView na entrada, sem duplicar (ou só após aceitar, com consentimento)", async ({ browser }) => {
-    const consent = /REQUIRE_CONSENT\s*=\s*true/.test(readFileSync("src/config/pixel.ts", "utf8"));
+  test("pixels: Utmify no <head>; Meta só pela Utmify, sem código do Meta duplicado", async ({ browser }) => {
+    const cfg = readFileSync("src/config/pixel.ts", "utf8");
+    const consent = /REQUIRE_CONSENT\s*=\s*true/.test(cfg);
+    const direct = /META_DIRECT\s*=\s*true/.test(cfg); // true = site carrega o Meta por conta própria
     const ctx = await browser.newContext({ storageState: undefined, baseURL: "http://localhost:4173" });
     const page = await ctx.newPage();
     const hits = await blockTrackers(page); // Meta e Utmify simulados: nada chega aos pixels reais
-    // o código oficial enfileira `arguments` (não arrays)
+    // o código oficial do Meta enfileira `arguments`; o fbq simulado abaixo, arrays
     const calls = () => page.evaluate(() => (window.fbq?.queue ?? []).map((c) => Array.from(c as ArrayLike<unknown>).slice(0, 2).join(" ")));
     const banner = page.getByRole("region", { name: "Aviso de cookies" });
 
     for (const path of ["/", "/mente-em-paz/"]) {
       const html = await (await page.request.get(path)).text();
-      // código base no <head> (antes do JS do site) e <noscript> — só sem consentimento obrigatório
-      expect(html.includes("fbq('init','4617173178570579')"), path).toBe(!consent);
-      expect(html.includes("facebook.com/tr?id=4617173178570579"), path).toBe(!consent);
+      // código do Meta no <head>/<noscript> só com META_DIRECT (senão a Utmify avisa "outro código de Pixel Meta")
+      expect(html.includes("fbq('init','4617173178570579')"), path).toBe(direct && !consent);
+      expect(html.includes("facebook.com/tr?id=4617173178570579"), path).toBe(direct && !consent);
       // Utmify: pixel (com o pixelId) e script de UTMs, uma vez cada
       expect(html.includes('window.pixelId="6ae005d49e436dbeb71fd8ed"'), path).toBe(!consent);
       expect(html.split("cdn.utmify.com.br/scripts/pixel/pixel.js").length - 1, path).toBe(consent ? 0 : 1);
@@ -130,16 +132,29 @@ test.describe("Build de produção", () => {
       await page.waitForTimeout(1500); // o aviso apareceria em 0,9 s
       await expect(banner).toHaveCount(0);
     }
-    await expect(page.locator('script[src*="fbevents"]')).toHaveCount(1);
-    await expect.poll(calls).toEqual(expect.arrayContaining(["track ViewContent"]));
-    const sent = await calls();
-    expect(sent.filter((c) => c === "init 4617173178570579")).toHaveLength(1);
-    expect(sent.filter((c) => c === "track PageView")).toHaveLength(1);
-    expect(hits.some((u) => u.includes("fbevents.js"))).toBe(true);
     // Utmify carregada uma vez só (o site não reinjeta o que já está no <head>)
     await expect(page.locator('script[src*="utmify.com.br/scripts/pixel/"]')).toHaveCount(1);
     await expect(page.locator('script[src*="utmify.com.br/scripts/utms/"]')).toHaveCount(1);
     expect(await page.evaluate(() => window.pixelId)).toBe("6ae005d49e436dbeb71fd8ed");
+
+    if (direct) {
+      await expect(page.locator('script[src*="fbevents"]')).toHaveCount(1);
+      await expect.poll(calls).toEqual(expect.arrayContaining(["track ViewContent"]));
+      const sent = await calls();
+      expect(sent.filter((c) => c === "init 4617173178570579")).toHaveLength(1);
+      expect(sent.filter((c) => c === "track PageView")).toHaveLength(1);
+    } else {
+      // o site não carrega o Meta: quem carrega é a Utmify (simulada aqui pelo fbq abaixo)
+      expect(hits.some((u) => u.includes("fbevents.js"))).toBe(false);
+      await page.evaluate(() => {
+        const queue: unknown[] = [];
+        window.fbq = Object.assign((...args: unknown[]) => void queue.push(args), { queue });
+      });
+      await page.locator('[data-plan="essencial"]').click(); // essencial_clicked + upgrade_popup_opened
+      await expect.poll(calls).toEqual(expect.arrayContaining(["trackCustom essencial_clicked", "trackCustom upgrade_popup_opened"]));
+      // ViewContent/InitiateCheckout/PageView saem pela Utmify (deduplicados) — nunca pelo site
+      expect((await calls()).filter((c) => /^(track|init) /.test(c))).toEqual([]);
+    }
     await ctx.close();
   });
 

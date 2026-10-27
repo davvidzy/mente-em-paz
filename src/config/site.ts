@@ -14,7 +14,7 @@
  *  • Nunca preencher com dados fictícios (depoimentos, URLs, IDs).
  */
 
-import { META_PIXEL_ID, REQUIRE_CONSENT, UTMIFY_PIXEL_ID, UTMIFY_UTMS_SCRIPT } from "./pixel";
+import { META_DIRECT, META_PIXEL_ID, REQUIRE_CONSENT, UTMIFY_PIXEL_ID, UTMIFY_UTMS_SCRIPT } from "./pixel";
 
 // ── Marca ────────────────────────────────────────────────────────────
 export const brand = {
@@ -299,6 +299,8 @@ export const faq: { q: string; a: string }[] = [
 export const tracking = {
   /** Meta Pixel — ID e consentimento ficam em config/pixel.ts (o build também lê). */
   metaPixelId: (import.meta.env.VITE_META_PIXEL_ID as string | undefined) || META_PIXEL_ID,
+  /** false = Meta disparado pela Utmify (ver config/pixel.ts); o site não carrega o código do Meta. */
+  metaDirect: META_DIRECT,
   /** Utmify — pixel e script de UTMs (config/pixel.ts). */
   utmifyPixelId: (import.meta.env.VITE_UTMIFY_PIXEL_ID as string | undefined) || UTMIFY_PIXEL_ID,
   utmifyUtmsScript: UTMIFY_UTMS_SCRIPT,

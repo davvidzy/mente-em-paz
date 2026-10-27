@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { defineConfig, loadEnv, type HtmlTagDescriptor, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { META_PIXEL_ID, REQUIRE_CONSENT, UTMIFY_PIXEL_ID, UTMIFY_UTMS_SCRIPT } from "./src/config/pixel";
+import { META_DIRECT, META_PIXEL_ID, REQUIRE_CONSENT, UTMIFY_PIXEL_ID, UTMIFY_UTMS_SCRIPT } from "./src/config/pixel";
 
 const r = (p: string) => resolve(import.meta.dirname, p);
 
@@ -54,8 +54,8 @@ function seo(siteUrl: string): Plugin {
 }
 
 /**
- * Pixels no <head> de cada página: Meta (código oficial — PageView na entrada) e Utmify
- * (pixel + script de UTMs, os mesmos scripts do painel, sem a ofuscação). Saem antes do
+ * Pixels no <head> de cada página: Utmify (pixel + script de UTMs, os mesmos scripts do
+ * painel, sem a ofuscação) e, só com META_DIRECT, o Meta (código oficial). Saem antes do
  * JavaScript do site — quem sai cedo também é contado e as UTMs são capturadas na hora.
  * Só sem consentimento obrigatório (config/pixel.ts); com consentimento, lib/analytics.ts
  * carrega tudo depois do "Aceitar".
@@ -67,7 +67,7 @@ function adPixels({ meta, utmify, utms }: { meta: string; utmify: string; utms: 
     transformIndexHtml: () => {
       if (REQUIRE_CONSENT) return [];
       const tags: HtmlTagDescriptor[] = [];
-      if (meta) {
+      if (meta && META_DIRECT) {
         tags.push(
           {
             tag: "script",

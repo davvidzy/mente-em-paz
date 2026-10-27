@@ -68,6 +68,20 @@ export function goToCheckout(kind: CheckoutKind): boolean {
     content_name: kind === "essencial" ? plans.essencial.name : plans.completo.name,
   });
   // pequena folga para o pixel enviar antes da navegação
-  window.setTimeout(() => window.location.assign(url), window.fbq ? 250 : 0);
+  window.setTimeout(() => openCheckout(url), window.fbq ? 250 : 0);
   return true;
+}
+
+/**
+ * Navega por um link <a> (e não location.assign): a Utmify registra o InitiateCheckout ao
+ * ver o clique num link de checkout, em qualquer navegador. Por location.assign ela só
+ * percebe via Navigation API, que navegadores antigos (ex.: iOS desatualizado) não têm.
+ */
+function openCheckout(url: string) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.hidden = true;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }

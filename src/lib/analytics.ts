@@ -1,6 +1,9 @@
 /**
  * Camada única de eventos → Meta Pixel (e Utmify, que lê o próprio pixel).
  *
+ * • Padrão (tracking.metaDirect = false): a Utmify carrega o Meta Pixel e envia PageView,
+ *   ViewContent e InitiateCheckout (navegador + API de Conversões, deduplicados). Aqui só
+ *   saem os eventos extras do funil (trackCustom), pelo pixel que a Utmify carregou.
  * • Sem ID configurado ou sem consentimento: nada é enviado.
  * • Eventos anteriores ao consentimento ficam em fila (só nesta página) e
  *   são enviados se a visitante aceitar; descartados se recusar.
@@ -75,9 +78,10 @@ function loadTools() {
   if (loaded) return;
   loaded = true;
 
+  // Meta só direto no site com tracking.metaDirect (senão quem carrega é a Utmify).
   // Sem consentimento obrigatório, o build já pôs o código base no <head> (init + PageView
   // na entrada) — aqui não se repete, senão o PageView sairia duplicado.
-  if (tracking.metaPixelId && !window.fbq) {
+  if (tracking.metaDirect && tracking.metaPixelId && !window.fbq) {
     // Snippet oficial do Meta Pixel (base code)
     /* eslint-disable */
     (function (f: any, b: Document, e: string, v: string) {
@@ -115,11 +119,20 @@ function loadTools() {
 }
 
 function send(name: EventName, params: Params) {
-  if (!window.fbq) return;
-  const clean = sanitize(params);
   const std = META_STANDARD[name];
-  if (std) window.fbq("track", std, clean);
-  else window.fbq("trackCustom", name, clean);
+  // Com o Meta pela Utmify, ViewContent e InitiateCheckout já saem por ela (com deduplicação).
+  if (std && !tracking.metaDirect) return;
+  const clean = sanitize(params);
+  whenFbq((fbq) => (std ? fbq("track", std, clean) : fbq("trackCustom", name, clean)));
+}
+
+/**
+ * Executa com o `fbq` disponível. Pela Utmify ele só existe depois da primeira resposta
+ * dela (~1 s): eventos do início (ex.: quiz_started) esperam até 15 s em vez de se perderem.
+ */
+function whenFbq(fn: (fbq: NonNullable<Window["fbq"]>) => void, tries = 30) {
+  if (window.fbq) fn(window.fbq);
+  else if (!tracking.metaDirect && tries > 0) window.setTimeout(() => whenFbq(fn, tries - 1), 500);
 }
 
 export function track(name: EventName, params: Params = {}) {

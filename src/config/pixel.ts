@@ -8,6 +8,16 @@
 /** Meta Pixel. VITE_META_PIXEL_ID tem prioridade. */
 export const META_PIXEL_ID = "4617173178570579";
 
+/**
+ * false (padrão) = o Meta Pixel é disparado pela Utmify, que tem este pixel cadastrado no painel
+ * e envia PageView, ViewContent e InitiateCheckout pelo navegador e pela API de Conversões, com
+ * ID de deduplicação. O site NÃO carrega o código do Meta (senão os eventos contam em dobro —
+ * a Utmify avisa "Detectamos outro código de Pixel Meta"); só repassa os eventos extras do
+ * funil (quiz etc.) ao pixel que a Utmify carregou.
+ * true = o site carrega o Meta Pixel diretamente (usar só se a Utmify sair ou não tiver o pixel).
+ */
+export const META_DIRECT = false;
+
 /** Utmify — pixel (pixelId do painel). VITE_UTMIFY_PIXEL_ID tem prioridade. Vazio = desativado. */
 export const UTMIFY_PIXEL_ID = "6ae005d49e436dbeb71fd8ed";
 
