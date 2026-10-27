@@ -38,7 +38,7 @@ export function Expert({ tone }: { tone: Tone }) {
             )}
             {!expertPublished && (
               <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white md:text-[11px]">
-                Provisório
+                Prévia · não publicada
               </span>
             )}
           </div>

@@ -224,4 +224,14 @@ test.describe("Build de produção", () => {
     await expect(page.locator("footer a", { hasText: "Termos de Uso" })).toHaveAttribute("href", "../termos/");
     await ctx.close();
   });
+
+  test("especialista sem CRP: oculta no site, visível só no link de prévia", async ({ page }) => {
+    test.skip(!/credential:\s*""/.test(SITE), "CRP preenchido: seção publicada");
+    await page.goto("/mente-em-paz/");
+    await expect(page.locator("#especialista")).toHaveCount(0);
+    await page.goto("/mente-em-paz/?previa=especialista");
+    const sec = page.locator("#especialista");
+    await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
+    await expect(sec).toContainText("Prévia · não publicada");
+  });
 });

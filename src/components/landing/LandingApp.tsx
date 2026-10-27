@@ -33,9 +33,13 @@ export function LandingApp() {
   // O HTML vem pré-renderizado sem perfil; a frase de acolhimento entra após a hidratação.
   const [profile, setProfile] = useState<ProfileId | null>(null);
   const [notice, setNotice] = useState<NoticeMessage | null>(null);
+  // Prévia para aprovação (?previa=especialista): mostra a seção ainda não publicada
+  // só para quem tem o link. Lida após a hidratação (o HTML pré-renderizado não a inclui).
+  const [expertPreview, setExpertPreview] = useState(false);
 
   useEffect(() => {
     setProfile(quizSession.getProfile());
+    setExpertPreview(new URLSearchParams(window.location.search).get("previa") === "especialista");
     trackOnce("landing_page_viewed", { content_name: "Mente em Paz" });
   }, []);
 
@@ -47,7 +51,7 @@ export function LandingApp() {
     [true, (t) => <Identification key="ident" tone={t} profile={profile} />],
     [true, (t) => <Product key="product" tone={t} />],
     [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} />],
-    [expertPublished || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com profissão e CRP
+    [expertPublished || expertPreview || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com profissão e CRP
     [program.nights.length > 0, (t) => <Program key="program" tone={t} />],
     [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],

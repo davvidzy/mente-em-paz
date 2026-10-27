@@ -244,8 +244,8 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(sec).toContainText("Psicóloga");
     await expect(sec).toContainText("mulheres cuidadoras");
     await expect(sec.locator("blockquote")).toBeVisible();
-    // sem CRP: marcada como provisória (e oculta no site publicado — ver prod.spec)
-    if (/credential:\s*""/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Provisório");
+    // sem CRP: marcada como prévia (e oculta no site publicado — ver prod.spec)
+    if (/credential:\s*""/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
   });
 
   test("CTA do hero rola até os planos", async ({ page }) => {
