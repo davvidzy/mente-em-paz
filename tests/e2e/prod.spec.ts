@@ -31,8 +31,9 @@ test.describe("Build de produção", () => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
-    // especialista provisória e depoimentos sem conteúdo → ocultos; vídeo fica no hero
-    expect(order).toEqual(["identificacao", "produto", "demonstracao", "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
+    // especialista só com CRP; depoimentos sem conteúdo → ocultos; vídeo fica no hero
+    const expertOn = !/credential:\s*""/.test(SITE);
+    expect(order).toEqual(["identificacao", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
     // sem vídeo: espaço reservado discreto só com media.video.showPlaceholder
     await expect(page.locator("[data-hero] [data-video-soon]")).toHaveCount(/showPlaceholder:\s*true/.test(SITE) ? 1 : 0);

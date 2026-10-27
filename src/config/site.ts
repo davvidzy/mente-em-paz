@@ -210,18 +210,15 @@ export const expert = {
   eyebrow: "Quem criou o Mente em Paz",
   name: "Clara Martins",
   role: "Psicóloga",
-  credential: "CRP 07/43242", // PENDENTE — ex.: "CRP 01/12345" (sem ele a seção fica oculta)
+  credential: "CRP 07/43242", // obrigatório para psicóloga (sem ele a seção fica oculta)
   /** Mostrado no lugar do CRP só na prévia (?previa=especialista) e em desenvolvimento. */
   credentialPlaceholder: "CRP XX/XXXX",
   /** Retrato vertical 4:5 (ex.: "img/clara-martins-800.webp"). Vazio = espaço reservado. */
   photo: "", // PENDENTE
   /** Área de atuação, logo abaixo do nome. */
   focus: "Bem-estar emocional, autocuidado e descanso de mulheres cuidadoras",
-  /** Fala em primeira pessoa (validar o texto com ela). Até ~5 linhas no celular. */
-  quote:
-    "Eu acompanho mulheres que cuidam de todo mundo e chegam ao fim do dia sem espaço para si. Criei o Mente em Paz para que esse espaço exista: poucos minutos, à noite, só para você.",
-  /** Linha de apoio abaixo da fala. */
-  bio: "Os áudios foram pensados para a rotina real de quem cuida: curtos, simples de seguir e feitos para ouvir já deitada.",
+  /** Fala em primeira pessoa (validar o texto com ela). Curta: até ~3 linhas no celular. */
+  quote: "Você cuida de todo mundo. Criei o Mente em Paz para que, à noite, alguém cuide de você.",
 };
 
 /** Pode aparecer no site publicado? (profissão confirmada + registro). */

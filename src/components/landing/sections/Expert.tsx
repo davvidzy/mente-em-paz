@@ -4,8 +4,8 @@ import { routes } from "../../../lib/routes";
 import { Reveal, Section, type Tone } from "../shared";
 
 /**
- * Quem está por trás do Mente em Paz: foto, nome, profissão + CRP, área de atuação,
- * uma fala dela e uma linha de apoio. Tom: tranquilo, seguro e objetivo.
+ * Quem está por trás do Mente em Paz: foto, nome, profissão + CRP, área de atuação
+ * e uma fala curta dela. Tom: tranquilo, seguro e objetivo.
  * Mobile: foto compacta ao lado do nome; fala abaixo. Desktop: foto grande à esquerda.
  * Visível em produção somente com `expertPublished` (ver LandingApp e site.ts).
  */
@@ -55,9 +55,8 @@ export function Expert({ tone }: { tone: Tone }) {
 
           <div className="[grid-area:body] md:self-start">
             <blockquote className="border-l-2 border-accent pl-5">
-              <p className="font-serif text-[19px] italic leading-relaxed text-brand md:text-[21px]">“{expert.quote}”</p>
+              <p className="font-serif text-[21px] italic leading-snug text-brand md:text-[24px]">“{expert.quote}”</p>
             </blockquote>
-            <p className="t-muted mt-5 text-[16px] leading-relaxed md:text-[17px]">{expert.bio}</p>
           </div>
         </Reveal>
       </div>
