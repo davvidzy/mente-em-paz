@@ -100,11 +100,13 @@ function loadTools() {
     window.fbq!("track", "PageView");
   }
 
-  if (tracking.utmifyPixelId) {
+  // Idem para a Utmify: se o build já a pôs no <head>, não carrega de novo.
+  const inHead = (path: string) => Boolean(document.querySelector(`script[src*="cdn.utmify.com.br/scripts/${path}"]`));
+  if (tracking.utmifyPixelId && !inHead("pixel/")) {
     window.pixelId = tracking.utmifyPixelId;
     injectScript("https://cdn.utmify.com.br/scripts/pixel/pixel.js", { defer: "" });
   }
-  if (tracking.utmifyUtmsScript) {
+  if (tracking.utmifyUtmsScript && !inHead("utms/")) {
     injectScript("https://cdn.utmify.com.br/scripts/utms/latest.js", {
       "data-utmify-prevent-xcod-sck": "",
       "data-utmify-prevent-subids": "",

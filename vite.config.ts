@@ -1,9 +1,9 @@
 /// <reference types="vitest/config" />
 import { resolve } from "node:path";
-import { defineConfig, loadEnv, type Plugin } from "vite";
+import { defineConfig, loadEnv, type HtmlTagDescriptor, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { META_PIXEL_ID, REQUIRE_CONSENT } from "./src/config/pixel";
+import { META_PIXEL_ID, REQUIRE_CONSENT, UTMIFY_PIXEL_ID, UTMIFY_UTMS_SCRIPT } from "./src/config/pixel";
 
 const r = (p: string) => resolve(import.meta.dirname, p);
 
@@ -54,31 +54,54 @@ function seo(siteUrl: string): Plugin {
 }
 
 /**
- * Meta Pixel no <head> de cada página (código oficial do Meta): o PageView sai na
- * entrada, sem esperar o JavaScript do site — quem sai cedo também é contado.
+ * Pixels no <head> de cada página: Meta (código oficial — PageView na entrada) e Utmify
+ * (pixel + script de UTMs, os mesmos scripts do painel, sem a ofuscação). Saem antes do
+ * JavaScript do site — quem sai cedo também é contado e as UTMs são capturadas na hora.
  * Só sem consentimento obrigatório (config/pixel.ts); com consentimento, lib/analytics.ts
- * carrega o pixel depois do "Aceitar".
+ * carrega tudo depois do "Aceitar".
  */
-function metaPixel(id: string): Plugin {
-  const src = `https://www.facebook.com/tr?id=${id}&ev=PageView&noscript=1`;
+function adPixels({ meta, utmify, utms }: { meta: string; utmify: string; utms: boolean }): Plugin {
   return {
-    name: "mente-em-paz-meta-pixel",
+    name: "mente-em-paz-ad-pixels",
     apply: "build",
-    transformIndexHtml: () =>
-      !id || REQUIRE_CONSENT
-        ? []
-        : [
-            {
-              tag: "script",
-              injectTo: "head",
-              children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${id}');fbq('track','PageView');`,
-            },
-            {
-              tag: "noscript",
-              injectTo: "body-prepend",
-              children: `<img height="1" width="1" style="display:none" alt="" src="${src}" />`,
-            },
-          ],
+    transformIndexHtml: () => {
+      if (REQUIRE_CONSENT) return [];
+      const tags: HtmlTagDescriptor[] = [];
+      if (meta) {
+        tags.push(
+          {
+            tag: "script",
+            injectTo: "head",
+            children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${meta}');fbq('track','PageView');`,
+          },
+          {
+            tag: "noscript",
+            injectTo: "body-prepend",
+            children: `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${meta}&ev=PageView&noscript=1" />`,
+          },
+        );
+      }
+      if (utmify) {
+        tags.push(
+          { tag: "script", injectTo: "head", children: `window.pixelId=${JSON.stringify(utmify)};` },
+          { tag: "script", injectTo: "head", attrs: { src: "https://cdn.utmify.com.br/scripts/pixel/pixel.js", async: true, defer: true } },
+        );
+      }
+      if (utms) {
+        tags.push({
+          tag: "script",
+          injectTo: "head",
+          attrs: {
+            src: "https://cdn.utmify.com.br/scripts/utms/latest.js",
+            async: true,
+            defer: true,
+            "data-utmify-prevent-xcod-sck": "",
+            "data-utmify-prevent-subids": "",
+          },
+        });
+      }
+      return tags;
+    },
   };
 }
 
@@ -91,7 +114,16 @@ export default defineConfig(({ mode, isSsrBuild }) => {
     plugins: [
       react(),
       tailwindcss(),
-      ...(isSsrBuild ? [] : [seo(env.VITE_SITE_URL ?? ""), metaPixel(env.VITE_META_PIXEL_ID || META_PIXEL_ID)]),
+      ...(isSsrBuild
+        ? []
+        : [
+            seo(env.VITE_SITE_URL ?? ""),
+            adPixels({
+              meta: env.VITE_META_PIXEL_ID || META_PIXEL_ID,
+              utmify: env.VITE_UTMIFY_PIXEL_ID || UTMIFY_PIXEL_ID,
+              utms: UTMIFY_UTMS_SCRIPT,
+            }),
+          ]),
     ],
     // Pré-render (`vite build --ssr`): assets apontam para a raiz da página gerada
     // (__MP_ROOT__, definido por scripts/prerender.mjs), com os mesmos nomes do build do navegador.

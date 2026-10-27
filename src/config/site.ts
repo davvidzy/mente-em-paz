@@ -14,7 +14,7 @@
  *  • Nunca preencher com dados fictícios (depoimentos, URLs, IDs).
  */
 
-import { META_PIXEL_ID, REQUIRE_CONSENT } from "./pixel";
+import { META_PIXEL_ID, REQUIRE_CONSENT, UTMIFY_PIXEL_ID, UTMIFY_UTMS_SCRIPT } from "./pixel";
 
 // ── Marca ────────────────────────────────────────────────────────────
 export const brand = {
@@ -299,10 +299,9 @@ export const faq: { q: string; a: string }[] = [
 export const tracking = {
   /** Meta Pixel — ID e consentimento ficam em config/pixel.ts (o build também lê). */
   metaPixelId: (import.meta.env.VITE_META_PIXEL_ID as string | undefined) || META_PIXEL_ID,
-  /** Utmify: cole o pixelId fornecido pelo painel. Vazio = desativado. */
-  utmifyPixelId: (import.meta.env.VITE_UTMIFY_PIXEL_ID as string | undefined) ?? "", // PENDENTE
-  /** Script de UTMs da Utmify (repasse automático de UTMs para o checkout). */
-  utmifyUtmsScript: false,
+  /** Utmify — pixel e script de UTMs (config/pixel.ts). */
+  utmifyPixelId: (import.meta.env.VITE_UTMIFY_PIXEL_ID as string | undefined) || UTMIFY_PIXEL_ID,
+  utmifyUtmsScript: UTMIFY_UTMS_SCRIPT,
   /** LGPD: true = pixels só depois do "Aceitar"; false = na entrada (ver config/pixel.ts). */
   requireConsent: REQUIRE_CONSENT,
   currency: "BRL",

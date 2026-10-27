@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, stubCheckout } from "./helpers";
+import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockTrackers, collectErrors, events, recordEvents, stubCheckout } from "./helpers";
 
-test.beforeEach(({ page }) => blockMeta(page));
+test.beforeEach(({ page }) => blockTrackers(page));
 
 test.describe("Quiz", () => {
   test("fluxo completo: abre direto na 1ª pergunta, 3 perguntas, sem preços, resultado e CTA para a LP com UTMs", async ({ page }) => {
