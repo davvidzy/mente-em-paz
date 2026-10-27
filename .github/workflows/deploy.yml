@@ -37,7 +37,6 @@ jobs:
           # Configure em Settings → Secrets and variables → Actions → Variables
           VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
           VITE_META_PIXEL_ID: ${{ vars.VITE_META_PIXEL_ID }}
-          VITE_UTMIFY_PIXEL_ID: ${{ vars.VITE_UTMIFY_PIXEL_ID }}
 
       - name: Publicar dist/ na branch deploy
         uses: peaceiris/actions-gh-pages@v4

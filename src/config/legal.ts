@@ -33,8 +33,8 @@ export const privacy: LegalDoc = {
     {
       h: "Cookies e medição de anúncios",
       p: [
-        `${tracking.requireConsent ? "Com o seu consentimento, usamos" : "Usamos"} o Meta Pixel (Meta Platforms) e, quando configurado, a ferramenta Utmify, para medir o desempenho dos nossos anúncios: por exemplo, visitas às páginas, início do quiz e cliques para o checkout. Essas ferramentas podem usar cookies e identificadores do seu navegador.`,
-        "Nenhuma resposta do quiz é compartilhada com essas ferramentas.",
+        `${tracking.requireConsent ? "Com o seu consentimento, usamos" : "Usamos"} o Meta Pixel (Meta Platforms) para medir o desempenho dos nossos anúncios: por exemplo, visitas às páginas, início do quiz e cliques para o checkout. Essa ferramenta pode usar cookies e identificadores do seu navegador.`,
+        "Nenhuma resposta do quiz é compartilhada com essa ferramenta.",
         tracking.requireConsent
           ? "Você pode aceitar ou recusar no aviso exibido no site. Para mudar sua escolha, limpe os dados do site no seu navegador e escolha novamente."
           : "Você pode limitar essa medição bloqueando cookies de terceiros nas configurações do seu navegador ou ajustando suas preferências de anúncios nas contas da Meta (Facebook e Instagram).",

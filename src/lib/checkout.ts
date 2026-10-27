@@ -19,27 +19,9 @@ export function hasCheckoutUrl(kind: CheckoutKind): boolean {
   return /^https:\/\//.test(URLS[kind]?.trim() ?? "");
 }
 
-declare global {
-  interface Window {
-    /** Montado pelo script de UTMs da Utmify (scripts/utms/latest.js). */
-    utmParams?: URLSearchParams;
-  }
-}
-
 export function checkoutUrl(kind: CheckoutKind): string | null {
   if (!hasCheckoutUrl(kind)) return null;
-  const url = new URL(withParams(URLS[kind].trim()));
-  // A Utmify remonta as UTMs com o ID da visita (utm_source=…jLj<id>) e só aplica isso
-  // a links <a>; os botões de compra navegam por código, então a mesclagem é feita aqui.
-  // Sem isso a venda chega à Utmify sem ligação com a visita/anúncio.
-  try {
-    window.utmParams?.forEach((value, key) => {
-      if (value) url.searchParams.set(key, value);
-    });
-  } catch {
-    /* script da Utmify ausente ou bloqueado: seguem as UTMs da própria URL */
-  }
-  return url.toString();
+  return withParams(URLS[kind].trim());
 }
 
 export function checkoutValueCents(kind: CheckoutKind): number {
@@ -68,20 +50,6 @@ export function goToCheckout(kind: CheckoutKind): boolean {
     content_name: kind === "essencial" ? plans.essencial.name : plans.completo.name,
   });
   // pequena folga para o pixel enviar antes da navegação
-  window.setTimeout(() => openCheckout(url), window.fbq ? 250 : 0);
+  window.setTimeout(() => window.location.assign(url), window.fbq ? 250 : 0);
   return true;
-}
-
-/**
- * Navega por um link <a> (e não location.assign): a Utmify registra o InitiateCheckout ao
- * ver o clique num link de checkout, em qualquer navegador. Por location.assign ela só
- * percebe via Navigation API, que navegadores antigos (ex.: iOS desatualizado) não têm.
- */
-function openCheckout(url: string) {
-  const a = document.createElement("a");
-  a.href = url;
-  a.hidden = true;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
 }

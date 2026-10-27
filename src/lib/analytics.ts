@@ -1,9 +1,6 @@
 /**
- * Camada única de eventos → Meta Pixel (e Utmify, que lê o próprio pixel).
+ * Camada única de eventos → Meta Pixel.
  *
- * • Padrão (tracking.metaDirect = false): a Utmify carrega o Meta Pixel e envia PageView,
- *   ViewContent e InitiateCheckout (navegador + API de Conversões, deduplicados). Aqui só
- *   saem os eventos extras do funil (trackCustom), pelo pixel que a Utmify carregou.
  * • Sem ID configurado ou sem consentimento: nada é enviado.
  * • Eventos anteriores ao consentimento ficam em fila (só nesta página) e
  *   são enviados se a visitante aceitar; descartados se recusar.
@@ -50,7 +47,6 @@ declare global {
   interface Window {
     fbq?: ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean };
     _fbq?: unknown;
-    pixelId?: string;
     /** Registro local dos eventos (debug e testes automatizados). */
     __mpEvents?: { name: EventName; params: Params }[];
   }
@@ -66,22 +62,13 @@ function sanitize(params: Params): Params {
   return out;
 }
 
-function injectScript(src: string, attrs: Record<string, string> = {}) {
-  const s = document.createElement("script");
-  s.async = true;
-  s.src = src;
-  for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v);
-  document.head.appendChild(s);
-}
-
 function loadTools() {
   if (loaded) return;
   loaded = true;
 
-  // Meta só direto no site com tracking.metaDirect (senão quem carrega é a Utmify).
   // Sem consentimento obrigatório, o build já pôs o código base no <head> (init + PageView
   // na entrada) — aqui não se repete, senão o PageView sairia duplicado.
-  if (tracking.metaDirect && tracking.metaPixelId && !window.fbq) {
+  if (tracking.metaPixelId && !window.fbq) {
     // Snippet oficial do Meta Pixel (base code)
     /* eslint-disable */
     (function (f: any, b: Document, e: string, v: string) {
@@ -103,36 +90,14 @@ function loadTools() {
     window.fbq!("init", tracking.metaPixelId);
     window.fbq!("track", "PageView");
   }
-
-  // Idem para a Utmify: se o build já a pôs no <head>, não carrega de novo.
-  const inHead = (path: string) => Boolean(document.querySelector(`script[src*="cdn.utmify.com.br/scripts/${path}"]`));
-  if (tracking.utmifyPixelId && !inHead("pixel/")) {
-    window.pixelId = tracking.utmifyPixelId;
-    injectScript("https://cdn.utmify.com.br/scripts/pixel/pixel.js", { defer: "" });
-  }
-  if (tracking.utmifyUtmsScript && !inHead("utms/")) {
-    injectScript("https://cdn.utmify.com.br/scripts/utms/latest.js", {
-      "data-utmify-prevent-xcod-sck": "",
-      "data-utmify-prevent-subids": "",
-    });
-  }
 }
 
 function send(name: EventName, params: Params) {
-  const std = META_STANDARD[name];
-  // Com o Meta pela Utmify, ViewContent e InitiateCheckout já saem por ela (com deduplicação).
-  if (std && !tracking.metaDirect) return;
+  if (!window.fbq) return;
   const clean = sanitize(params);
-  whenFbq((fbq) => (std ? fbq("track", std, clean) : fbq("trackCustom", name, clean)));
-}
-
-/**
- * Executa com o `fbq` disponível. Pela Utmify ele só existe depois da primeira resposta
- * dela (~1 s): eventos do início (ex.: quiz_started) esperam até 15 s em vez de se perderem.
- */
-function whenFbq(fn: (fbq: NonNullable<Window["fbq"]>) => void, tries = 30) {
-  if (window.fbq) fn(window.fbq);
-  else if (!tracking.metaDirect && tries > 0) window.setTimeout(() => whenFbq(fn, tries - 1), 500);
+  const std = META_STANDARD[name];
+  if (std) window.fbq("track", std, clean);
+  else window.fbq("trackCustom", name, clean);
 }
 
 export function track(name: EventName, params: Params = {}) {

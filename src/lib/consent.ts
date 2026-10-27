@@ -1,5 +1,5 @@
 /**
- * Consentimento (LGPD) para ferramentas não essenciais (Meta Pixel / Utmify).
+ * Consentimento (LGPD) para ferramentas não essenciais (Meta Pixel).
  * Nada de rastreamento é carregado antes da escolha da visitante.
  */
 import { tracking } from "../config/site";
@@ -10,7 +10,7 @@ const KEY = "mp_consent";
 const listeners = new Set<(s: ConsentState) => void>();
 
 /** Há alguma ferramenta configurada que dependa de consentimento? */
-export const hasTrackingTools = () => Boolean(tracking.metaPixelId || tracking.utmifyPixelId);
+export const hasTrackingTools = () => Boolean(tracking.metaPixelId);
 
 export function getConsent(): ConsentState {
   if (!tracking.requireConsent) return "granted";

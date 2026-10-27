@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockTrackers, collectErrors, events, recordEvents, stubCheckout } from "./helpers";
+import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, stubCheckout } from "./helpers";
 
-test.beforeEach(({ page }) => blockTrackers(page));
+test.beforeEach(({ page }) => blockMeta(page));
 
 test.describe("Quiz", () => {
   test("fluxo completo: abre direto na 1ª pergunta, 3 perguntas, sem preços, resultado e CTA para a LP com UTMs", async ({ page }) => {
@@ -160,22 +160,6 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await page.locator('[data-plan="completo"]').click();
     await expect(page).toHaveURL("https://pay.wiapy.com/4U-4VtXIgz-e?utm_source=ig");
     expect(evs).toEqual(expect.arrayContaining(["upgrade_accepted", "completo_clicked", "checkout_redirect"]));
-  });
-
-  test("checkout recebe as UTMs remontadas pela Utmify (ID da visita)", async ({ page }) => {
-    await stubCheckout(page);
-    await page.goto("/mente-em-paz/?utm_source=FB&utm_campaign=camp1");
-    // o que o script de UTMs da Utmify deixa em window.utmParams (simulado; o real é bloqueado nos testes)
-    await page.evaluate(() => {
-      window.utmParams = new URLSearchParams("utm_source=FBjLj6712abc&utm_campaign=camp1&utm_medium=&sck=xyz");
-    });
-    await page.locator('[data-plan="completo"]').click();
-    await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\/4U-4VtXIgz-e\?/);
-    const params = new URL(page.url()).searchParams;
-    expect(params.get("utm_source")).toBe("FBjLj6712abc"); // a versão da Utmify prevalece
-    expect(params.get("utm_campaign")).toBe("camp1");
-    expect(params.get("sck")).toBe("xyz");
-    expect(params.has("utm_medium")).toBe(false); // vazios não entram
   });
 
   test("FAQ abre uma pergunta por vez", async ({ page }) => {
