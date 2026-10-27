@@ -88,9 +88,10 @@ export const plans: Record<PlanId, Plan> = {
     priceCents: 3990,
     installmentsNote: "até 10x de R$ 5,36",
     items: [
-      "4 áudios para desacelerar a mente",
-      "Práticas para relaxar antes de dormir",
-      "Acesso pelo celular",
+      "4 áudios guiados (noites 1 a 4 do programa)",
+      "Guia para relaxar antes de dormir",
+      "Caderno de reflexão com perguntas guiadas",
+      "Acesso pelo celular, no portal",
       "Acesso vitalício",
     ],
     cta: "Quero o Essencial",
@@ -105,18 +106,43 @@ export const plans: Record<PlanId, Plan> = {
     installmentsNote: "até 12x de R$ 8,06",
     itemsLead: "Tudo do Essencial +",
     items: [
-      "Programa completo de 7 noites",
-      "3 áudios SOS para noites difíceis",
-      "Diário para aliviar a mente",
-      "Plano para noites sem preocupações",
-      "Exercício para descansar sem culpa",
+      "Noites 5, 6 e 7: o programa completo",
+      "SOS Mente Acelerada (5 min)",
+      "Quando Acordo no Meio da Noite",
+      "Diário do Descarrego Mental",
+      "Plano da Noite Organizada",
       "Acesso vitalício a tudo",
     ],
-    itemsSummary: "10 áudios + 3 ferramentas práticas",
+    itemsSummary: "9 áudios guiados + 4 materiais de apoio",
     cta: "Quero o Completo",
     featured: true,
     tag: "Recomendado",
   },
+};
+
+// ── Pagamento e entrega (linhas abaixo dos planos e FAQ) ────────────
+export const payment = {
+  /** Desconto do Pix no checkout, em %. 0 = não exibe. */
+  pixDiscountPercent: 5,
+  /** {pix} = pixDiscountPercent. */
+  pixNote: "ou {pix}% de desconto no Pix",
+  secureNote: "Pagamento seguro · Pix ou cartão",
+  accessNote: "Acesso enviado por e-mail logo após o pagamento",
+};
+
+// ── Programa de 7 noites (seção "Suas 7 noites" e durações citadas no site) ──
+export const program = {
+  /** Quantas noites (a partir da 1ª) estão no Essencial. */
+  essencialNights: 4,
+  nights: [
+    { title: "O dia terminou, você pode descansar", minutes: 17 },
+    { title: "Soltando o peso da culpa", minutes: 11 },
+    { title: "Acalmando os pensamentos acelerados", minutes: 17 },
+    { title: "Nem tudo precisa ser resolvido hoje", minutes: 10 },
+    { title: "Você também merece cuidado", minutes: 12 },
+    { title: "Saindo do estado de alerta", minutes: 13 },
+    { title: "Sua prática de Mente em Paz", minutes: 13 },
+  ],
 };
 
 // ── Upgrade (popup ao escolher o Essencial) ─────────────────────────
@@ -139,7 +165,7 @@ export const guarantee = {
   days: 7,
   title: "Seu primeiro passo, com tranquilidade.",
   /** {dias} é substituído por `days`. */
-  text: "Experimente por {dias} dias. Se não for para você, peça o reembolso dentro desse prazo.",
+  text: "Experimente por {dias} dias. Se não for para você, peça o reembolso pelo link que chega no e-mail de confirmação da compra.",
 };
 
 // ── Mídia ────────────────────────────────────────────────────────────
@@ -219,25 +245,18 @@ export interface Bonus {
 
 export const bonuses = {
   /**
-   * ⚠ Mostra "Valor dos 5 bônus: R$ 124,50" riscado → "R$ 0,00" no box final.
-   * SÓ com `true` se cada bônus for de fato vendido separadamente por esse valor
-   * (valor de referência inventado é âncora enganosa — CDC). Com `false`, o box
-   * mostra apenas "5 bônus inclusos sem custo adicional".
+   * Mostra "Valor dos 4 bônus: R$ 94,60" riscado → "R$ 0,00" no box final.
+   * Valores = preço real de cada um como order bump no checkout. Se algum deixar
+   * de ser vendido por esse valor, use `false` (valor inventado é âncora enganosa — CDC).
    */
-  showValues: true, // ⚠ TESTE — revisar antes de anunciar
+  showValues: true,
   /**
-   * ⚠ TESTE — cronômetro do desconto no box final, em segundos (12:30:32).
-   * Reinicia a cada carregamento da página. 0 = sem cronômetro.
-   * Remover antes de anunciar (contagem que reinicia é urgência falsa).
+   * Prazo dos bônus grátis: "Bônus grátis no Completo até DD/MM", sempre a data de
+   * HOJE + `deadlineDaysAhead` no aparelho da visitante. 0 = sem prazo.
+   * ⚠ A promoção precisa existir de fato: retirar/encerrar manualmente quando acabar.
    */
-  countdownSeconds: 12 * 3600 + 30 * 60 + 32,
+  deadlineDaysAhead: 1,
   items: [
-    {
-      name: "Descansar Não É Abandonar",
-      description: "Áudio e exercício para acolher a culpa de tirar um tempo para você.",
-      valueCents: 2990,
-      image: "img/bonus/descansar-nao-e-abandonar",
-    },
     {
       name: "Plano da Noite Organizada",
       description: "Organize pendências e cuidados para encerrar o dia com clareza.",
@@ -268,24 +287,44 @@ export const bonuses = {
 // ── FAQ ──────────────────────────────────────────────────────────────
 export const faq: { q: string; a: string }[] = [
   {
-    q: "Preciso ter problemas para dormir?",
-    a: "Não. O Mente em Paz também é para quem deseja desacelerar e construir uma rotina de descanso mais tranquila.",
+    q: "Como recebo o acesso?",
+    a: "Logo após a confirmação do pagamento, você recebe um e-mail com o link e as instruções para entrar no portal. Ele abre no navegador do celular ou do computador, sem instalar aplicativo.",
   },
   {
-    q: "Posso ouvir os áudios mais de uma vez?",
-    a: "Sim! O material foi pensado para ser reutilizado sempre que você desejar.",
+    q: "Quanto tempo dura cada áudio?",
+    a: "Os áudios do programa têm de 10 a 17 minutos. O SOS Mente Acelerada tem 5 minutos, para quando você precisa de uma pausa rápida.",
+  },
+  {
+    q: "E se eu dormir no meio do áudio?",
+    a: "Ótimo, esse é o objetivo. Os áudios foram feitos para acompanhar você até o descanso. Se quiser, ouça de novo na noite seguinte.",
+  },
+  {
+    q: "Funciona mesmo se minha rotina for muito corrida?",
+    a: "Sim. Você ouve já deitada, na hora de dormir, então não precisa encontrar um tempo extra no seu dia.",
+  },
+  {
+    q: "Posso ouvir sem incomodar quem dorme perto de mim?",
+    a: "Sim. Ouça com fone ou em volume baixo: os áudios são calmos e suaves.",
+  },
+  {
+    q: "Quais são as formas de pagamento?",
+    a: "Pix, com 5% de desconto, ou cartão de crédito parcelado: em até 12x no Completo e em até 10x no Essencial.",
+  },
+  {
+    q: "Como funciona a garantia?",
+    a: "Você tem 7 dias para experimentar. Se não for para você, peça o reembolso pelo link que chega no e-mail de confirmação da compra.",
   },
   {
     q: "Por quanto tempo terei acesso?",
     a: "Para sempre. O pagamento é único e o acesso é vitalício, sem mensalidades.",
   },
   {
-    q: "O produto é físico?",
-    a: "Não. O Mente em Paz é um produto 100% digital.",
+    q: "Preciso ter problemas para dormir?",
+    a: "Não. O Mente em Paz também é para quem deseja desacelerar e construir uma rotina de descanso mais tranquila.",
   },
   {
-    q: "Funciona mesmo se minha rotina for muito corrida?",
-    a: "O método foi pensado para se adaptar a diferentes rotinas. Você pode escolher os momentos mais adequados para utilizá-lo.",
+    q: "Posso ouvir os áudios mais de uma vez?",
+    a: "Sim! O material foi pensado para ser reutilizado sempre que você desejar.",
   },
   {
     q: "Substitui terapia ou acompanhamento médico?",

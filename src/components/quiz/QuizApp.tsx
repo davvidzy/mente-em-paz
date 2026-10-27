@@ -26,11 +26,22 @@ const LOADING_MS = 1100;
 const FIRST: View = { kind: "question", index: 0 };
 
 function initialView(): View {
+  if (typeof document === "undefined") return FIRST; // pré-render
   const page = document.documentElement.dataset.page;
   if (page === "result") return { kind: "result" };
   const st = history.state as HistState | null;
   if (st?.mp && st.view.kind === "question") return st.view;
   return FIRST;
+}
+
+/**
+ * O HTML pré-renderizado é a 1ª pergunta sem resposta. Só dá para reaproveitá-lo (hydrate)
+ * se a visitante está exatamente nesse estado — ao recarregar na pergunta 2, por exemplo,
+ * a página é montada do zero.
+ */
+export function matchesPrerender(): boolean {
+  const v = initialView();
+  return v.kind === "question" && v.index === 0 && !quizSession.getAnswers()[0];
 }
 
 /**
@@ -41,7 +52,7 @@ function initialView(): View {
 export function QuizApp() {
   const [answers, setAnswers] = useState<Answers>(() => quizSession.getAnswers());
   const [view, setView] = useState<View>(initialView);
-  const depth = useRef((history.state as HistState | null)?.depth ?? 0);
+  const depth = useRef(typeof history === "undefined" ? 0 : ((history.state as HistState | null)?.depth ?? 0));
   const busy = useRef(false);
 
   // Resultado acessado sem quiz completo → volta ao início do quiz

@@ -44,8 +44,8 @@ if (/audioPreview:\s*\{\s*src:\s*""/.test(site)) warn.push("Trecho de áudio nã
 if (/testimonials:\s*Testimonial\[\]\s*=\s*\[\]/.test(site)) warn.push("Sem depoimentos — seção oculta.");
 
 // Especialista
-if (/countdownSeconds:\s*(?!0\b)\d/.test(site))
-  warn.push("Cronômetro de TESTE nos bônus (bonuses.countdownSeconds) — reinicia a cada visita; remova antes de anunciar.");
+if (/deadlineDaysAhead:\s*(?!0\b)\d/.test(site))
+  warn.push('Prazo dos bônus ativo (bonuses.deadlineDaysAhead) — a data é sempre "hoje + N": encerre a promoção manualmente quando acabar.');
 if (/^\s*showValues:\s*true/m.test(site))
   warn.push("Bônus com valor riscado (bonuses.showValues = true) — só mantenha se os valores individuais forem reais.");
 if (/verified:\s*false/.test(site)) warn.push("Seção da especialista com conteúdo provisório (expert.verified = false) — oculta.");

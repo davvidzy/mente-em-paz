@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Check, ShieldCheck } from "lucide-react";
+import { useState, type MouseEvent } from "react";
+import { Check, Lock, Mail, ShieldCheck } from "lucide-react";
 import { landing } from "../../../config/landing";
-import { checkout, guarantee, plans, tracking, upgrade, type Plan } from "../../../config/site";
+import { checkout, guarantee, payment, plans, tracking, upgrade, type Plan } from "../../../config/site";
 import { track, trackOnce } from "../../../lib/analytics";
-import { goToCheckout, hasCheckoutUrl, type CheckoutKind } from "../../../lib/checkout";
-import { priceParts } from "../../../lib/format";
+import { checkoutBaseUrl, goToCheckout, hasCheckoutUrl, type CheckoutKind } from "../../../lib/checkout";
+import { fill, priceParts } from "../../../lib/format";
 import { read, write } from "../../../lib/storage";
 import { useInView } from "../../../hooks/useReveal";
-import { Button } from "../../ui/Button";
+import { Button, ButtonLink } from "../../ui/Button";
 import type { NoticeMessage } from "../Notice";
 import { Reveal, Section, SectionHead, type Tone } from "../shared";
 import { UpgradeModal } from "../UpgradeModal";
@@ -83,9 +83,20 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
 
         <div className="mx-auto mt-12 grid max-w-[920px] gap-5 md:mt-14 md:grid-cols-2 md:items-stretch md:gap-6">
           {/* Completo primeiro: em cima no celular, à esquerda no desktop */}
-          <PlanCard plan={plans.completo} onChoose={chooseCompleto} enabled={ready("completo")} />
-          <PlanCard plan={plans.essencial} onChoose={chooseEssencial} enabled={ready("essencial")} />
+          <PlanCard plan={plans.completo} href={checkoutBaseUrl("completo")} onChoose={chooseCompleto} enabled={ready("completo")} />
+          <PlanCard plan={plans.essencial} href={checkoutBaseUrl("essencial")} onChoose={chooseEssencial} enabled={ready("essencial")} />
         </div>
+
+        <ul className="mx-auto mt-8 flex max-w-[920px] flex-col items-center gap-2.5 text-center text-[14.5px] font-medium text-brand sm:flex-row sm:justify-center sm:gap-8">
+          <li className="flex items-center gap-2">
+            <Lock aria-hidden className="size-4 shrink-0 text-sage-deep" strokeWidth={1.8} />
+            {payment.secureNote}
+          </li>
+          <li className="flex items-center gap-2">
+            <Mail aria-hidden className="size-4 shrink-0 text-sage-deep" strokeWidth={1.8} />
+            {payment.accessNote}
+          </li>
+        </ul>
       </div>
 
       <UpgradeModal
@@ -98,7 +109,7 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
   );
 }
 
-function PlanCard({ plan, onChoose, enabled }: { plan: Plan; onChoose: () => void; enabled: boolean }) {
+function PlanCard({ plan, href, onChoose, enabled }: { plan: Plan; href: string | null; onChoose: () => void; enabled: boolean }) {
   const price = priceParts(plan.priceCents);
   const featured = plan.featured;
   return (
@@ -125,6 +136,9 @@ function PlanCard({ plan, onChoose, enabled }: { plan: Plan; onChoose: () => voi
         <span aria-hidden className="text-[24px] font-semibold">{price.dec}</span>
       </p>
       {plan.installmentsNote && <p className="mt-2 text-[15px] font-semibold text-brand">{plan.installmentsNote}</p>}
+      {payment.pixDiscountPercent > 0 && (
+        <p className="mt-1 text-[14.5px] text-sage-ink">{fill(payment.pixNote, { pix: payment.pixDiscountPercent })}</p>
+      )}
       {plan.paymentNote && <p className="mt-1 text-[14px] text-sage-deep">{plan.paymentNote}</p>}
 
       <div className="mt-6 border-t border-line pt-6" data-plan-items>
@@ -145,9 +159,28 @@ function PlanCard({ plan, onChoose, enabled }: { plan: Plan; onChoose: () => voi
       </div>
 
       <div className="mt-auto pt-8">
-        <Button variant={featured ? "primary" : "secondary"} size="lg" arrow={enabled} full onClick={onChoose} disabled={!enabled} data-plan={plan.id}>
-          {enabled ? plan.cta : landing.plans.pendingCta}
-        </Button>
+        {href ? (
+          // link de verdade: funciona antes da hidratação; depois, o clique passa pelo popup e pelo pixel
+          <ButtonLink
+            href={href}
+            variant={featured ? "primary" : "secondary"}
+            size="lg"
+            arrow
+            full
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+              e.preventDefault();
+              onChoose();
+            }}
+            data-plan={plan.id}
+            suppressHydrationWarning // o script do pré-render (entries/server.tsx) completa o href com as UTMs
+          >
+            {plan.cta}
+          </ButtonLink>
+        ) : (
+          <Button variant={featured ? "primary" : "secondary"} size="lg" arrow={enabled} full onClick={onChoose} disabled={!enabled} data-plan={plan.id}>
+            {enabled ? plan.cta : landing.plans.pendingCta}
+          </Button>
+        )}
         <p className="mt-3.5 flex items-center justify-center gap-2 text-[14px] font-medium text-brand" data-guarantee>
           <ShieldCheck aria-hidden className="size-[18px] text-sage-deep" strokeWidth={1.7} />
           Garantia de {guarantee.days} dias

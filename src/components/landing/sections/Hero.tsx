@@ -1,4 +1,4 @@
-import { BadgeCheck, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, Video, type LucideIcon } from "lucide-react";
+import { BadgeCheck, Clock, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, Video, type LucideIcon } from "lucide-react";
 import type { ProfileId } from "../../../config/quiz";
 import { landing } from "../../../config/landing";
 import { guarantee, media } from "../../../config/site";
@@ -15,6 +15,7 @@ const benefitIcons: Record<(typeof landing.hero.benefits)[number]["icon"], Lucid
   digital: MonitorSmartphone,
   lifetime: InfinityIcon,
   once: BadgeCheck,
+  duration: Clock,
 };
 
 export function Hero({ profile }: { profile: ProfileId | null }) {

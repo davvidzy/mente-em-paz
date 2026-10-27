@@ -1,7 +1,9 @@
 import { landing } from "../../../config/landing";
+import { profiles, type ProfileId } from "../../../config/quiz";
 import { Reveal, Section, type Tone } from "../shared";
 
-export function Identification({ tone }: { tone: Tone }) {
+/** Quem vem do quiz vê o título do próprio resultado; os demais, o título padrão. */
+export function Identification({ tone, profile }: { tone: Tone; profile: ProfileId | null }) {
   const c = landing.identification;
   return (
     <Section id="identificacao" tone={tone} labelledBy="ident-title">
@@ -9,7 +11,7 @@ export function Identification({ tone }: { tone: Tone }) {
         <div className="mx-auto max-w-[760px]">
           <Reveal>
             <h2 id="ident-title" className="t-h2 max-w-[20ch]">
-              {c.title}
+              {profile ? profiles[profile].title : c.title}
             </h2>
           </Reveal>
 

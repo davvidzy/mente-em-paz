@@ -1,4 +1,4 @@
 import { boot } from "./boot";
-import { QuizApp } from "../components/quiz/QuizApp";
+import { matchesPrerender, QuizApp } from "../components/quiz/QuizApp";
 
-boot(<QuizApp />);
+boot(<QuizApp />, matchesPrerender());

@@ -19,6 +19,11 @@ export function hasCheckoutUrl(kind: CheckoutKind): boolean {
   return /^https:\/\//.test(URLS[kind]?.trim() ?? "");
 }
 
+/** URL sem os parâmetros da campanha (não lê a página — seguro no pré-render). */
+export function checkoutBaseUrl(kind: CheckoutKind): string | null {
+  return hasCheckoutUrl(kind) ? URLS[kind].trim() : null;
+}
+
 export function checkoutUrl(kind: CheckoutKind): string | null {
   if (!hasCheckoutUrl(kind)) return null;
   return withParams(URLS[kind].trim());

@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import type { ProfileId } from "../../config/quiz";
-import { bonuses, expert, media, testimonials } from "../../config/site";
+import { bonuses, expert, media, program, testimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
 import { ConsentBanner } from "../ui/ConsentBanner";
@@ -10,6 +10,7 @@ import { Hero } from "./sections/Hero";
 import { Identification } from "./sections/Identification";
 import { Product } from "./sections/Product";
 import { AudioDemo } from "./sections/AudioDemo";
+import { Program } from "./sections/Program";
 import { Expert } from "./sections/Expert";
 import { Bonus } from "./sections/Bonus";
 import { Testimonials } from "./sections/Testimonials";
@@ -43,10 +44,11 @@ export function LandingApp() {
 
   // [visível, render(tone)]
   const sections: [boolean, (tone: Tone) => ReactElement][] = [
-    [true, (t) => <Identification key="ident" tone={t} />],
+    [true, (t) => <Identification key="ident" tone={t} profile={profile} />],
     [true, (t) => <Product key="product" tone={t} />],
     [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} />],
     [expert.verified || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com dados confirmados
+    [program.nights.length > 0, (t) => <Program key="program" tone={t} />],
     [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],
     [true, (t) => <Plans key="plans" tone={t} onNotice={setNotice} />],

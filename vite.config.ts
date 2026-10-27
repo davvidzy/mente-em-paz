@@ -54,8 +54,10 @@ function seo(siteUrl: string): Plugin {
 }
 
 /**
- * Meta Pixel no <head> de cada página (código oficial do Meta): o PageView sai na
- * entrada, sem esperar o JavaScript do site — quem sai cedo também é contado.
+ * Meta Pixel no <head> de cada página (código oficial do Meta, com uma mudança): a fila
+ * `fbq` e o PageView são registrados na entrada, mas o fbevents.js (~200 KB) só é baixado
+ * no DOMContentLoaded, depois do JavaScript do site. Em 3G ele disputava a banda com a
+ * página e atrasava em segundos o quiz e os botões. Os eventos ficam na fila até lá.
  * Só sem consentimento obrigatório (config/pixel.ts); com consentimento, lib/analytics.ts
  * carrega o pixel depois do "Aceitar".
  */
@@ -71,7 +73,7 @@ function metaPixel(id: string): Plugin {
             {
               tag: "script",
               injectTo: "head",
-              children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${id}');fbq('track','PageView');`,
+              children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];s=function(){t=b.createElement(e);t.async=!0;t.src=v;b.head.appendChild(t)};b.readyState==='loading'?b.addEventListener('DOMContentLoaded',s):s()}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${id}');fbq('track','PageView');`,
             },
             {
               tag: "noscript",

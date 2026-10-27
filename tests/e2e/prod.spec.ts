@@ -32,7 +32,7 @@ test.describe("Build de produção", () => {
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
     // especialista provisória e depoimentos sem conteúdo → ocultos; vídeo fica no hero
-    expect(order).toEqual(["identificacao", "produto", "demonstracao", "bonus", "planos", "garantia", "faq", "cta-final"]);
+    expect(order).toEqual(["identificacao", "produto", "demonstracao", "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
     // sem vídeo: espaço reservado discreto só com media.video.showPlaceholder
     await expect(page.locator("[data-hero] [data-video-soon]")).toHaveCount(/showPlaceholder:\s*true/.test(SITE) ? 1 : 0);
@@ -64,12 +64,14 @@ test.describe("Build de produção", () => {
     }
     await expect(page.locator("#planos")).toContainText("39");
     await expect(page.locator("#planos")).toContainText("67");
-    // conteúdo dos planos (Completo primeiro): Completo com "Tudo do Essencial +", 6 itens e resumo; 4 itens no Essencial
+    // conteúdo dos planos (Completo primeiro): Completo com "Tudo do Essencial +", 6 itens e resumo; 5 itens no Essencial
     const items = page.locator("#planos [data-plan-items]");
-    await expect(items.nth(1).getByRole("listitem")).toHaveCount(4);
+    await expect(items.nth(1).getByRole("listitem")).toHaveCount(5);
     await expect(items.nth(0)).toContainText("Tudo do Essencial +");
     await expect(items.nth(0).getByRole("listitem")).toHaveCount(6);
-    await expect(items.nth(0)).toContainText("10 áudios + 3 ferramentas práticas");
+    await expect(items.nth(0)).toContainText("9 áudios guiados + 4 materiais de apoio");
+    await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
+    await expect(page.locator("#programa li")).toHaveCount(7);
     // sem aviso de cookies na tela (pixel na entrada ou recusado no estado padrão dos testes)
     await expect(page.getByRole("region", { name: "Aviso de cookies" })).toHaveCount(0);
     expect(errors).toEqual([]);
@@ -82,7 +84,7 @@ test.describe("Build de produção", () => {
     await expect(page).toHaveURL("http://localhost:4174/promo/resultado/");
     await page.getByRole("button", { name: /Conhecer o Mente em Paz/ }).click();
     await expect(page).toHaveURL("http://localhost:4174/promo/mente-em-paz/?utm_source=ig");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Agora é hora de cuidar de você");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Sua mente continua de plantão");
     // logo e fontes carregaram
     const logoOk = await page.locator("header img").first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
     expect(logoOk).toBe(true);
@@ -145,7 +147,7 @@ test.describe("Build de produção", () => {
     await expect.poll(() => audio.evaluate((a: HTMLAudioElement) => a.currentTime)).toBeGreaterThan(0);
   });
 
-  test("bônus: 5 cards do Completo, textos curtos no celular, total e cronômetro", async ({ page }) => {
+  test("bônus: 4 cards do Completo, textos curtos no celular, total e prazo", async ({ page }) => {
     const lines = (sel: string) =>
       page.locator(sel).evaluateAll((els) =>
         els.map((e) => Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight))),
@@ -154,8 +156,8 @@ test.describe("Build de produção", () => {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/mente-em-paz/");
       const sec = page.locator("#bonus");
-      await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(5);
-      await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
+      await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(4);
+      await expect(sec.getByText("Incluso no Completo")).toHaveCount(4);
       expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
       expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
       expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(3);
@@ -166,23 +168,27 @@ test.describe("Build de produção", () => {
     await expect(sec).not.toContainText("estão incluídos no");
     // capas carregadas (também em subpasta, ver teste sem JS)
     const covers = sec.locator("article img");
-    await expect(covers).toHaveCount(5);
+    await expect(covers).toHaveCount(4);
     for (const img of await covers.all()) {
       await img.scrollIntoViewIfNeeded();
       await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     }
     if (/^\s*showValues:\s*true/m.test(SITE)) {
-      await expect(sec.locator("s")).toHaveText("R$ 124,50");
+      await expect(sec.locator("s")).toHaveText("R$ 94,60");
       await expect(sec).toContainText("R$ 0,00");
     } else {
       await expect(sec.locator("s")).toHaveCount(0);
-      await expect(sec).toContainText("5 bônus inclusos sem custo adicional");
+      await expect(sec).toContainText("4 bônus inclusos sem custo adicional");
     }
-    if (/countdownSeconds:\s*(?!0\b)\d/.test(SITE)) {
-      const timer = sec.getByRole("timer");
-      const first = await timer.innerText();
-      await expect(timer).not.toHaveText(first, { timeout: 3000 }); // diminuindo
-      expect(await timer.innerText()).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+    const days = Number(SITE.match(/deadlineDaysAhead:\s*(\d+)/)?.[1] ?? 0);
+    if (days > 0) {
+      // data de hoje + N no aparelho da visitante (não a do build)
+      const expected = await page.evaluate((n) => {
+        const d = new Date();
+        d.setDate(d.getDate() + n);
+        return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+      }, days);
+      await expect(sec.locator("[data-deadline]")).toHaveText(expected);
     }
   });
 
@@ -203,7 +209,10 @@ test.describe("Build de produção", () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL: "http://localhost:4174" });
     const page = await ctx.newPage();
     await page.goto("/promo/mente-em-paz/"); // em subpasta: links e assets relativos
-    await expect(page.locator("h1")).toContainText("Agora é hora de cuidar de você");
+    await expect(page.locator("h1")).toContainText("Sua mente continua de plantão");
+    // sem JavaScript: prazo dos bônus já com a data de hoje (script inline) e compra por link
+    await expect(page.locator("#bonus [data-deadline]")).toHaveText(/^\d{2}\/\d{2}$/);
+    if (READY) await expect(page.locator('#planos a[data-plan="completo"]')).toHaveAttribute("href", /^https:\/\/pay\.wiapy\.com\//);
     await expect(page.locator("#planos")).toContainText("R$ 39,90");
     const logoOk = await page.locator("header img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
     expect(logoOk).toBe(true);

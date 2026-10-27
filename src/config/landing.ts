@@ -11,20 +11,21 @@ export const landing = {
   hero: {
     /** Uma linha no mobile (≤ 30 caracteres). */
     eyebrow: "Pausa noturna para quem cuida",
-    title: "Você cuida de quem ama. **Agora é hora de cuidar de você.**",
-    body: "O **Mente em Paz** reúne áudios guiados para você desacelerar à noite e descansar com mais tranquilidade.",
+    title: "Seu dia terminou. **Sua mente continua de plantão.**",
+    body: "O **Mente em Paz** é um programa de 7 noites com áudios guiados para desligar o alerta e descansar, sem deixar de cuidar de quem você ama.",
     cta: "Quero descansar melhor",
     /**
      * Benefícios abaixo do CTA. SÓ condições reais e confirmadas.
      * `enabled: false` = aguardando confirmação (não aparece no site).
      */
     benefits: [
+      { icon: "duration", label: "Áudios de 10 a 17 min", enabled: true },
       { icon: "lifetime", label: "Acesso vitalício", enabled: true },
+      { icon: "guarantee", label: "Garantia de {dias} dias", enabled: true },
       { icon: "once", label: "Pagamento único", enabled: true },
-      { icon: "guarantee", label: "Garantia de {dias} dias", enabled: true },
-      { icon: "repeat", label: "Use quantas vezes quiser", enabled: true },
+      { icon: "repeat", label: "Use quantas vezes quiser", enabled: false },
       { icon: "digital", label: "100% digital", enabled: false },
-    ] as { icon: "guarantee" | "repeat" | "digital" | "lifetime" | "once"; label: string; enabled: boolean }[],
+    ] as { icon: "guarantee" | "repeat" | "digital" | "lifetime" | "once" | "duration"; label: string; enabled: boolean }[],
   },
 
   /** Substitui o eyebrow quando a visitante vem do quiz. Uma linha no mobile (≤ 30 caracteres). */
@@ -43,17 +44,25 @@ export const landing = {
       "Será que fiz tudo o que precisava hoje?",
     ],
     after:
-      "Você não precisa esperar todas as preocupações desaparecerem para começar a cuidar de si.",
+      "Cuidar de você não é deixar de cuidar deles. É o que te dá força para continuar.",
   },
 
   product: {
     title: "Como funciona?",
     steps: [
-      "Escolha um momento tranquilo da noite.",
-      "Acompanhe o áudio guiado no seu ritmo.",
-      "Repita sempre que sentir necessidade.",
+      "Receba o acesso por e-mail e abra o portal no celular.",
+      "Deite, coloque o fone e dê play no áudio da noite.",
+      "Pegou no sono no meio? Ótimo, esse é o objetivo.",
     ],
     cta: "Quero começar agora",
+  },
+
+  /** Lista das 7 noites (títulos e minutos em site.ts → program). */
+  program: {
+    title: "Suas 7 noites",
+    text: "Um áudio por noite, na ordem. Depois, repita os que mais fizerem bem a você.",
+    /** Etiqueta nas noites que vêm no Essencial. */
+    essencialTag: "Também no Essencial",
   },
 
   audioDemo: {
@@ -70,8 +79,8 @@ export const landing = {
     // com bonuses.showValues = true
     totalLabel: "Valor dos {n} bônus:",
     totalNote: "Incluídos no {plano}, sem custo adicional.",
-    /** Com bonuses.countdownSeconds > 0. */
-    countdownLabel: "O desconto nos bônus termina em",
+    /** Com bonuses.deadlineDaysAhead > 0. {data} = hoje + N dias (DD/MM). */
+    deadlineLabel: "Bônus grátis no Completo até {data}",
     // com bonuses.showValues = false
     noValuesHighlight: "{n} bônus inclusos sem custo adicional",
     noValuesNote: "Incluídos no {plano}.",

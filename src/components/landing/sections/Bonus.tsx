@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Clock, Gift } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { bonuses, plans, type Bonus as BonusItem } from "../../../config/site";
@@ -8,7 +8,7 @@ import { Reveal, Section, SectionHead, type Tone } from "../shared";
 
 /**
  * Bônus exclusivos do Completo: cabeçalho, cards empilhados e o box de valor total
- * (com cronômetro opcional). Valor riscado só com `bonuses.showValues` (ver site.ts).
+ * (com prazo opcional). Valor riscado só com `bonuses.showValues` (ver site.ts).
  */
 export function Bonus({ tone }: { tone: Tone }) {
   const c = landing.bonus;
@@ -50,7 +50,7 @@ export function Bonus({ tone }: { tone: Tone }) {
                 <p className="mt-3 text-[16px] text-sage-deep">{fill(c.noValuesNote, values)}</p>
               </>
             )}
-            {bonuses.countdownSeconds > 0 && <Countdown seconds={bonuses.countdownSeconds} label={c.countdownLabel} />}
+            {bonuses.deadlineDaysAhead > 0 && <Deadline days={bonuses.deadlineDaysAhead} label={c.deadlineLabel} />}
           </Reveal>
         </div>
       </div>
@@ -104,34 +104,32 @@ function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; t
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+/** Hoje + `days`, como DD/MM, no relógio do aparelho. */
+function deadline(days: number) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+}
+
 /**
- * Contagem regressiva (HH:MM:SS) a partir de `seconds`, reiniciada a cada carregamento.
- * role="timer" não é anunciado a cada segundo pelo leitor de tela — só quando lido.
+ * "Bônus grátis no Completo até DD/MM". O HTML pré-renderizado sai com a data do build;
+ * um script do pré-render (entries/server.tsx) troca pela data de hoje assim que o HTML
+ * chega (antes do JavaScript do site, que em 3G demora), e a hidratação mantém o texto.
  */
-function Countdown({ seconds, label }: { seconds: number; label: string }) {
-  const [left, setLeft] = useState(seconds);
-
-  useEffect(() => {
-    const end = Date.now() + seconds * 1000;
-    const id = window.setInterval(() => {
-      const rest = Math.max(0, Math.round((end - Date.now()) / 1000));
-      setLeft(rest);
-      if (rest === 0) window.clearInterval(id);
-    }, 1000);
-    return () => window.clearInterval(id);
-  }, [seconds]);
-
-  const time = `${pad(Math.floor(left / 3600))}:${pad(Math.floor((left % 3600) / 60))}:${pad(left % 60)}`;
+function Deadline({ days, label }: { days: number; label: string }) {
+  const [date] = useState(() => deadline(days));
+  const [before, after = ""] = label.split("{data}");
 
   return (
-    <div className="mx-auto mt-7 flex max-w-[340px] flex-col items-center gap-1.5 border-t border-line pt-6">
-      <p className="flex items-center gap-2 text-[14.5px] font-medium text-sage-deep">
-        <Clock aria-hidden className="size-4" strokeWidth={1.8} />
-        {label}
-      </p>
-      <p role="timer" className="font-serif text-[30px] font-semibold tracking-wide text-brand tabular-nums">
-        {time}
-      </p>
-    </div>
+    <p className="mx-auto mt-7 flex max-w-[340px] items-center justify-center gap-2 border-t border-line pt-6 text-[16px] font-medium text-brand">
+      <Clock aria-hidden className="size-[18px] shrink-0 text-sage-deep" strokeWidth={1.8} />
+      <span>
+        {before}
+        <strong data-deadline suppressHydrationWarning>
+          {date}
+        </strong>
+        {after}
+      </span>
+    </p>
   );
 }
