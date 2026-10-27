@@ -210,7 +210,7 @@ export const expert = {
   eyebrow: "Quem criou o Mente em Paz",
   name: "Clara Martins",
   role: "Psicóloga",
-  credential: "", // PENDENTE — ex.: "CRP 01/12345" (sem ele a seção fica oculta)
+  credential: "CRP 07/43242", // PENDENTE — ex.: "CRP 01/12345" (sem ele a seção fica oculta)
   /** Mostrado no lugar do CRP só na prévia (?previa=especialista) e em desenvolvimento. */
   credentialPlaceholder: "CRP XX/XXXX",
   /** Retrato vertical 4:5 (ex.: "img/clara-martins-800.webp"). Vazio = espaço reservado. */
