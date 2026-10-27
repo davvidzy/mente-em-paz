@@ -233,5 +233,6 @@ test.describe("Build de produção", () => {
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(sec).toContainText("Prévia · não publicada");
+    await expect(sec).toContainText("Psicóloga · CRP XX/XXXX");
   });
 });

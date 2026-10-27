@@ -10,7 +10,8 @@ import { Reveal, Section, type Tone } from "../shared";
  * Visível em produção somente com `expertPublished` (ver LandingApp e site.ts).
  */
 export function Expert({ tone }: { tone: Tone }) {
-  const role = [expert.role, expert.credential].filter(Boolean).join(" · ");
+  // sem CRP a seção só aparece na prévia/dev — aí entra o marcador "CRP XX/XXXX"
+  const role = [expert.role, expert.credential || expert.credentialPlaceholder].filter(Boolean).join(" · ");
 
   return (
     <Section id="especialista" tone={tone} labelledBy="expert-title">
