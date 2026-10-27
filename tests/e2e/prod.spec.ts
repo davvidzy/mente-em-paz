@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { ANSWERS_PAIS, answerQuiz, collectErrors, stubCheckout } from "./helpers";
+import { ANSWERS_PAIS, answerQuiz, blockMeta, collectErrors, stubCheckout } from "./helpers";
 
 const WIDTHS = [320, 360, 375, 390, 430, 768, 1024, 1440];
 const SITE = readFileSync("src/config/site.ts", "utf8");
 const PREVIEW = /previewCheckout:\s*true/.test(SITE);
 const READY = ["checkoutEssencialUrl", "checkoutCompletoUrl", "checkoutUpgradeUrl"].every((k) => new RegExp(`${k}:\\s*"https://`).test(SITE));
+
+test.beforeEach(({ page }) => blockMeta(page));
 
 test.describe("Build de produção", () => {
   test("sem rolagem horizontal em nenhuma largura (quiz, resultado, LP)", async ({ page }) => {
@@ -68,9 +70,8 @@ test.describe("Build de produção", () => {
     await expect(items.nth(0)).toContainText("Tudo do Essencial +");
     await expect(items.nth(0).getByRole("listitem")).toHaveCount(6);
     await expect(items.nth(0)).toContainText("10 áudios + 3 ferramentas práticas");
-    // cookies recusados (estado padrão dos testes) → sem aviso e sem script do Meta
+    // sem aviso de cookies na tela (pixel na entrada ou recusado no estado padrão dos testes)
     await expect(page.getByRole("region", { name: "Aviso de cookies" })).toHaveCount(0);
-    expect(await page.locator('script[src*="fbevents"]').count()).toBe(0);
     expect(errors).toEqual([]);
   });
 
@@ -100,26 +101,37 @@ test.describe("Build de produção", () => {
     expect(small).toBe(0);
   });
 
-  test("Meta Pixel: só carrega depois de aceitar os cookies (LGPD)", async ({ browser }) => {
+  test("Meta Pixel: PageView na entrada, sem duplicar (ou só após aceitar, com consentimento)", async ({ browser }) => {
+    const consent = /REQUIRE_CONSENT\s*=\s*true/.test(readFileSync("src/config/pixel.ts", "utf8"));
     const ctx = await browser.newContext({ storageState: undefined, baseURL: "http://localhost:4173" });
     const page = await ctx.newPage();
-    const hits: string[] = [];
-    // responde no lugar do Meta: nenhum evento de teste chega ao pixel real
-    await page.route(/facebook\.(net|com)/, (route) => {
-      hits.push(route.request().url());
-      return route.fulfill({ contentType: "text/javascript", body: "" });
-    });
-    await page.goto("/mente-em-paz/");
+    const hits = await blockMeta(page); // Meta simulado: nada chega ao pixel real
+    // o código oficial enfileira `arguments` (não arrays)
+    const calls = () => page.evaluate(() => (window.fbq?.queue ?? []).map((c) => Array.from(c as ArrayLike<unknown>).slice(0, 2).join(" ")));
     const banner = page.getByRole("region", { name: "Aviso de cookies" });
-    await expect(banner).toBeVisible();
-    expect(await page.locator('script[src*="fbevents"]').count()).toBe(0);
-    expect(hits).toEqual([]);
-    await banner.getByRole("button", { name: "Aceitar" }).click();
-    await expect(banner).toHaveCount(0);
+
+    for (const path of ["/", "/mente-em-paz/"]) {
+      const html = await (await page.request.get(path)).text();
+      // código base no <head> (antes do JS do site) e <noscript> — só sem consentimento obrigatório
+      expect(html.includes("fbq('init','4617173178570579')"), path).toBe(!consent);
+      expect(html.includes("facebook.com/tr?id=4617173178570579"), path).toBe(!consent);
+    }
+
+    await page.goto("/mente-em-paz/");
+    if (consent) {
+      await expect(banner).toBeVisible();
+      expect(hits).toEqual([]);
+      await banner.getByRole("button", { name: "Aceitar" }).click();
+    } else {
+      await page.waitForTimeout(1500); // o aviso apareceria em 0,9 s
+      await expect(banner).toHaveCount(0);
+    }
     await expect(page.locator('script[src*="fbevents"]')).toHaveCount(1);
-    expect(await page.evaluate(() => (window.fbq?.queue ?? []).map((c) => (c as unknown[]).slice(0, 2).join(" ")))).toEqual(
-      expect.arrayContaining(["init 4617173178570579", "track PageView", "track ViewContent"]),
-    );
+    await expect.poll(calls).toEqual(expect.arrayContaining(["track ViewContent"]));
+    const sent = await calls();
+    expect(sent.filter((c) => c === "init 4617173178570579")).toHaveLength(1);
+    expect(sent.filter((c) => c === "track PageView")).toHaveLength(1);
+    expect(hits.some((u) => u.includes("fbevents.js"))).toBe(true);
     await ctx.close();
   });
 

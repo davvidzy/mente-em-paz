@@ -40,6 +40,16 @@ export async function recordEvents(page: Page): Promise<string[]> {
   return names;
 }
 
+/** Responde no lugar do Meta: nenhum evento de teste chega ao pixel real. Devolve as URLs pedidas. */
+export async function blockMeta(page: Page): Promise<string[]> {
+  const hits: string[] = [];
+  await page.route(/facebook\.(net|com)/, (route) => {
+    hits.push(route.request().url());
+    return route.fulfill({ contentType: "text/javascript", body: "" });
+  });
+  return hits;
+}
+
 /** Responde no lugar da Wiapy: o teste confere o destino sem abrir o checkout real. */
 export async function stubCheckout(page: Page) {
   await page.route("https://pay.wiapy.com/**", (route) =>

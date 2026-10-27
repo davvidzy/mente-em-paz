@@ -3,7 +3,7 @@
  * Descreve apenas o que o site realmente faz. Campos [PENDENTE] precisam ser preenchidos
  * antes da publicação (o build avisa enquanto existirem).
  */
-import { brand, guarantee } from "./site";
+import { brand, guarantee, tracking } from "./site";
 
 const responsavel = brand.legalEntity || "[PENDENTE: nome/razão social e CNPJ do responsável]";
 const contato = brand.contactEmail || "[PENDENTE: e-mail de contato]";
@@ -33,9 +33,11 @@ export const privacy: LegalDoc = {
     {
       h: "Cookies e medição de anúncios",
       p: [
-        "Com o seu consentimento, usamos o Meta Pixel (Meta Platforms) e, quando configurado, a ferramenta Utmify, para medir o desempenho dos nossos anúncios: por exemplo, visitas às páginas, início do quiz e cliques para o checkout. Essas ferramentas podem usar cookies e identificadores do seu navegador.",
+        `${tracking.requireConsent ? "Com o seu consentimento, usamos" : "Usamos"} o Meta Pixel (Meta Platforms) e, quando configurado, a ferramenta Utmify, para medir o desempenho dos nossos anúncios: por exemplo, visitas às páginas, início do quiz e cliques para o checkout. Essas ferramentas podem usar cookies e identificadores do seu navegador.`,
         "Nenhuma resposta do quiz é compartilhada com essas ferramentas.",
-        "Você pode aceitar ou recusar no aviso exibido no site. Para mudar sua escolha, limpe os dados do site no seu navegador e escolha novamente.",
+        tracking.requireConsent
+          ? "Você pode aceitar ou recusar no aviso exibido no site. Para mudar sua escolha, limpe os dados do site no seu navegador e escolha novamente."
+          : "Você pode limitar essa medição bloqueando cookies de terceiros nas configurações do seu navegador ou ajustando suas preferências de anúncios nas contas da Meta (Facebook e Instagram).",
       ],
     },
     {

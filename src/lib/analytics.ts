@@ -75,7 +75,9 @@ function loadTools() {
   if (loaded) return;
   loaded = true;
 
-  if (tracking.metaPixelId) {
+  // Sem consentimento obrigatório, o build já pôs o código base no <head> (init + PageView
+  // na entrada) — aqui não se repete, senão o PageView sairia duplicado.
+  if (tracking.metaPixelId && !window.fbq) {
     // Snippet oficial do Meta Pixel (base code)
     /* eslint-disable */
     (function (f: any, b: Document, e: string, v: string) {
