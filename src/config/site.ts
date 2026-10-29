@@ -213,8 +213,11 @@ export const expert = {
   credential: "CRP 07/43242", // obrigatório para psicóloga (sem ele a seção fica oculta)
   /** Mostrado no lugar do CRP só na prévia (?previa=especialista) e em desenvolvimento. */
   credentialPlaceholder: "CRP XX/XXXX",
-  /** Retrato vertical 4:5 (ex.: "img/clara-martins-800.webp"). Vazio = espaço reservado. */
-  photo: "", // PENDENTE
+  /**
+   * Retrato 4:5, sem sufixo: "img/expert/clara-martins" → usa -400.webp e -800.webp.
+   * Original (já recortado em 4:5) em images-src/expert/ → `npm run images`. Vazio = espaço reservado.
+   */
+  photo: "img/expert/clara-martins",
   /** Área de atuação, logo abaixo do nome. */
   focus: "Bem-estar emocional, autocuidado e descanso de mulheres cuidadoras",
   /** Fala em primeira pessoa (validar o texto com ela). Curta: até ~3 linhas no celular. */

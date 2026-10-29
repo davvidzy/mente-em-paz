@@ -11,7 +11,7 @@ import { Reveal, Section, type Tone } from "../shared";
  */
 export function Expert({ tone }: { tone: Tone }) {
   // sem CRP a seção só aparece na prévia/dev — aí entra o marcador "CRP XX/XXXX"
-  const role = [expert.role, expert.credential || expert.credentialPlaceholder].filter(Boolean).join(" · ");
+  const credential = expert.credential || expert.credentialPlaceholder;
 
   return (
     <Section id="especialista" tone={tone} labelledBy="expert-title">
@@ -20,10 +20,12 @@ export function Expert({ tone }: { tone: Tone }) {
           <div className="relative [grid-area:photo] md:self-center">
             {expert.photo ? (
               <img
-                src={routes.asset(expert.photo)}
+                src={routes.asset(`${expert.photo}-400.webp`)}
+                srcSet={`${routes.asset(`${expert.photo}-400.webp`)} 400w, ${routes.asset(`${expert.photo}-800.webp`)} 800w`}
+                sizes="(min-width: 768px) 300px, 112px"
                 alt={`Foto de ${expert.name}`}
-                width={600}
-                height={750}
+                width={400}
+                height={500}
                 loading="lazy"
                 decoding="async"
                 className="aspect-[4/5] w-full rounded-[18px] object-cover md:rounded-[24px]"
@@ -49,7 +51,16 @@ export function Expert({ tone }: { tone: Tone }) {
             <h2 id="expert-title" className="t-h2 mt-2">
               {expert.name}
             </h2>
-            <p className="mt-1.5 text-[15px] font-semibold leading-snug text-brand md:text-[16px]">{role}</p>
+            <p className="mt-1.5 text-[15px] font-semibold leading-snug text-brand md:text-[16px]">
+              {expert.role}
+              {/* celular: registro na linha de baixo, inteiro; desktop: "Psicóloga · CRP …" */}
+              {credential && (
+                <span className="block whitespace-nowrap md:inline">
+                  <span className="hidden md:inline"> · </span>
+                  {credential}
+                </span>
+              )}
+            </p>
             <p className="mt-1 text-[14px] leading-snug text-sage-ink md:text-[15px]">{expert.focus}</p>
           </div>
 
