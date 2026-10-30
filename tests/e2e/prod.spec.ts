@@ -116,8 +116,8 @@ test.describe("Build de produção", () => {
     for (const path of ["/", "/mente-em-paz/"]) {
       const html = await (await page.request.get(path)).text();
       // código base no <head> (antes do JS do site) e <noscript> — só sem consentimento obrigatório
-      expect(html.includes("fbq('init','4617173178570579')"), path).toBe(!consent);
-      expect(html.includes("facebook.com/tr?id=4617173178570579"), path).toBe(!consent);
+      expect(html.includes("fbq('init','1701181361725576')"), path).toBe(!consent);
+      expect(html.includes("facebook.com/tr?id=1701181361725576"), path).toBe(!consent);
     }
 
     await page.goto("/mente-em-paz/");
@@ -132,7 +132,7 @@ test.describe("Build de produção", () => {
     await expect(page.locator('script[src*="fbevents"]')).toHaveCount(1);
     await expect.poll(calls).toEqual(expect.arrayContaining(["track ViewContent"]));
     const sent = await calls();
-    expect(sent.filter((c) => c === "init 4617173178570579")).toHaveLength(1);
+    expect(sent.filter((c) => c === "init 1701181361725576")).toHaveLength(1);
     expect(sent.filter((c) => c === "track PageView")).toHaveLength(1);
     expect(hits.some((u) => u.includes("fbevents.js"))).toBe(true);
     await ctx.close();

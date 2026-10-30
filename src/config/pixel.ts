@@ -5,7 +5,7 @@
  */
 
 /** ID do pixel (público — aparece no código de qualquer página com pixel). VITE_META_PIXEL_ID tem prioridade. */
-export const META_PIXEL_ID = "4617173178570579";
+export const META_PIXEL_ID = "1701181361725576";
 
 /**
  * LGPD: true = o pixel só carrega depois de "Aceitar" no aviso de cookies.

@@ -49,7 +49,7 @@ npm run images       # converte images-src/ → public/img/ (WebP 400/800)
 | Material | Como ativar | Sem ele |
 |---|---|---|
 | **Checkouts** | Preencher `checkoutEssencialUrl`, `checkoutCompletoUrl` e `checkoutUpgradeUrl` (https://) | Botão desabilitado ("Checkout em configuração"); em dev, aviso de integração pendente |
-| **Meta Pixel** | ID `4617173178570579` e consentimento em `src/config/pixel.ts` (`VITE_META_PIXEL_ID` tem prioridade). Com `REQUIRE_CONSENT = false` o código base vai no `<head>` de todas as páginas (PageView na entrada, sem aviso de cookies); com `true`, só depois do "Aceitar" | — |
+| **Meta Pixel** | ID `1701181361725576` e consentimento em `src/config/pixel.ts` (`VITE_META_PIXEL_ID` tem prioridade). Com `REQUIRE_CONSENT = false` o código base vai no `<head>` de todas as páginas (PageView na entrada, sem aviso de cookies); com `true`, só depois do "Aceitar" | — |
 | **Vídeo** (no hero, abaixo dos benefícios) | Arquivos em `public/video/` + `media.video.sources` e `poster` | Espaço oculto |
 | **Áudio** | Arquivo em `public/audio/` + `media.audioPreview.src` | Seção de demonstração de áudio oculta |
 | **Depoimentos** (carrossel infinito) | Itens reais e autorizados em `testimonials`: `name`, `daysAsClient`, `avatar`, `print` (print do WhatsApp) e `printAlt`. Imagens em `images-src/depoimentos/` → `npm run images` | Seção oculta |
