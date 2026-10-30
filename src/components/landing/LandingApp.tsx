@@ -51,7 +51,7 @@ export function LandingApp() {
     [true, (t) => <Identification key="ident" tone={t} profile={profile} />],
     [true, (t) => <Product key="product" tone={t} />],
     [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} />],
-    [expertPublished || expertPreview || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com profissão e CRP
+    [expertPublished || expertPreview || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com expert.verified
     [program.nights.length > 0, (t) => <Program key="program" tone={t} />],
     [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],

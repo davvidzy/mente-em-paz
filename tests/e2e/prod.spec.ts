@@ -31,8 +31,8 @@ test.describe("Build de produção", () => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
-    // especialista só com CRP; depoimentos sem conteúdo → ocultos; vídeo fica no hero
-    const expertOn = !/credential:\s*""/.test(SITE);
+    // especialista só com expert.verified; depoimentos sem conteúdo → ocultos; vídeo fica no hero
+    const expertOn = !/verified:\s*false/.test(SITE);
     expect(order).toEqual(["identificacao", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
     // sem vídeo: espaço reservado discreto só com media.video.showPlaceholder
@@ -226,14 +226,12 @@ test.describe("Build de produção", () => {
     await ctx.close();
   });
 
-  test("especialista sem CRP: oculta no site, visível só no link de prévia", async ({ page }) => {
-    test.skip(!/credential:\s*""/.test(SITE), "CRP preenchido: seção publicada");
+  test("especialista virtual: sem profissão nem CRP, aviso discreto no rodapé", async ({ page }) => {
+    test.skip(/verified:\s*false/.test(SITE), "seção da especialista oculta");
     await page.goto("/mente-em-paz/");
-    await expect(page.locator("#especialista")).toHaveCount(0);
-    await page.goto("/mente-em-paz/?previa=especialista");
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
-    await expect(sec).toContainText("Prévia · não publicada");
-    await expect(sec).toContainText("Psicóloga · CRP XX/XXXX");
+    await expect(page.locator("body")).not.toContainText(/Psicóloga|CRP/);
+    await expect(page.locator("footer")).toContainText("Clara Martins é a expert virtual do nosso produto.");
   });
 });

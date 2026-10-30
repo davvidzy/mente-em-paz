@@ -53,7 +53,7 @@ npm run images       # converte images-src/ → public/img/ (WebP 400/800)
 | **Vídeo** (no hero, abaixo dos benefícios) | Arquivos em `public/video/` + `media.video.sources` e `poster` | Espaço oculto |
 | **Áudio** | Arquivo em `public/audio/` + `media.audioPreview.src` | Seção de demonstração de áudio oculta |
 | **Depoimentos** (carrossel infinito) | Itens reais e autorizados em `testimonials`: `name`, `daysAsClient`, `avatar`, `print` (print do WhatsApp) e `printAlt`. Imagens em `images-src/depoimentos/` → `npm run images` | Seção oculta |
-| **Especialista** (abaixo do áudio) | Dados reais em `expert` (`src/config/site.ts`): nome, profissão, registro (CRP, se psicóloga), foto 4:5 e bio. Depois mude `verified: true` | Seção oculta |
+| **Especialista** (abaixo do áudio) | Dados reais em `expert` (`src/config/site.ts`): nome (persona virtual: sem profissão nem registro), foto 4:5, fala e aviso do rodapé. Depois mude `verified: true` | Seção oculta |
 | **Benefícios do hero** | `landing.hero.benefits` em `src/config/landing.ts`. "Acesso vitalício" está desativado até ser confirmado | — |
 | **Preços individuais dos bônus** | Só se cada bônus for vendido separadamente por esse valor: confirme `valueCents` em `bonuses.items` e mude `bonuses.showValues: true` (`src/config/site.ts`) | Seção mostra "5 bônus inclusos sem custo adicional", sem preço riscado |
 | **Domínio** | `VITE_SITE_URL=https://...` | Sem canonical absoluto e sem sitemap.xml |

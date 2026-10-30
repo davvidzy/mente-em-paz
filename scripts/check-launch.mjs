@@ -48,9 +48,7 @@ if (/deadlineDaysAhead:\s*(?!0\b)\d/.test(site))
   warn.push('Prazo dos bônus ativo (bonuses.deadlineDaysAhead) — a data é sempre "hoje + N": encerre a promoção manualmente quando acabar.');
 if (/^\s*showValues:\s*true/m.test(site))
   warn.push("Bônus com valor riscado (bonuses.showValues = true) — só mantenha se os valores individuais forem reais.");
-if (/verified:\s*false/.test(site)) warn.push("Seção da especialista com conteúdo provisório (expert.verified = false) — oculta.");
-else if (/credential:\s*""/.test(site)) warn.push("Especialista sem CRP (expert.credential) — obrigatório para psicóloga; seção oculta até preencher.");
-if (!/verified:\s*false/.test(site) && /photo:\s*""/.test(site)) warn.push("Especialista sem foto (expert.photo) — aparece o espaço reservado.");
+if (/verified:\s*false/.test(site)) warn.push("Seção da especialista com conteúdo provisório (expert.verified = false) — oculta.");if (!/verified:\s*false/.test(site) && /photo:\s*""/.test(site)) warn.push("Especialista sem foto (expert.photo) — aparece o espaço reservado.");
 
 // Legal
 if (legal.includes("[PENDENTE")) block.push("Textos legais com campos [PENDENTE] em src/config/legal.ts.");

@@ -1,5 +1,5 @@
 import { landing } from "../../../config/landing";
-import { brand } from "../../../config/site";
+import { brand, expert, expertPublished } from "../../../config/site";
 import { whatsappUrl } from "../../../lib/contact";
 import { routes } from "../../../lib/routes";
 import { Logo } from "../../ui/Logo";
@@ -41,6 +41,7 @@ export function Footer() {
           </nav>
         </div>
         <p className="mt-10 max-w-[72ch] text-[13.5px] leading-relaxed text-white/60">{landing.footer.disclaimer}</p>
+        {expertPublished && <p className="mt-3 text-[12.5px] text-white/50">{expert.disclosure}</p>}
         {/* o ano vem do pré-render; numa virada de ano o navegador corrige sem aviso */}
         <p className="mt-6 border-t border-white/10 pt-6 text-[13px] text-white/50" suppressHydrationWarning>
           © {year} {brand.name}

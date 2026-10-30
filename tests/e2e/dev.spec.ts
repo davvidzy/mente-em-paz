@@ -241,11 +241,11 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     expect(order.indexOf("especialista")).toBe(order.indexOf("demonstracao") + 1);
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
-    await expect(sec).toContainText("Psicóloga");
+    await expect(sec).not.toContainText(/Psicóloga|CRP/);
     await expect(sec).toContainText("mulheres cuidadoras");
     await expect(sec.locator("blockquote")).toBeVisible();
-    // sem CRP: marcada como prévia (e oculta no site publicado — ver prod.spec)
-    if (/credential:\s*""/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
+    // não aprovada: marcada como prévia (e oculta no site publicado — ver prod.spec)
+    if (/verified:\s*false/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
   });
 
   test("CTA do hero rola até os planos", async ({ page }) => {

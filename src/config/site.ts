@@ -201,18 +201,17 @@ export const media = {
 };
 
 // ── Especialista (quem está por trás do Mente em Paz) ───────────────
-// Psicóloga: o CRP é OBRIGATÓRIO na divulgação (Código de Ética / resoluções do CFP).
-// A seção só aparece no site publicado com `verified: true` E `credential` preenchido;
+// Persona virtual: NÃO atribuir profissão regulamentada (psicóloga etc.), registro (CRP)
+// nem formação — o aviso `disclosure` aparece no rodapé.
+// A seção só aparece no site publicado com `verified: true`;
 // em desenvolvimento aparece sempre (com etiqueta "provisório" enquanto faltar algo).
-// Nunca atribuir formação, números ou resultados não comprovados.
+// Nunca atribuir números ou resultados não comprovados.
 export const expert = {
-  verified: true, // nome e profissão confirmados
+  verified: true, // conteúdo aprovado
   eyebrow: "Quem criou o Mente em Paz",
   name: "Clara Martins",
-  role: "Psicóloga",
-  credential: "CRP 07/43242", // obrigatório para psicóloga (sem ele a seção fica oculta)
-  /** Mostrado no lugar do CRP só na prévia (?previa=especialista) e em desenvolvimento. */
-  credentialPlaceholder: "CRP XX/XXXX",
+  /** Aviso discreto no rodapé da landing. */
+  disclosure: "Clara Martins é a expert virtual do nosso produto.",
   /**
    * Retrato 4:5, sem sufixo: "img/expert/clara-martins" → usa -400.webp e -800.webp.
    * Original (já recortado em 4:5) em images-src/expert/ → `npm run images`. Vazio = espaço reservado.
@@ -224,8 +223,8 @@ export const expert = {
   quote: "Você cuida de todo mundo. Criei o Mente em Paz para que, à noite, alguém cuide de você.",
 };
 
-/** Pode aparecer no site publicado? (profissão confirmada + registro). */
-export const expertPublished = expert.verified && Boolean(expert.credential.trim());
+/** Pode aparecer no site publicado? */
+export const expertPublished = expert.verified;
 
 // ── Depoimentos ──────────────────────────────────────────────────────
 // SOMENTE depoimentos reais, com autorização de nome, foto e print.
