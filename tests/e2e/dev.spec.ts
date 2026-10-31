@@ -245,7 +245,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(sec).not.toContainText(/Psicóloga|CRP/);
     await expect(sec).toContainText("Conheça a voz que apresenta o Mente em Paz");
-    await expect(sec).toContainText("apresentadora virtual");
+    await expect(sec).toContainText("Criei o Mente em Paz");
     // não aprovada: marcada como prévia (e oculta no site publicado — ver prod.spec)
     if (/verified:\s*false/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
   });

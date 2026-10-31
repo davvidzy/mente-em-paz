@@ -219,8 +219,9 @@ export const expert = {
   name: "Clara Martins",
   /** Apresentação transparente (persona virtual + equipe real). Parágrafos curtos. */
   about: [
-    "Clara Martins é a apresentadora virtual do Mente em Paz, criada para comunicar nossa proposta de autocuidado e acompanhar a apresentação dos conteúdos.",
-    "Por trás do Mente em Paz existe uma equipe responsável pela organização dos materiais, pelo acesso e pelo suporte às clientes.",
+    "Criei o Mente em Paz pensando em mulheres que passam o dia cuidando de quem amam, mas encontram dificuldade para cuidar de si mesmas.",
+    "Reuni áudios guiados e práticas simples para ajudar você a desacelerar e encontrar um momento de tranquilidade no fim do dia.",
+    "Porque você também merece esse cuidado.",
   ],
   /** Aviso discreto no rodapé da landing. */
   disclosure: "Clara Martins é a apresentadora virtual do Mente em Paz.",

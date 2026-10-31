@@ -248,8 +248,7 @@ test.describe("Build de produção", () => {
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(page.locator("body")).not.toContainText(/Psicóloga|CRP/);
-    await expect(sec).toContainText("apresentadora virtual do Mente em Paz");
-    await expect(sec).toContainText("Por trás do Mente em Paz existe uma equipe");
+    await expect(sec).toContainText("Porque você também merece esse cuidado.");
     await expect(page.locator("footer")).toContainText("Clara Martins é a apresentadora virtual do Mente em Paz.");
   });
 });
