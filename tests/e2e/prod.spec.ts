@@ -76,10 +76,11 @@ test.describe("Build de produção", () => {
     }
     await expect(page.locator("#planos")).toContainText("39");
     await expect(page.locator("#planos")).toContainText("67");
-    // conteúdo dos planos (Completo primeiro): 8 itens no Completo, 5 no Essencial
+    // conteúdo dos planos (Completo primeiro): "Tudo do Essencial +" e 6 itens no Completo, 4 no Essencial
     const items = page.locator("#planos [data-plan-items]");
-    await expect(items.nth(1).getByRole("listitem")).toHaveCount(5);
-    await expect(items.nth(0).getByRole("listitem")).toHaveCount(8);
+    await expect(items.nth(1).getByRole("listitem")).toHaveCount(4);
+    await expect(items.nth(0).getByRole("listitem")).toHaveCount(6);
+    await expect(items.nth(0)).toContainText("Tudo do Essencial +");
     await expect(page.locator("#planos")).toContainText("Experiência completa");
     await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
     await expect(page.locator("#programa li")).toHaveCount(7);
