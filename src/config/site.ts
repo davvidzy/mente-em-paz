@@ -111,13 +111,14 @@ export const plans: Record<PlanId, Plan> = {
     itemsLead: "Tudo do Essencial +",
     items: [
       "Noites 5, 6 e 7 do programa",
+      "3 áudios para seus pais",
       "SOS Mente Acelerada (5 min)",
       "Quando Acordo no Meio da Noite",
       "Diário do Descarrego Mental",
       "Plano da Noite Organizada",
       "Acesso vitalício a tudo",
     ],
-    itemsSummary: "9 áudios guiados + 4 materiais de apoio",
+    itemsSummary: "12 áudios guiados + 4 materiais de apoio",
     cta: "Quero o Completo",
     featured: true,
     tag: "Recomendado",
@@ -260,7 +261,7 @@ export interface Bonus {
 
 export const bonuses = {
   /**
-   * Mostra "Valor dos 4 bônus: R$ 94,60" riscado → "R$ 0,00" no box final.
+   * Mostra "Valor dos 5 bônus: R$ 134,50" riscado → "R$ 0,00" no box final.
    * Valores = preço real de cada um como order bump no checkout. Se algum deixar
    * de ser vendido por esse valor, use `false` (valor inventado é âncora enganosa — CDC).
    */
@@ -272,6 +273,12 @@ export const bonuses = {
    */
   deadlineDaysAhead: 1,
   items: [
+    {
+      name: "Um Momento de Paz para Seus Pais",
+      description: "3 áudios suaves de relaxamento e tranquilidade para compartilhar com seus pais.",
+      valueCents: 3990,
+      image: "img/bonus/um-momento-de-paz-para-seus-pais",
+    },
     {
       name: "Plano da Noite Organizada",
       description: "Organize pendências e cuidados para encerrar o dia com clareza.",

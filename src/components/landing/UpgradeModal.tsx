@@ -37,7 +37,7 @@ export function UpgradeModal({ open, onClose, onAccept, onDecline }: Props) {
 
         <div className="rounded-(--radius-card) border border-line bg-white px-5 py-4 [@media(max-height:680px)]:px-4 [@media(max-height:680px)]:py-3">
           <p className="text-[13.5px] font-semibold text-sage-deep">{upgrade.extrasLabel}</p>
-          <ul className="mt-2.5 space-y-2 [@media(max-height:680px)]:mt-1.5 [@media(max-height:680px)]:space-y-1">
+          <ul className="mt-2.5 space-y-2 [@media(max-height:680px)]:mt-1.5 [@media(max-height:680px)]:space-y-0.5">
             {extras.map((e) => (
               <li key={e} className="flex items-start gap-2.5 text-[15px] leading-snug [@media(max-height:680px)]:text-[14px]">
                 <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-sage-deep" strokeWidth={2.4} />

@@ -69,8 +69,8 @@ test.describe("Build de produção", () => {
     const items = page.locator("#planos [data-plan-items]");
     await expect(items.nth(1).getByRole("listitem")).toHaveCount(5);
     await expect(items.nth(0)).toContainText("Tudo do Essencial +");
-    await expect(items.nth(0).getByRole("listitem")).toHaveCount(6);
-    await expect(items.nth(0)).toContainText("9 áudios guiados + 4 materiais de apoio");
+    await expect(items.nth(0).getByRole("listitem")).toHaveCount(7);
+    await expect(items.nth(0)).toContainText("12 áudios guiados + 4 materiais de apoio");
     await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
     await expect(page.locator("#programa li")).toHaveCount(7);
     // sem aviso de cookies na tela (pixel na entrada ou recusado no estado padrão dos testes)
@@ -148,7 +148,7 @@ test.describe("Build de produção", () => {
     await expect.poll(() => audio.evaluate((a: HTMLAudioElement) => a.currentTime)).toBeGreaterThan(0);
   });
 
-  test("bônus: 4 cards do Completo, textos curtos no celular, total e prazo", async ({ page }) => {
+  test("bônus: 5 cards do Completo, textos curtos no celular, total e prazo", async ({ page }) => {
     const lines = (sel: string) =>
       page.locator(sel).evaluateAll((els) =>
         els.map((e) => Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight))),
@@ -157,8 +157,8 @@ test.describe("Build de produção", () => {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/mente-em-paz/");
       const sec = page.locator("#bonus");
-      await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(4);
-      await expect(sec.getByText("Incluso no Completo")).toHaveCount(4);
+      await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(5);
+      await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
       expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
       expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
       expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(3);
@@ -169,17 +169,17 @@ test.describe("Build de produção", () => {
     await expect(sec).not.toContainText("estão incluídos no");
     // capas carregadas (também em subpasta, ver teste sem JS)
     const covers = sec.locator("article img");
-    await expect(covers).toHaveCount(4);
+    await expect(covers).toHaveCount(5);
     for (const img of await covers.all()) {
       await img.scrollIntoViewIfNeeded();
       await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     }
     if (/^\s*showValues:\s*true/m.test(SITE)) {
-      await expect(sec.locator("s")).toHaveText("R$ 94,60");
+      await expect(sec.locator("s")).toHaveText("R$ 134,50");
       await expect(sec).toContainText("R$ 0,00");
     } else {
       await expect(sec.locator("s")).toHaveCount(0);
-      await expect(sec).toContainText("4 bônus inclusos sem custo adicional");
+      await expect(sec).toContainText("5 bônus inclusos sem custo adicional");
     }
     const days = Number(SITE.match(/deadlineDaysAhead:\s*(\d+)/)?.[1] ?? 0);
     if (days > 0) {

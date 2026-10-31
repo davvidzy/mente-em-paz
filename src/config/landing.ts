@@ -74,7 +74,7 @@ export const landing = {
     /** Até 2 linhas no celular. */
     title: "E mais {n} bônus para cuidar de você.",
     /** Até 3 linhas no celular. */
-    text: "Recursos extras para acolher preocupações, organizar a mente e ter calma nos dias difíceis.",
+    text: "Recursos extras para acalmar a mente nos dias difíceis e dividir momentos de paz com seus pais.",
     tag: "Incluso no Completo",
     // com bonuses.showValues = true
     totalLabel: "Valor dos {n} bônus:",
