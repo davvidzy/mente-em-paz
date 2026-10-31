@@ -244,8 +244,8 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(sec).not.toContainText(/Psicóloga|CRP/);
-    await expect(sec).toContainText("mulheres cuidadoras");
-    await expect(sec.locator("blockquote")).toBeVisible();
+    await expect(sec).toContainText("Conheça a voz que apresenta o Mente em Paz");
+    await expect(sec).toContainText("apresentadora virtual");
     // não aprovada: marcada como prévia (e oculta no site publicado — ver prod.spec)
     if (/verified:\s*false/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
   });

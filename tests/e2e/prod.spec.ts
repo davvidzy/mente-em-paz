@@ -33,7 +33,7 @@ test.describe("Build de produção", () => {
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
     // especialista só com expert.verified; depoimentos sem conteúdo → ocultos
     const expertOn = !/verified:\s*false/.test(SITE);
-    expect(order).toEqual(["identificacao", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
+    expect(order).toEqual(["identificacao", "diferencial", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
     // mockup do portal entre a descrição e o CTA, já carregado
     const mockup = page.locator("[data-hero] img[data-hero-mockup]");
@@ -72,14 +72,21 @@ test.describe("Build de produção", () => {
     }
     await expect(page.locator("#planos")).toContainText("39");
     await expect(page.locator("#planos")).toContainText("67");
-    // conteúdo dos planos (Completo primeiro): Completo com "Tudo do Essencial +", 6 itens e resumo; 5 itens no Essencial
+    // conteúdo dos planos (Completo primeiro): 8 itens no Completo, 5 no Essencial, cada um com sua frase final
     const items = page.locator("#planos [data-plan-items]");
     await expect(items.nth(1).getByRole("listitem")).toHaveCount(5);
-    await expect(items.nth(0)).toContainText("Tudo do Essencial +");
-    await expect(items.nth(0).getByRole("listitem")).toHaveCount(7);
-    await expect(items.nth(0)).toContainText("12 áudios guiados + 4 materiais de apoio");
+    await expect(items.nth(0).getByRole("listitem")).toHaveCount(8);
+    await expect(items.nth(0).locator("[data-plan-closing]")).toHaveText("O programa completo e recursos extras para quando a rotina pedir mais cuidado.");
+    await expect(items.nth(1).locator("[data-plan-closing]")).toHaveText("Uma forma simples de começar seu momento de descanso.");
+    await expect(page.locator("#planos")).toContainText("Experiência completa");
     await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
     await expect(page.locator("#programa li")).toHaveCount(7);
+    // objeções resolvidas antes dos planos
+    await expect(page.locator("#diferencial li")).toHaveCount(3);
+    await expect(page.locator("#produto [data-routine] > li")).toHaveCount(3);
+    await expect(page.locator("#demonstracao")).toContainText("Trecho real de um dos áudios do Mente em Paz.");
+    await expect(page.locator("#garantia [data-guarantee-notes] li")).toHaveCount(4);
+    await expect(page.locator("main")).not.toContainText("esse é o objetivo");
     // sem aviso de cookies na tela (pixel na entrada ou recusado no estado padrão dos testes)
     await expect(page.getByRole("region", { name: "Aviso de cookies" })).toHaveCount(0);
     expect(errors).toEqual([]);
@@ -169,6 +176,7 @@ test.describe("Build de produção", () => {
       expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
       expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
       expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(3);
+      expect(Math.max(...(await lines("#bonus [data-bonus-benefit]"))), `benefícios @ ${width}px`).toBeLessThanOrEqual(3);
       const overflow = await sec.evaluate((s) => [...s.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth).length);
       expect(overflow, `estouro @ ${width}px`).toBe(0);
     }
@@ -186,7 +194,8 @@ test.describe("Build de produção", () => {
       await expect(sec).toContainText("R$ 0,00");
     } else {
       await expect(sec.locator("s")).toHaveCount(0);
-      await expect(sec).toContainText("5 bônus inclusos sem custo adicional");
+      await expect(sec).toContainText("5 bônus exclusivos");
+      await expect(sec).toContainText("Incluídos no Mente em Paz Completo, sem custo adicional.");
     }
     const days = Number(SITE.match(/deadlineDaysAhead:\s*(\d+)/)?.[1] ?? 0);
     if (days > 0) {
@@ -239,6 +248,8 @@ test.describe("Build de produção", () => {
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(page.locator("body")).not.toContainText(/Psicóloga|CRP/);
-    await expect(page.locator("footer")).toContainText("Clara Martins é a expert virtual do nosso produto.");
+    await expect(sec).toContainText("apresentadora virtual do Mente em Paz");
+    await expect(sec).toContainText("Por trás do Mente em Paz existe uma equipe");
+    await expect(page.locator("footer")).toContainText("Clara Martins é a apresentadora virtual do Mente em Paz.");
   });
 });

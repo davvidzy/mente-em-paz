@@ -1,11 +1,11 @@
-import { Headphones, MoonStar, Repeat } from "lucide-react";
+import { Check, Mail, Play, Repeat } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { ButtonLink } from "../../ui/Button";
 import { jumpTo, Reveal, Section, type Tone } from "../shared";
 
-const stepIcons = [MoonStar, Headphones, Repeat];
+const stepIcons = [Mail, Play, Repeat];
 
-/** "Como funciona?" — título, 3 passos e CTA. */
+/** "Como funciona?" — título, 3 passos, dúvidas rápidas da rotina e CTA. */
 export function Product({ tone }: { tone: Tone }) {
   const c = landing.product;
   return (
@@ -33,6 +33,21 @@ export function Product({ tone }: { tone: Tone }) {
             );
           })}
         </ol>
+
+        {/* Dúvidas rápidas: respondidas aqui, antes dos planos (o FAQ detalha) */}
+        <Reveal className="mt-10 rounded-[20px] border border-line bg-white/60 p-6 md:mt-12 md:p-8">
+          <h3 className="font-serif text-[21px] font-semibold leading-snug text-brand md:text-[24px]">{c.routine.title}</h3>
+          <ul className="mt-5 grid gap-3 md:grid-cols-3 md:gap-6" data-routine>
+            {c.routine.items.map((item) => (
+              <li key={item} className="flex items-start gap-3 text-[16px] leading-snug">
+                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-sage/40 text-brand">
+                  <Check aria-hidden className="size-3" strokeWidth={3} />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
 
         <Reveal className="mt-9 flex justify-center md:mt-12">
           <ButtonLink href="#planos" arrow size="lg" onClick={jumpTo("planos")} className="w-full sm:w-auto">

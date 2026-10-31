@@ -4,9 +4,9 @@ import { routes } from "../../../lib/routes";
 import { Reveal, Section, type Tone } from "../shared";
 
 /**
- * Quem está por trás do Mente em Paz: foto, nome, área de atuação e uma fala curta.
- * Tom: tranquilo, seguro e objetivo. Persona virtual — o aviso fica no rodapé.
- * Mobile: foto compacta ao lado do nome; fala abaixo. Desktop: foto grande à esquerda.
+ * Quem apresenta o Mente em Paz: foto, nome e uma apresentação curta e transparente
+ * (persona virtual + equipe real por trás). Sem profissão, registro ou formação.
+ * Mobile: foto compacta ao lado do nome; texto abaixo. Desktop: foto grande à esquerda.
  * Visível em produção somente com `expertPublished` (ver LandingApp e site.ts).
  */
 export function Expert({ tone }: { tone: Tone }) {
@@ -48,13 +48,12 @@ export function Expert({ tone }: { tone: Tone }) {
             <h2 id="expert-title" className="t-h2 mt-2">
               {expert.name}
             </h2>
-            <p className="mt-1.5 text-[14px] leading-snug text-sage-ink md:text-[15px]">{expert.focus}</p>
           </div>
 
-          <div className="[grid-area:body] md:self-start">
-            <blockquote className="border-l-2 border-accent pl-5">
-              <p className="font-serif text-[21px] italic leading-snug text-brand md:text-[24px]">“{expert.quote}”</p>
-            </blockquote>
+          <div className="space-y-3.5 text-[16px] leading-relaxed text-brand [grid-area:body] md:self-start md:text-[17px]">
+            {expert.about.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
           </div>
         </Reveal>
       </div>

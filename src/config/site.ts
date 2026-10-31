@@ -75,8 +75,8 @@ export interface Plan {
   /** Linha em destaque acima da lista (ex.: "Tudo do Essencial +"). */
   itemsLead?: string;
   items: string[];
-  /** Resumo em destaque abaixo da lista (ex.: "10 áudios + 3 ferramentas práticas"). */
-  itemsSummary?: string;
+  /** Frase curta abaixo da lista: a diferença prática do plano, não quantidade. */
+  closing?: string;
   cta: string;
   featured: boolean;
   /** Rótulo discreto (sem apelo falso de popularidade). */
@@ -88,16 +88,17 @@ export const plans: Record<PlanId, Plan> = {
     id: "essencial",
     name: "Mente em Paz Essencial",
     shortName: "Essencial",
-    description: "Para dar o primeiro passo.",
+    description: "O primeiro passo para começar a desacelerar à noite.",
     priceCents: 3990,
     installmentsNote: "até 10x de R$ 5,36",
     items: [
-      "4 áudios guiados (noites 1 a 4 do programa)",
+      "As 4 primeiras noites guiadas",
       "Guia para relaxar antes de dormir",
-      "Caderno de reflexão com perguntas guiadas",
-      "Acesso pelo celular, no portal",
+      "Caderno de reflexão",
+      "Acesso ao portal pelo celular",
       "Acesso vitalício",
     ],
+    closing: "Uma forma simples de começar seu momento de descanso.",
     cta: "Quero o Essencial",
     featured: false,
   },
@@ -105,23 +106,23 @@ export const plans: Record<PlanId, Plan> = {
     id: "completo",
     name: "Mente em Paz Completo",
     shortName: "Completo",
-    description: "Mais apoio para a sua rotina.",
+    description: "Mais recursos para cuidar de você em diferentes momentos da noite.",
     priceCents: 6790,
     installmentsNote: "até 12x de R$ 8,06",
-    itemsLead: "Tudo do Essencial +",
     items: [
-      "Noites 5, 6 e 7 do programa",
-      "3 áudios para seus pais",
-      "SOS Mente Acelerada (5 min)",
-      "Quando Acordo no Meio da Noite",
+      "As 7 noites guiadas do programa",
+      "3 áudios suaves para compartilhar com seus pais",
+      "SOS Mente Acelerada de 5 minutos",
+      "Áudio para quando acordar de madrugada",
       "Diário do Descarrego Mental",
       "Plano da Noite Organizada",
-      "Acesso vitalício a tudo",
+      "Todos os materiais do Essencial",
+      "Acesso vitalício",
     ],
-    itemsSummary: "12 áudios guiados + 4 materiais de apoio",
+    closing: "O programa completo e recursos extras para quando a rotina pedir mais cuidado.",
     cta: "Quero o Completo",
     featured: true,
-    tag: "Recomendado",
+    tag: "Experiência completa",
   },
 };
 
@@ -160,6 +161,15 @@ export const upgrade = {
   title: "Por apenas {diferenca} a mais, leve o Completo.",
   /** Acima da lista do que o Completo acrescenta. */
   extrasLabel: "Você ganha também:",
+  /** O que o Completo acrescenta ao Essencial (curto: o popup não pode rolar no celular). */
+  extras: [
+    "Noites 5, 6 e 7 do programa",
+    "3 áudios para seus pais",
+    "SOS Mente Acelerada (5 min)",
+    "Quando Acordo no Meio da Noite",
+    "Diário do Descarrego Mental",
+    "Plano da Noite Organizada",
+  ],
   /** Uma linha no celular (≤ 20 caracteres). {por} disponível. O "De … por …" é calculado. */
   acceptCta: "Quero o Completo",
   declineCta: "Prefiro continuar com o Essencial",
@@ -168,9 +178,17 @@ export const upgrade = {
 // ── Garantia ─────────────────────────────────────────────────────────
 export const guarantee = {
   days: 7,
-  title: "Seu primeiro passo, com tranquilidade.",
   /** {dias} é substituído por `days`. */
-  text: "Experimente por {dias} dias. Se não for para você, peça o reembolso pelo link que chega no e-mail de confirmação da compra.",
+  title: "Experimente por {dias} dias, com tranquilidade.",
+  /** Procedimento real: reembolso pela plataforma de checkout, via e-mail de confirmação. */
+  text: "Acesse os áudios, conheça o Mente em Paz e experimente no seu ritmo. Se decidir que não é para você, peça o reembolso em até {dias} dias pelo link que chega no e-mail de confirmação da compra.",
+  /** Informações de apoio (só condições reais). */
+  notes: [
+    "Pagamento único, sem mensalidade",
+    "Acesso digital enviado após a confirmação do pagamento",
+    "Acesso vitalício",
+    "Suporte para dúvidas sobre o acesso",
+  ],
 };
 
 // ── Mídia ────────────────────────────────────────────────────────────
@@ -197,46 +215,59 @@ export const media = {
 // Nunca atribuir números ou resultados não comprovados.
 export const expert = {
   verified: true, // conteúdo aprovado
-  eyebrow: "Quem criou o Mente em Paz",
+  eyebrow: "Conheça a voz que apresenta o Mente em Paz",
   name: "Clara Martins",
+  /** Apresentação transparente (persona virtual + equipe real). Parágrafos curtos. */
+  about: [
+    "Clara Martins é a apresentadora virtual do Mente em Paz, criada para comunicar nossa proposta de autocuidado e acompanhar a apresentação dos conteúdos.",
+    "Por trás do Mente em Paz existe uma equipe responsável pela organização dos materiais, pelo acesso e pelo suporte às clientes.",
+  ],
   /** Aviso discreto no rodapé da landing. */
-  disclosure: "Clara Martins é a expert virtual do nosso produto.",
+  disclosure: "Clara Martins é a apresentadora virtual do Mente em Paz.",
   /**
    * Retrato 4:5, sem sufixo: "img/expert/clara-martins" → usa -400.webp e -800.webp.
    * Original (já recortado em 4:5) em images-src/expert/ → `npm run images`. Vazio = espaço reservado.
    */
   photo: "img/expert/clara-martins",
-  /** Área de atuação, logo abaixo do nome. */
-  focus: "Bem-estar emocional, autocuidado e descanso de mulheres cuidadoras",
-  /** Fala em primeira pessoa (validar o texto com ela). Curta: até ~3 linhas no celular. */
-  quote: "Você cuida de todo mundo. Criei o Mente em Paz para que, à noite, alguém cuide de você.",
 };
 
 /** Pode aparecer no site publicado? */
 export const expertPublished = expert.verified;
 
 // ── Depoimentos ──────────────────────────────────────────────────────
-// SOMENTE depoimentos reais, com autorização de nome, foto e print.
-// Lista vazia → seção oculta em produção.
+// SOMENTE depoimentos reais, com autorização registrada de nome, foto, vídeo e texto.
+// Sem `consent: true` o depoimento não aparece. Lista vazia → seção oculta em produção.
+// Nada de fotos de banco de imagens, estrelas ou notas inventadas.
 // Imagens: coloque os originais em images-src/depoimentos/ e rode `npm run images`.
 export interface Testimonial {
   name: string;
+  /** A cliente autorizou a publicação (guarde o registro da autorização). */
+  consent: boolean;
   /** Dias como cliente → "Cliente há X dias". Omitir se não souber. */
   daysAsClient?: number;
-  /** Foto/avatar (ex.: "img/depoimentos/maria-avatar-400.webp"). Opcional. */
+  /** Foto/avatar da própria cliente (ex.: "img/depoimentos/maria-avatar-400.webp"). Opcional. */
   avatar?: string;
-  /** Print da conversa do WhatsApp (conteúdo intacto). */
-  print: string;
-  /** Descrição do print para leitores de tela (o texto do depoimento). */
-  printAlt: string;
+  /** Depoimento em texto, com as palavras dela. Use este, `print` ou `video`. */
+  text?: string;
+  /** Print da conversa do WhatsApp (conteúdo intacto) + descrição para leitores de tela. */
+  print?: string;
+  printAlt?: string;
+  /** Vídeo curto (ex.: "video/depoimento-maria.mp4") e capa opcional. */
+  video?: string;
+  videoPoster?: string;
 }
 
 export const testimonials: Testimonial[] = [];
 
+/** Só depoimentos com autorização registrada e algum conteúdo (texto, print ou vídeo). */
+export const publishedTestimonials = testimonials.filter((t) => t.consent && Boolean(t.text || t.print || t.video));
+
 // ── Bônus (exclusivos do Plano Completo) ────────────────────────────
 export interface Bonus {
   name: string;
-  /** Curta: até 3 linhas no celular (≈ 70 caracteres). */
+  /** Em destaque: a situação em que o bônus ajuda. Até 2–3 linhas no celular. */
+  benefit: string;
+  /** O que é, em texto menor. Até 3 linhas no celular (≈ 80 caracteres). */
   description: string;
   /** Soma exibida riscada no box final (com `showValues: true`). */
   valueCents: number;
@@ -263,31 +294,36 @@ export const bonuses = {
   items: [
     {
       name: "Um Momento de Paz para Seus Pais",
+      benefit: "Um cuidado que você também pode oferecer a quem ama.",
       description: "3 áudios suaves de relaxamento e tranquilidade para compartilhar com seus pais.",
       valueCents: 3990,
       image: "img/bonus/um-momento-de-paz-para-seus-pais",
     },
     {
       name: "Plano da Noite Organizada",
-      description: "Organize pendências e cuidados para encerrar o dia com clareza.",
+      benefit: "Organize o que precisa de atenção antes de encerrar o dia.",
+      description: "Checklist preenchível para pendências, contatos e combinados de cuidado.",
       valueCents: 2490,
       image: "img/bonus/plano-da-noite-organizada",
     },
     {
       name: "SOS Mente Acelerada",
-      description: "Pausa guiada de 5 minutos para quando a mente não para.",
+      benefit: "Uma pausa curta para quando os pensamentos não param.",
+      description: "Áudio guiado de 5 minutos.",
       valueCents: 1990,
       image: "img/bonus/sos-mente-acelerada",
     },
     {
       name: "Diário do Descarrego Mental",
-      description: "Registre as preocupações e tire as pendências da cabeça.",
+      benefit: "Coloque os pensamentos no papel em vez de repassar tudo mentalmente.",
+      description: "Caderno digital preenchível para registrar preocupações e pendências.",
       valueCents: 2490,
       image: "img/bonus/diario-do-descarrego-mental",
     },
     {
       name: "Quando Acordo no Meio da Noite",
-      description: "Áudio acolhedor para quando você desperta inquieta de madrugada.",
+      benefit: "Um acompanhamento tranquilo para quando a noite é interrompida.",
+      description: "Áudio de relaxamento para despertares noturnos.",
       valueCents: 2490,
       image: "img/bonus/quando-acordo-no-meio-da-noite",
     },
@@ -312,11 +348,11 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "E se eu dormir no meio do áudio?",
-    a: "Ótimo, esse é o objetivo. Os áudios foram feitos para acompanhar você até o descanso. Na noite seguinte, continue de onde parou ou ouça de novo.",
+    a: "Tudo bem. Os áudios foram feitos para acompanhar você até o descanso. Na noite seguinte, continue de onde parou ou ouça de novo.",
   },
   {
     q: "Qual plano escolher?",
-    a: "Se você quer começar pelo básico, o Essencial traz as 4 primeiras noites. Se costuma acordar de madrugada ou ter noites em que a mente dispara, o Completo traz as 7 noites e os áudios SOS para esses momentos.",
+    a: "Se você quer começar pelo básico, o Essencial traz as 4 primeiras noites. Se costuma acordar de madrugada ou ter noites em que a mente dispara, o Completo traz as 7 noites, o SOS Mente Acelerada, o áudio para quando acordar de madrugada e os 3 áudios para compartilhar com seus pais.",
   },
   {
     q: "Como recebo o acesso?",

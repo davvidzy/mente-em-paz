@@ -22,7 +22,7 @@ export function UpgradeModal({ open, onClose, onAccept, onDecline }: Props) {
     de: formatBRL(plans.completo.priceCents),
     por: formatBRL(upgrade.priceCents),
   };
-  const extras = plans.completo.items.filter((i) => !/^tudo do|^acesso vital/i.test(i));
+  const extras = upgrade.extras;
 
   return (
     <Modal open={open} onClose={onClose} labelledBy="upgrade-title" describedBy="upgrade-price" tall>

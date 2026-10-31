@@ -12,9 +12,10 @@ export function AudioDemo({ tone }: { tone: Tone }) {
     <Section id="demonstracao" tone={tone} labelledBy="demo-title">
       <div className="container-page">
         <Reveal className="mx-auto max-w-[560px] text-center">
-          <h2 id="demo-title" className="t-h2 mx-auto max-w-[18ch]">
+          <h2 id="demo-title" className="t-h2 mx-auto max-w-[22ch]">
             {c.title}
           </h2>
+          <p className="t-muted mx-auto mt-5 max-w-[46ch] text-[16.5px] leading-relaxed md:text-[17px]">{c.text}</p>
           <div className="mt-8 text-left">
             {audio.src ? (
               <AudioPlayer src={routes.asset(audio.src)} title={audio.title} />
@@ -26,6 +27,7 @@ export function AudioDemo({ tone }: { tone: Tone }) {
               />
             )}
           </div>
+          {audio.src && <p className="mt-3.5 text-[14px] text-sage-ink">{c.caption}</p>}
         </Reveal>
       </div>
     </Section>

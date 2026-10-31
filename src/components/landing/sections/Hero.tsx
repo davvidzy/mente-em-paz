@@ -1,4 +1,4 @@
-import { BadgeCheck, Clock, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, type LucideIcon } from "lucide-react";
+import { BadgeCheck, BedDouble, Clock, Feather, Infinity as InfinityIcon, ShieldCheck, type LucideIcon } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { guarantee, media } from "../../../config/site";
 import { fill } from "../../../lib/format";
@@ -9,8 +9,8 @@ import { jumpTo } from "../shared";
 
 const benefitIcons: Record<(typeof landing.hero.benefits)[number]["icon"], LucideIcon> = {
   guarantee: ShieldCheck,
-  repeat: Repeat,
-  digital: MonitorSmartphone,
+  lying: BedDouble,
+  easy: Feather,
   lifetime: InfinityIcon,
   once: BadgeCheck,
   duration: Clock,

@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import type { ProfileId } from "../../config/quiz";
-import { bonuses, expertPublished, media, program, testimonials } from "../../config/site";
+import { bonuses, expertPublished, media, program, publishedTestimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
 import { ConsentBanner } from "../ui/ConsentBanner";
@@ -8,6 +8,7 @@ import type { Tone } from "./shared";
 import { Header } from "./sections/Header";
 import { Hero } from "./sections/Hero";
 import { Identification } from "./sections/Identification";
+import { Difference } from "./sections/Difference";
 import { Product } from "./sections/Product";
 import { AudioDemo } from "./sections/AudioDemo";
 import { Program } from "./sections/Program";
@@ -44,11 +45,12 @@ export function LandingApp() {
   }, []);
 
   const hasAudio = Boolean(media.audioPreview.src);
-  const hasTestimonials = testimonials.length > 0;
+  const hasTestimonials = publishedTestimonials.length > 0;
 
   // [visível, render(tone)]
   const sections: [boolean, (tone: Tone) => ReactElement][] = [
     [true, (t) => <Identification key="ident" tone={t} profile={profile} />],
+    [true, (t) => <Difference key="difference" tone={t} />],
     [true, (t) => <Product key="product" tone={t} />],
     [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} />],
     [expertPublished || expertPreview || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com expert.verified
