@@ -72,19 +72,16 @@ test.describe("Build de produção", () => {
     }
     await expect(page.locator("#planos")).toContainText("39");
     await expect(page.locator("#planos")).toContainText("67");
-    // conteúdo dos planos (Completo primeiro): 8 itens no Completo, 5 no Essencial, cada um com sua frase final
+    // conteúdo dos planos (Completo primeiro): 8 itens no Completo, 5 no Essencial
     const items = page.locator("#planos [data-plan-items]");
     await expect(items.nth(1).getByRole("listitem")).toHaveCount(5);
     await expect(items.nth(0).getByRole("listitem")).toHaveCount(8);
-    await expect(items.nth(0).locator("[data-plan-closing]")).toHaveText("O programa completo e recursos extras para quando a rotina pedir mais cuidado.");
-    await expect(items.nth(1).locator("[data-plan-closing]")).toHaveText("Uma forma simples de começar seu momento de descanso.");
     await expect(page.locator("#planos")).toContainText("Experiência completa");
     await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
     await expect(page.locator("#programa li")).toHaveCount(7);
     // objeções resolvidas antes dos planos
     await expect(page.locator("#diferencial li")).toHaveCount(3);
-    await expect(page.locator("#produto [data-routine] > li")).toHaveCount(3);
-    await expect(page.locator("#demonstracao")).toContainText("Trecho real de um dos áudios do Mente em Paz.");
+    await expect(page.locator("#demonstracao")).toContainText("Experimente um trecho real do Mente em Paz.");
     await expect(page.locator("#garantia [data-guarantee-notes] li")).toHaveCount(4);
     await expect(page.locator("main")).not.toContainText("esse é o objetivo");
     // sem aviso de cookies na tela (pixel na entrada ou recusado no estado padrão dos testes)
@@ -175,8 +172,7 @@ test.describe("Build de produção", () => {
       await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
       expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
       expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
-      expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(3);
-      expect(Math.max(...(await lines("#bonus [data-bonus-benefit]"))), `benefícios @ ${width}px`).toBeLessThanOrEqual(3);
+      expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(2);
       const overflow = await sec.evaluate((s) => [...s.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth).length);
       expect(overflow, `estouro @ ${width}px`).toBe(0);
     }
@@ -242,13 +238,32 @@ test.describe("Build de produção", () => {
     await ctx.close();
   });
 
+  test("copy mobile em 390px: títulos em até 2 linhas e descrições em até 2 linhas", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/mente-em-paz/");
+    const lines = (sel: string) =>
+      page.locator(sel).evaluateAll((els) =>
+        els.map((e) => [e.textContent?.trim().slice(0, 40), Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight))] as const),
+      );
+    const check = async (sel: string, max: number) => {
+      for (const [text, n] of await lines(sel)) expect(n, `"${text}" (${sel})`).toBeLessThanOrEqual(max);
+    };
+    await check("#hero-title", 4);
+    await check("#hero-title + p", 3);
+    await check("main section[data-section] h2:not(#diferencial-title)", 2);
+    await check("#diferencial-title + p, #bonus-title + p, #demo-title + p, #programa h2 + p", 2);
+    await check("#identificacao p, #garantia h2 + p, #especialista [data-expert-disclosure]", 2);
+    await check("#produto li p, #diferencial li span:last-child, #bonus [data-bonus-desc]", 2);
+    await check("#planos h3 + p", 2);
+  });
+
   test("especialista virtual: sem profissão nem CRP, aviso discreto no rodapé", async ({ page }) => {
     test.skip(/verified:\s*false/.test(SITE), "seção da especialista oculta");
     await page.goto("/mente-em-paz/");
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(page.locator("body")).not.toContainText(/Psicóloga|CRP/);
-    await expect(sec).toContainText("Porque você também merece esse cuidado.");
+    await expect(sec.locator("[data-expert-disclosure]")).toHaveText("Clara Martins é a apresentadora virtual do Mente em Paz.");
     await expect(page.locator("footer")).toContainText("Clara Martins é a apresentadora virtual do Mente em Paz.");
   });
 });

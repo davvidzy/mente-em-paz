@@ -59,7 +59,7 @@ export function Bonus({ tone }: { tone: Tone }) {
 }
 
 /**
- * Mobile: capa à esquerda do título; benefício e descrição na largura toda, abaixo (≤ 3 linhas cada).
+ * Mobile: capa à esquerda do título; descrição (uma frase) na largura toda, abaixo (≤ 2 linhas).
  * ≥ 640px: capa ocupa as duas linhas à esquerda.
  */
 function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; tag: string }) {
@@ -95,15 +95,9 @@ function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; t
         </p>
         <h3 className="mt-2 font-serif text-[19px] font-semibold leading-snug text-brand sm:text-[20px]">{bonus.name}</h3>
       </div>
-      {/* benefício (a situação em que ajuda) em destaque; o que é, em texto menor */}
-      <div className="[grid-area:desc] sm:self-start">
-        <p className="text-[15.5px] font-semibold leading-snug text-brand" data-bonus-benefit>
-          {bonus.benefit}
-        </p>
-        <p className="mt-1 text-[14px] leading-normal text-sage-ink" data-bonus-desc>
-          {bonus.description}
-        </p>
-      </div>
+      <p className="text-[15px] leading-normal text-brand/85 [grid-area:desc] sm:self-start" data-bonus-desc>
+        {bonus.description}
+      </p>
     </article>
   );
 }

@@ -27,7 +27,6 @@ export function AudioDemo({ tone }: { tone: Tone }) {
               />
             )}
           </div>
-          {audio.src && <p className="mt-3.5 text-[14px] text-sage-ink">{c.caption}</p>}
         </Reveal>
       </div>
     </Section>

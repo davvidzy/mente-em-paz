@@ -79,7 +79,7 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
   return (
     <Section id="planos" tone={tone} labelledBy="planos-title">
       <div ref={sectionRef} className="container-page">
-        <SectionHead id="planos-title" title={c.title} text={c.text} center />
+        <SectionHead id="planos-title" title={c.title} center />
 
         <div className="mx-auto mt-12 grid max-w-[920px] gap-5 md:mt-14 md:grid-cols-2 md:items-stretch md:gap-6">
           {/* Completo primeiro: em cima no celular, à esquerda no desktop */}
@@ -125,7 +125,7 @@ function PlanCard({ plan, href, onChoose, enabled }: { plan: Plan; href: string 
           {plan.tag}
         </p>
       )}
-      <h3 className="t-h3">{plan.name}</h3>
+      <h3 className="t-h3" aria-label={plan.name}>{plan.shortName}</h3>
       <p className="t-muted mt-1.5 text-[16px]">{plan.description}</p>
 
       <p className="mt-6 flex items-baseline gap-1 font-serif text-brand">

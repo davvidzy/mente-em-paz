@@ -9,7 +9,7 @@ const icons: Record<(typeof landing.difference.items)[number]["icon"], LucideIco
 };
 
 /**
- * Por que não ouvir áudios aleatórios: título, texto curto, 3 diferenciais e uma frase final.
+ * Por que não ouvir áudios aleatórios: título, texto curto e 3 diferenciais.
  * Compacto de propósito — lista simples com ícones lineares, sem cards grandes.
  */
 export function Difference({ tone }: { tone: Tone }) {
@@ -36,8 +36,6 @@ export function Difference({ tone }: { tone: Tone }) {
               );
             })}
           </ul>
-
-          <p className="mt-7 font-serif text-[19px] italic leading-snug text-brand md:text-[21px]">{c.closing}</p>
         </Reveal>
       </div>
     </Section>

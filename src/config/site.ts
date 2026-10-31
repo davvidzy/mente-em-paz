@@ -88,17 +88,10 @@ export const plans: Record<PlanId, Plan> = {
     id: "essencial",
     name: "Mente em Paz Essencial",
     shortName: "Essencial",
-    description: "O primeiro passo para começar a desacelerar à noite.",
+    description: "Comece com as 4 primeiras noites guiadas.",
     priceCents: 3990,
     installmentsNote: "até 10x de R$ 5,36",
-    items: [
-      "As 4 primeiras noites guiadas",
-      "Guia para relaxar antes de dormir",
-      "Caderno de reflexão",
-      "Acesso ao portal pelo celular",
-      "Acesso vitalício",
-    ],
-    closing: "Uma forma simples de começar seu momento de descanso.",
+    items: ["4 áudios guiados", "Guia para relaxar", "Caderno de reflexão", "Portal no celular", "Acesso vitalício"],
     cta: "Quero o Essencial",
     featured: false,
   },
@@ -106,20 +99,19 @@ export const plans: Record<PlanId, Plan> = {
     id: "completo",
     name: "Mente em Paz Completo",
     shortName: "Completo",
-    description: "Mais recursos para cuidar de você em diferentes momentos da noite.",
+    description: "7 noites e 5 bônus para cuidar de você.",
     priceCents: 6790,
     installmentsNote: "até 12x de R$ 8,06",
     items: [
-      "As 7 noites guiadas do programa",
-      "3 áudios suaves para compartilhar com seus pais",
-      "SOS Mente Acelerada de 5 minutos",
-      "Áudio para quando acordar de madrugada",
+      "Tudo do Essencial",
+      "Noites 5, 6 e 7",
+      "3 áudios para seus pais",
+      "SOS Mente Acelerada — 5 min",
+      "Áudio para despertares noturnos",
       "Diário do Descarrego Mental",
       "Plano da Noite Organizada",
-      "Todos os materiais do Essencial",
       "Acesso vitalício",
     ],
-    closing: "O programa completo e recursos extras para quando a rotina pedir mais cuidado.",
     cta: "Quero o Completo",
     featured: true,
     tag: "Experiência completa",
@@ -179,9 +171,9 @@ export const upgrade = {
 export const guarantee = {
   days: 7,
   /** {dias} é substituído por `days`. */
-  title: "Experimente por {dias} dias, com tranquilidade.",
+  title: "{dias} dias para experimentar.",
   /** Procedimento real: reembolso pela plataforma de checkout, via e-mail de confirmação. */
-  text: "Acesse os áudios, conheça o Mente em Paz e experimente no seu ritmo. Se decidir que não é para você, peça o reembolso em até {dias} dias pelo link que chega no e-mail de confirmação da compra.",
+  text: "Não era o que esperava? Peça o reembolso em até {dias} dias pelo link enviado por e-mail.",
   /** Informações de apoio (só condições reais). */
   notes: [
     "Pagamento único, sem mensalidade",
@@ -215,15 +207,11 @@ export const media = {
 // Nunca atribuir números ou resultados não comprovados.
 export const expert = {
   verified: true, // conteúdo aprovado
-  eyebrow: "Conheça a voz que apresenta o Mente em Paz",
+  eyebrow: "Conheça a apresentadora",
   name: "Clara Martins",
-  /** Apresentação transparente (persona virtual + equipe real). Parágrafos curtos. */
-  about: [
-    "Criei o Mente em Paz pensando em mulheres que passam o dia cuidando de quem amam, mas encontram dificuldade para cuidar de si mesmas.",
-    "Reuni áudios guiados e práticas simples para ajudar você a desacelerar e encontrar um momento de tranquilidade no fim do dia.",
-    "Porque você também merece esse cuidado.",
-  ],
-  /** Aviso discreto no rodapé da landing. */
+  /** Apresentação curta (sem autoria humana, formação ou vivências inventadas). */
+  about: ["Uma voz de acolhimento para acompanhar seus momentos de descanso."],
+  /** Transparência: aparece na própria seção e, discreto, no rodapé. */
   disclosure: "Clara Martins é a apresentadora virtual do Mente em Paz.",
   /**
    * Retrato 4:5, sem sufixo: "img/expert/clara-martins" → usa -400.webp e -800.webp.
@@ -266,9 +254,7 @@ export const publishedTestimonials = testimonials.filter((t) => t.consent && Boo
 // ── Bônus (exclusivos do Plano Completo) ────────────────────────────
 export interface Bonus {
   name: string;
-  /** Em destaque: a situação em que o bônus ajuda. Até 2–3 linhas no celular. */
-  benefit: string;
-  /** O que é, em texto menor. Até 3 linhas no celular (≈ 80 caracteres). */
+  /** Uma frase só: até 2 linhas no celular (≈ 55 caracteres). */
   description: string;
   /** Soma exibida riscada no box final (com `showValues: true`). */
   valueCents: number;
@@ -295,36 +281,31 @@ export const bonuses = {
   items: [
     {
       name: "Um Momento de Paz para Seus Pais",
-      benefit: "Um cuidado que você também pode oferecer a quem ama.",
-      description: "3 áudios suaves de relaxamento e tranquilidade para compartilhar com seus pais.",
+      description: "3 áudios suaves para compartilhar com seus pais.",
       valueCents: 3990,
       image: "img/bonus/um-momento-de-paz-para-seus-pais",
     },
     {
       name: "Plano da Noite Organizada",
-      benefit: "Organize o que precisa de atenção antes de encerrar o dia.",
-      description: "Checklist preenchível para pendências, contatos e combinados de cuidado.",
+      description: "Organize cuidados e pendências antes de descansar.",
       valueCents: 2490,
       image: "img/bonus/plano-da-noite-organizada",
     },
     {
       name: "SOS Mente Acelerada",
-      benefit: "Uma pausa curta para quando os pensamentos não param.",
-      description: "Áudio guiado de 5 minutos.",
+      description: "5 minutos guiados para desacelerar os pensamentos.",
       valueCents: 1990,
       image: "img/bonus/sos-mente-acelerada",
     },
     {
       name: "Diário do Descarrego Mental",
-      benefit: "Coloque os pensamentos no papel em vez de repassar tudo mentalmente.",
-      description: "Caderno digital preenchível para registrar preocupações e pendências.",
+      description: "Registre preocupações e organize sua mente.",
       valueCents: 2490,
       image: "img/bonus/diario-do-descarrego-mental",
     },
     {
       name: "Quando Acordo no Meio da Noite",
-      benefit: "Um acompanhamento tranquilo para quando a noite é interrompida.",
-      description: "Áudio de relaxamento para despertares noturnos.",
+      description: "Um áudio tranquilo para despertares noturnos.",
       valueCents: 2490,
       image: "img/bonus/quando-acordo-no-meio-da-noite",
     },
@@ -332,56 +313,56 @@ export const bonuses = {
 };
 
 // ── FAQ ──────────────────────────────────────────────────────────────
-// Ordem: ceticismo e medos primeiro, logística no meio, segurança no fim.
+// Ordem: ceticismo e medos primeiro, logística no meio, segurança no fim. Respostas curtas (1–2 frases).
 // {whatsapp} vira um link para o WhatsApp de suporte (brand.whatsapp).
 export const faq: { q: string; a: string }[] = [
   {
-    q: "Já tentei meditar e não funcionou. Isso é diferente?",
-    a: "É. Você não precisa saber meditar nem esvaziar a mente. São relaxamentos guiados por voz: é só deitar, ouvir e seguir. Se os pensamentos vierem, tudo bem, a voz te ajuda a voltar para o descanso.",
+    q: "Preciso saber meditar?",
+    a: "Não. Basta deitar, ouvir e acompanhar a voz guiada, no seu ritmo.",
   },
   {
-    q: "Tenho pouco tempo. Quanto dura cada áudio?",
-    a: "Os áudios do programa têm de 10 a 17 minutos, e você ouve já deitada, na hora de dormir: não precisa encontrar tempo extra no seu dia. O SOS Mente Acelerada tem 5 minutos, para quando você precisa de uma pausa rápida.",
+    q: "Quanto dura cada áudio?",
+    a: "De 10 a 17 minutos. Você pode ouvir já deitada. O SOS tem 5 minutos.",
   },
   {
-    q: "E se precisarem de mim no meio do áudio?",
-    a: "Pause e vá. O portal guarda o ponto em que você parou, e você continua quando voltar. O Mente em Paz foi feito para caber na rotina de quem cuida, não para competir com ela.",
+    q: "E se meus pais precisarem de mim?",
+    a: "Basta pausar e continuar depois. O momento de descanso se adapta à sua rotina.",
   },
   {
-    q: "E se eu dormir no meio do áudio?",
-    a: "Tudo bem. Os áudios foram feitos para acompanhar você até o descanso. Na noite seguinte, continue de onde parou ou ouça de novo.",
+    q: "E se eu dormir durante o áudio?",
+    a: "Tudo bem. Você pode ouvir novamente ou seguir para o próximo quando quiser.",
   },
   {
     q: "Qual plano escolher?",
-    a: "Se você quer começar pelo básico, o Essencial traz as 4 primeiras noites. Se costuma acordar de madrugada ou ter noites em que a mente dispara, o Completo traz as 7 noites, o SOS Mente Acelerada, o áudio para quando acordar de madrugada e os 3 áudios para compartilhar com seus pais.",
+    a: "O Essencial tem 4 noites. O Completo reúne as 7 noites e 5 bônus exclusivos.",
   },
   {
     q: "Como recebo o acesso?",
-    a: "Logo após a confirmação do pagamento, você recebe um e-mail com o link e as instruções para entrar no portal. Ele abre no navegador do celular ou do computador, sem instalar aplicativo.",
+    a: "Por e-mail, após a confirmação do pagamento. Acesse pelo navegador, sem instalar aplicativo.",
   },
   {
-    q: "E se o e-mail de acesso não chegar?",
-    a: "Confira as pastas de spam e promoções. Se não estiver lá, fale com a gente no {whatsapp} que resolvemos para você.",
+    q: "Não recebi o e-mail. E agora?",
+    a: "Confira spam e promoções. Se não encontrar, fale com nosso suporte no {whatsapp}.",
   },
   {
-    q: "Preciso de internet boa para ouvir?",
-    a: "Não. Você pode baixar os áudios no celular e ouvir offline, sem depender da internet na hora de dormir.",
+    q: "Posso ouvir sem internet?",
+    a: "Sim. Baixe os áudios no celular e ouça offline.",
   },
   {
-    q: "Posso ouvir sem incomodar quem dorme perto de mim?",
-    a: "Sim. Ouça com fone ou em volume baixo: os áudios são calmos e suaves.",
+    q: "Posso ouvir sem incomodar ninguém?",
+    a: "Sim. Use fones ou reproduza em volume baixo.",
   },
   {
     q: "Como funciona a garantia?",
-    a: "Você tem 7 dias para experimentar. Se não for para você, peça o reembolso pelo link que chega no e-mail de confirmação da compra, sem precisar explicar o motivo.",
+    a: "Você tem 7 dias para pedir o reembolso pelo link enviado no e-mail da compra, sem precisar explicar o motivo.",
   },
   {
-    q: "Quais são as formas de pagamento? Tem mensalidade?",
-    a: "Pix, com 5% de desconto, ou cartão de crédito em até 12x no Completo e em até 10x no Essencial. O pagamento é único, sem mensalidades, e o acesso é vitalício: ouça quantas vezes quiser.",
+    q: "Tem mensalidade? Como posso pagar?",
+    a: "Pagamento único por Pix ou cartão. Sem mensalidade e com acesso vitalício.",
   },
   {
-    q: "Substitui terapia ou acompanhamento médico?",
-    a: "Não. É um recurso complementar de autocuidado e não substitui atendimento profissional.",
+    q: "Substitui acompanhamento profissional?",
+    a: "Não. É um recurso de autocuidado, não um tratamento médico ou psicológico.",
   },
 ];
 

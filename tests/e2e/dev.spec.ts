@@ -166,7 +166,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
   test("FAQ abre uma pergunta por vez", async ({ page }) => {
     await page.goto("/mente-em-paz/");
     const q1 = page.getByRole("button", { name: "Qual plano escolher?" });
-    const q2 = page.getByRole("button", { name: "E se o e-mail de acesso não chegar?" });
+    const q2 = page.getByRole("button", { name: "Não recebi o e-mail. E agora?" });
     await q1.click();
     await expect(q1).toHaveAttribute("aria-expanded", "true");
     await q2.click();
@@ -244,8 +244,8 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(sec).not.toContainText(/Psicóloga|CRP/);
-    await expect(sec).toContainText("Conheça a voz que apresenta o Mente em Paz");
-    await expect(sec).toContainText("Criei o Mente em Paz");
+    await expect(sec).toContainText("Conheça a apresentadora");
+    await expect(sec.locator("[data-expert-disclosure]")).toHaveText("Clara Martins é a apresentadora virtual do Mente em Paz.");
     // não aprovada: marcada como prévia (e oculta no site publicado — ver prod.spec)
     if (/verified:\s*false/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
   });

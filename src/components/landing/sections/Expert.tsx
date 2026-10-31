@@ -54,6 +54,9 @@ export function Expert({ tone }: { tone: Tone }) {
             {expert.about.map((p) => (
               <p key={p}>{p}</p>
             ))}
+            <p className="text-[14px] leading-snug text-sage-ink md:text-[15px]" data-expert-disclosure>
+              {expert.disclosure}
+            </p>
           </div>
         </Reveal>
       </div>
