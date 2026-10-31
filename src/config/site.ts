@@ -338,7 +338,7 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "Quanto dura cada áudio?",
-    a: "De 10 a 17 minutos. Você pode ouvir já deitada. O SOS tem 5 minutos.",
+    a: "De 10 a 17 minutos. Você pode ouvir já na cama. O SOS tem 5 minutos.",
   },
   {
     q: "E se meus pais precisarem de mim?",

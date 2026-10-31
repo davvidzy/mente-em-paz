@@ -22,7 +22,7 @@ export const landing = {
       { icon: "lifetime", label: "Acesso vitalício", enabled: true },
       { icon: "guarantee", label: "Garantia de {dias} dias", enabled: true },
       { icon: "once", label: "Pagamento único", enabled: true },
-      { icon: "lying", label: "Ouça já deitada", enabled: false },
+      { icon: "lying", label: "Ouça já na cama", enabled: false },
       { icon: "easy", label: "Sem precisar saber meditar", enabled: false },
     ] as { icon: "guarantee" | "lying" | "easy" | "lifetime" | "once" | "duration"; label: string; enabled: boolean }[],
   },
@@ -86,7 +86,7 @@ export const landing = {
 
   testimonials: {
     title: "O que dizem nossas clientes.",
-    text: "Experiências reais de mulheres que incluíram o Mente em Paz na rotina.",
+    text: "Experiências reais de quem incluiu o Mente em Paz na rotina.",
   },
 
   /** Roleta de cupom (código e prêmio em site.ts → coupon). {premio} = coupon.prize. */

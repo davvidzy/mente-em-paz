@@ -83,7 +83,7 @@ export const questions: QuizQuestion[] = [
     title: "Quando tenta tirar um tempo para você, o que sente?",
     options: [
       { id: "A", label: "Culpa por não estar ajudando.", weights: { culpa: 4 }, mirror: "sente culpa quando tira um tempo para você" },
-      { id: "B", label: "Preocupação de alguém precisar de mim.", weights: { culpa: 2, pais: 1 }, mirror: "fica preocupada que alguém precise de você quando tira um tempo para si" },
+      { id: "B", label: "Preocupação de alguém precisar de mim.", weights: { culpa: 2, pais: 1 }, mirror: "se preocupa com a ideia de alguém precisar de você quando tira um tempo para si" },
       { id: "C", label: "Dificuldade de desligar os pensamentos.", weights: { pensamentos: 2 }, mirror: "tem dificuldade de desligar os pensamentos mesmo no seu tempo" },
       { id: "D", label: "Consigo aproveitar esse momento.", calm: true, mirror: "consegue aproveitar o tempo que reserva para si" },
     ],
