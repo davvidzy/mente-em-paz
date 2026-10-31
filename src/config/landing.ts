@@ -11,7 +11,7 @@ export const landing = {
 
   hero: {
     title: "Sua noite mais tranquila começa com **um simples play.**",
-    body: "Até 7 áudios guiados para desacelerar antes de dormir. Sem meditar, sem complicações.",
+    body: "Áudios guiados para desacelerar antes de dormir. Sem meditar, sem complicações.",
     cta: "Quero descansar melhor",
     /**
      * Benefícios abaixo do CTA (discretos). SÓ condições reais e confirmadas.
