@@ -85,10 +85,8 @@ export const landing = {
   },
 
   testimonials: {
-    title: "Quem começa a cuidar de si também merece ser ouvida.",
+    title: "O que dizem nossas clientes.",
     text: "Experiências reais de mulheres que incluíram o Mente em Paz na rotina.",
-    /** {dias} = dias como cliente. */
-    since: "Cliente há {dias} dias",
   },
 
   /** Roleta de cupom (código e prêmio em site.ts → coupon). {premio} = coupon.prize. */

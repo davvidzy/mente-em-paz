@@ -35,7 +35,8 @@ if (!envVal("VITE_SITE_URL")) warn.push("VITE_SITE_URL não definido — sem can
 
 // Mídia e prova social (seções ficam ocultas — só informativo)
 if (/audioPreview:\s*\{\s*src:\s*""/.test(site)) warn.push("Trecho de áudio não configurado — seção oculta.");
-if (/testimonials:\s*Testimonial\[\]\s*=\s*\[\]/.test(site)) warn.push("Sem depoimentos — seção oculta.");
+if (/showPlaceholders:\s*true/.test(site.slice(site.indexOf("export const testimonials"))))
+  warn.push("Depoimentos com espaços reservados no site (testimonials.showPlaceholders) — trocar pelas imagens reais.");
 
 // Especialista
 if (/deadlineDaysAhead:\s*(?!0\b)\d/.test(site))

@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import type { ProfileId } from "../../config/quiz";
-import { bonuses, coupon, expertPublished, media, program, publishedTestimonials } from "../../config/site";
+import { bonuses, coupon, expertPublished, media, program, publishedTestimonials, testimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
 import { read } from "../../lib/storage";
@@ -86,7 +86,7 @@ export function LandingApp() {
   const winCoupon = () => setCouponEnds(Date.now() + coupon.validMinutes * 60_000);
 
   const hasAudio = Boolean(media.audioPreview.src);
-  const hasTestimonials = publishedTestimonials.length > 0;
+  const hasTestimonials = publishedTestimonials.length > 0 || testimonials.showPlaceholders;
 
   // [visível, render(tone)]
   const sections: [boolean, (tone: Tone) => ReactElement][] = [

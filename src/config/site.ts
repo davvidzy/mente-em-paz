@@ -242,32 +242,31 @@ export const expert = {
 export const expertPublished = expert.verified;
 
 // ── Depoimentos ──────────────────────────────────────────────────────
-// SOMENTE depoimentos reais, com autorização registrada de nome, foto, vídeo e texto.
-// Sem `consent: true` o depoimento não aparece. Lista vazia → seção oculta em produção.
+// Carrossel infinito só com imagens (prints/fotos), sem interação.
+// SOMENTE depoimentos reais, com autorização registrada da cliente (`consent: true`).
 // Nada de fotos de banco de imagens, estrelas ou notas inventadas.
-// Imagens: coloque os originais em images-src/depoimentos/ e rode `npm run images`.
+// Imagens: originais em images-src/depoimentos/ → `npm run images` (gera -400 e -800.webp).
 export interface Testimonial {
-  name: string;
+  /** Sem sufixo: "img/depoimentos/maria" → usa maria-400.webp e maria-800.webp. */
+  image: string;
+  /** O que a imagem diz, para leitores de tela (o texto do depoimento). */
+  alt: string;
   /** A cliente autorizou a publicação (guarde o registro da autorização). */
   consent: boolean;
-  /** Dias como cliente → "Cliente há X dias". Omitir se não souber. */
-  daysAsClient?: number;
-  /** Foto/avatar da própria cliente (ex.: "img/depoimentos/maria-avatar-400.webp"). Opcional. */
-  avatar?: string;
-  /** Depoimento em texto, com as palavras dela. Use este, `print` ou `video`. */
-  text?: string;
-  /** Print da conversa do WhatsApp (conteúdo intacto) + descrição para leitores de tela. */
-  print?: string;
-  printAlt?: string;
-  /** Vídeo curto (ex.: "video/depoimento-maria.mp4") e capa opcional. */
-  video?: string;
-  videoPoster?: string;
 }
 
-export const testimonials: Testimonial[] = [];
+export const testimonials = {
+  /**
+   * ⚠ TEMPORÁRIO — enquanto não há imagens, mostra no site espaços reservados vazios
+   * (sem nome nem texto) para visualizar a seção. Desligar (false) ao preencher `items`.
+   */
+  showPlaceholders: true,
+  placeholderCount: 6,
+  items: [] as Testimonial[],
+};
 
-/** Só depoimentos com autorização registrada e algum conteúdo (texto, print ou vídeo). */
-export const publishedTestimonials = testimonials.filter((t) => t.consent && Boolean(t.text || t.print || t.video));
+/** Só depoimentos com autorização registrada. */
+export const publishedTestimonials = testimonials.items.filter((t) => t.consent && Boolean(t.image));
 
 // ── Bônus (exclusivos do Plano Completo) ────────────────────────────
 export interface Bonus {

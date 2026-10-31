@@ -217,6 +217,35 @@
   }
 }
 
+/* ───────────── Carrossel infinito (depoimentos) ─────────────
+   Movimento contínuo, sem pausa nem controles. A lista vem duplicada: -50% emenda sem salto. */
+@keyframes mp-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.mp-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.mp-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  animation: mp-marquee var(--marquee-duration, 40s) linear infinite;
+}
+.mp-marquee-item {
+  padding-right: 16px; /* espaçamento uniforme → o loop em -50% fica perfeito */
+}
+/* Movimento reduzido no aparelho: fileira parada (sem interação, como o carrossel) */
+@media (prefers-reduced-motion: reduce) {
+  .mp-marquee-track {
+    animation: none;
+    padding-left: var(--page-gutter);
+  }
+}
+
 /* Sobre o fundo areia, o sálvia-escuro ganha um tom derivado para manter contraste AA.
    Fora de @layer para prevalecer sobre os utilitários do Tailwind. */
 .bg-surface :is(.t-muted, .text-sage-deep, .t-eyebrow) {
@@ -227,8 +256,8 @@
 }
 
 /* ───────────── Movimento ─────────────
-   Site estático: sem animações de entrada, revelação ao rolar ou carrossel.
-   O único movimento é o giro da roleta de cupom (desligado com movimento reduzido). */
+   Site estático: sem animações de entrada ou revelação ao rolar. Os únicos movimentos são
+   o carrossel de depoimentos e o giro da roleta (ambos parados com movimento reduzido). */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

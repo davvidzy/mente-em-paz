@@ -34,9 +34,10 @@ test.describe("Build de produção", () => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
-    // especialista só com expert.verified; depoimentos sem conteúdo → ocultos
+    // especialista só com expert.verified; depoimentos com imagens ou espaços reservados
+    const depoOn = /showPlaceholders:\s*true/.test(SITE) || /consent:\s*true/.test(SITE);
     const expertOn = !/verified:\s*false/.test(SITE);
-    expect(order).toEqual(["identificacao", "diferencial", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
+    expect(order).toEqual(["identificacao", "diferencial", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", ...(depoOn ? ["depoimentos"] : []), "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
     // mockup do portal entre a descrição e o CTA, já carregado
     const mockup = page.locator("[data-hero] img[data-hero-mockup]");

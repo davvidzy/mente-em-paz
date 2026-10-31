@@ -206,13 +206,22 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(page.locator("#video-title")).toHaveCount(0); // seção de vídeo separada não existe mais
   });
 
-  test("depoimentos: lista estática, sem movimento automático, com ≥ 4 placeholders (dev)", async ({ page }) => {
+  test("depoimentos: título, descrição e carrossel infinito só de imagens, sem controles", async ({ page }) => {
     await page.goto("/mente-em-paz/");
-    const cards = page.locator('[data-testimonial="placeholder"]');
-    await expect(cards).toHaveCount(4);
-    await expect(page.locator("#depoimentos")).toContainText("Cliente há 7 dias");
-    const moving = await page.locator("#depoimentos ul").evaluate((e) => getComputedStyle(e).animationName);
-    expect(moving).toBe("none");
+    const sec = page.locator("#depoimentos");
+    await expect(sec.getByRole("heading", { level: 2 })).toBeVisible();
+    await expect(sec.locator("#depo-title + p")).toBeVisible();
+    // lista duplicada para o loop (a cópia fica oculta para leitores de tela)
+    const items = sec.locator(".mp-marquee-item");
+    const n = await items.count();
+    expect(n % 2).toBe(0);
+    await expect(sec.locator('.mp-marquee-item[aria-hidden="true"]')).toHaveCount(n / 2);
+    expect(await sec.locator(".mp-marquee-track").evaluate((e) => getComputedStyle(e).animationName)).toBe("mp-marquee");
+    // sem interação: nenhum botão ou link na seção
+    await expect(sec.locator("button, a")).toHaveCount(0);
+    // movimento reduzido no aparelho: fileira parada
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    expect(await sec.locator(".mp-marquee-track").evaluate((e) => getComputedStyle(e).animationName)).toBe("none");
   });
 
   test("roleta de cupom: abre ao chegar no meio dos bônus (a cada carregamento), para em 10%, copia o cupom, leva aos planos e fica no botão flutuante", async ({ page, context }) => {
