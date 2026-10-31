@@ -3,7 +3,7 @@ import type { ProfileId } from "../../config/quiz";
 import { bonuses, coupon, expertPublished, media, program, publishedTestimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
-import { read, write } from "../../lib/storage";
+import { read } from "../../lib/storage";
 import { useCountdown } from "../../hooks/useCountdown";
 import { CouponButton, CouponWheel } from "./Coupon";
 import { ConsentBanner } from "../ui/ConsentBanner";
@@ -26,8 +26,7 @@ import { Footer } from "./sections/Footer";
 import { Notice, type NoticeMessage } from "./Notice";
 
 const DEV = import.meta.env.DEV;
-const WHEEL_SEEN = "mp_coupon_wheel_seen";
-const COUPON_WON = "mp_coupon_won";
+const WHEEL_SKIP = "mp_coupon_wheel_seen";
 
 /**
  * Landing Page. O mockup do portal fica dentro do Hero.
@@ -43,8 +42,8 @@ export function LandingApp() {
   // só para quem tem o link. Lida após a hidratação (o HTML pré-renderizado não a inclui).
   const [expertPreview, setExpertPreview] = useState(false);
 
-  // Roleta de cupom: abre após `coupon.delaySeconds`. Fora da fase de teste, uma vez por
-  // visitante e o cupom ganho fica salvo (botão flutuante reabre). Em teste, nada é salvo.
+  // Roleta de cupom: abre quando o meio da seção de bônus chega ao meio da tela, a cada
+  // carregamento da página (nada fica salvo: recarregou, volta). O botão flutuante reabre o cupom.
   const [wheelOpen, setWheelOpen] = useState(false);
   // fim do prazo do cupom ganho (ms); null = ainda não ganhou
   const [couponEnds, setCouponEnds] = useState<number | null>(null);
@@ -58,24 +57,33 @@ export function LandingApp() {
 
   useEffect(() => {
     if (!coupon.enabled) return;
-    if (!coupon.testMode) {
-      const ends = read<unknown>(COUPON_WON, "local");
-      setCouponEnds(typeof ends === "number" ? ends : null); // versões antigas guardavam `true`
-    }
-    // "já vista" também é lido na fase de teste: é assim que os testes automáticos a pulam
-    if (read<boolean>(WHEEL_SEEN, "local")) return;
-    const timer = window.setTimeout(() => {
-      if (!coupon.testMode) write(WHEEL_SEEN, true, "local");
+    // marcador só dos testes automáticos (para a roleta não abrir por cima dos outros testes)
+    if (read<boolean>(WHEEL_SKIP, "local")) return;
+    const section = document.getElementById("bonus");
+    if (!section) return;
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const r = section.getBoundingClientRect();
+      if (r.top + r.height / 2 > window.innerHeight / 2) return;
+      stop();
       setWheelOpen(true);
-    }, coupon.delaySeconds * 1000);
-    return () => window.clearTimeout(timer);
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(check);
+    };
+    const stop = () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    onScroll();
+    return stop;
   }, []);
 
-  const winCoupon = () => {
-    const ends = Date.now() + coupon.validMinutes * 60_000;
-    if (!coupon.testMode) write(COUPON_WON, ends, "local");
-    setCouponEnds(ends);
-  };
+  const winCoupon = () => setCouponEnds(Date.now() + coupon.validMinutes * 60_000);
 
   const hasAudio = Boolean(media.audioPreview.src);
   const hasTestimonials = publishedTestimonials.length > 0;

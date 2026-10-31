@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, skipCouponWheel, stubCheckout } from "./helpers";
 
 test.beforeEach(async ({ page }, info) => {
@@ -117,6 +117,14 @@ test.describe("Quiz", () => {
   });
 });
 
+/** Rola até que a fração `at` da seção de bônus esteja no meio da tela. */
+async function scrollBonus(page: Page, at: number) {
+  await page.evaluate((at) => {
+    const r = document.getElementById("bonus")!.getBoundingClientRect();
+    window.scrollTo(0, window.scrollY + r.top + r.height * at - window.innerHeight / 2);
+  }, at);
+}
+
 test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
   test("Essencial abre o popup; Esc fecha; foco preso; recusar → checkout do Essencial e não reabre", async ({ page }) => {
     const evs = await recordEvents(page);
@@ -207,16 +215,18 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     expect(moving).toBe("none");
   });
 
-  test("roleta de cupom: abre centralizada após 5 s, para em 10%, copia o cupom, leva aos planos e fica no botão flutuante", async ({ page, context }) => {
+  test("roleta de cupom: abre ao chegar no meio dos bônus (a cada carregamento), para em 10%, copia o cupom, leva aos planos e fica no botão flutuante", async ({ page, context }) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     const evs = await recordEvents(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/mente-em-paz/");
     const dialog = page.getByRole("dialog");
-    await page.waitForTimeout(3500);
-    await expect(dialog).toHaveCount(0); // ainda não: abre após 5 s
-    await expect(dialog).toBeVisible({ timeout: 4000 });
+    await scrollBonus(page, 0.2); // ainda antes do meio da seção de bônus
+    await page.waitForTimeout(400);
+    await expect(dialog).toHaveCount(0);
+    await scrollBonus(page, 0.55);
+    await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("heading")).toContainText("Gire a roleta e ganhe um desconto");
     // suspensa no centro da tela, sem rolagem interna
     const box = (await dialog.boundingBox())!;
@@ -241,12 +251,11 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await reopen.click();
     await expect(dialog.locator("[data-coupon-code]")).toHaveText("QUEROSENTIRPAZ");
     expect(evs).toEqual(expect.arrayContaining(["coupon_wheel_opened", "coupon_wheel_spun", "coupon_copied", "coupon_cta_clicked"]));
-    // fase de teste: recarregou → a roleta volta (e nada fica salvo)
-    if (/testMode:s*true/.test(readFileSync("src/config/site.ts", "utf8"))) {
-      await page.reload();
-      await expect(page.getByRole("button", { name: "Ver meu cupom de desconto" })).toHaveCount(0);
-      await expect(dialog.getByRole("button", { name: "Girar agora" })).toBeVisible({ timeout: 7000 });
-    }
+    // recarregou → nada fica salvo: a roleta volta ao chegar de novo nos bônus
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Ver meu cupom de desconto" })).toHaveCount(0);
+    await scrollBonus(page, 0.55);
+    await expect(dialog.getByRole("button", { name: "Girar agora" })).toBeVisible();
   });
 
   test("roleta de cupom: título e resultado em uma linha, aviso dos 5 minutos e cupom some quando o tempo acaba", async ({ page }) => {
@@ -256,7 +265,8 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     for (const [w, h] of [[320, 568], [390, 844]]) {
       await page.setViewportSize({ width: w, height: h });
       await page.goto("/mente-em-paz/");
-      await page.clock.runFor(5500);
+      await scrollBonus(page, 0.55);
+      await page.clock.runFor(100);
       const dialog = page.getByRole("dialog");
       await expect(dialog).toBeVisible();
       await expect(dialog).toContainText("Uma tentativa por pessoa · válido por 5 minutos.");

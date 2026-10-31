@@ -168,7 +168,8 @@ export const upgrade = {
 };
 
 // ── Cupom da roleta ─────────────────────────────────────────────────
-// A roleta abre centralizada após `delaySeconds` na página de vendas e para SEMPRE na
+// A roleta abre centralizada quando a visitante chega ao meio da seção de bônus (a cada
+// carregamento da página) e para SEMPRE na
 // casa `winningSlice` (10%: o único cupom que a plataforma de checkout aceita).
 // O cupom precisa existir de verdade no checkout, com este código e este desconto.
 export const coupon = {
@@ -182,14 +183,6 @@ export const coupon = {
   winningSlice: 0,
   /** Minutos para usar o cupom depois de ganhar. Ao zerar, o cupom some do site (roleta e botão). */
   validMinutes: 5,
-  /** Segundos na página até a roleta abrir. */
-  delaySeconds: 5,
-  /**
-   * ⚠ FASE DE TESTE: true = a roleta abre de novo a cada recarregamento e nada fica salvo.
-   * Ao encerrar o teste: false (abre uma vez por visitante; o cupom ganho fica salvo) e
-   * ajustar `delaySeconds`.
-   */
-  testMode: true,
 };
 
 // ── Garantia ─────────────────────────────────────────────────────────
