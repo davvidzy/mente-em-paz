@@ -92,7 +92,7 @@ test.describe("Build de produção", () => {
     await expect(page).toHaveURL("http://localhost:4174/promo/resultado/");
     await page.getByRole("button", { name: /Conhecer o Mente em Paz/ }).click();
     await expect(page).toHaveURL("http://localhost:4174/promo/mente-em-paz/?utm_source=ig");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Sua mente continua de plantão");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Sua noite mais tranquila começa com um simples play.");
     // logo e fontes carregaram
     const logoOk = await page.locator("header img").first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
     expect(logoOk).toBe(true);
@@ -217,7 +217,7 @@ test.describe("Build de produção", () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL: "http://localhost:4174" });
     const page = await ctx.newPage();
     await page.goto("/promo/mente-em-paz/"); // em subpasta: links e assets relativos
-    await expect(page.locator("h1")).toContainText("Sua mente continua de plantão");
+    await expect(page.locator("h1")).toContainText("Sua noite mais tranquila começa com um simples play.");
     // sem JavaScript: prazo dos bônus já com a data de hoje (script inline) e compra por link
     await expect(page.locator("#bonus [data-deadline]")).toHaveText(/^\d{2}\/\d{2}$/);
     if (READY) await expect(page.locator('#planos a[data-plan="completo"]')).toHaveAttribute("href", /^https:\/\/pay\.wiapy\.com\//);

@@ -11,8 +11,8 @@ export const landing = {
   hero: {
     /** Uma linha no mobile (≤ 30 caracteres). */
     eyebrow: "Pausa noturna para quem cuida",
-    title: "Seu dia terminou. **Sua mente continua de plantão.**",
-    body: "O **Mente em Paz** é um programa de 7 noites com áudios guiados para desligar o alerta e descansar, sem deixar de cuidar de quem você ama.",
+    title: "Sua noite mais tranquila começa com **um simples play.**",
+    body: "Conheça o **Mente em Paz**: 7 áudios guiados para ajudar você a desacelerar os pensamentos e criar um momento de tranquilidade antes de dormir.",
     cta: "Quero descansar melhor",
     /**
      * Benefícios abaixo do CTA. SÓ condições reais e confirmadas.
