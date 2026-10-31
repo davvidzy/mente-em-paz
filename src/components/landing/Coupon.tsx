@@ -10,27 +10,28 @@ import { scrollToId } from "./shared";
 const SPIN_MS = 4200;
 
 /**
- * Roleta de cupom. Abre uma vez por visitante quando a seção de bônus aparece
- * (LandingApp controla quando). Todas as casas têm o mesmo prêmio (`coupon.prize`):
- * o giro é a experiência, não um sorteio com prêmios que nunca saem.
+ * Roleta de cupom, suspensa no centro da tela (LandingApp controla quando abre).
+ * Para sempre na casa `coupon.winningSlice` (5%: único cupom aceito pelo checkout).
+ * Com `won`, abre direto no resultado (botão flutuante que reabre o cupom).
  */
-export function CouponWheel({ open, onClose, onWin }: { open: boolean; onClose: () => void; onWin: () => void }) {
+export function CouponWheel({ open, won, onClose, onWin }: { open: boolean; won: boolean; onClose: () => void; onWin: () => void }) {
   const c = landing.couponWheel;
   const [rotation, setRotation] = useState(0);
   const [phase, setPhase] = useState<"idle" | "spinning" | "won">("idle");
   const timer = useRef<number>(undefined);
+  const showWon = won || phase === "won";
 
   useEffect(() => {
-    if (open) track("coupon_wheel_opened");
-  }, [open]);
+    if (open && !won) track("coupon_wheel_opened");
+  }, [open, won]);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const spin = () => {
     if (phase !== "idle") return;
-    const step = 360 / coupon.slices;
-    const slice = Math.floor(Math.random() * coupon.slices);
-    // 6 voltas + para com o centro de uma casa sob o ponteiro (no topo)
-    setRotation(360 * 6 + (360 - (slice * step + step / 2)));
+    const step = 360 / coupon.slices.length;
+    // 6 voltas + para dentro da casa vencedora, sob o ponteiro (no topo), num ponto variado dela
+    const jitter = (Math.random() - 0.5) * (step - 12);
+    setRotation(360 * 6 + (360 - (coupon.winningSlice * step + step / 2)) + jitter);
     setPhase("spinning");
     track("coupon_wheel_spun");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -47,9 +48,9 @@ export function CouponWheel({ open, onClose, onWin }: { open: boolean; onClose: 
   };
 
   return (
-    <Modal open={open} onClose={onClose} labelledBy="coupon-title">
-      <div className="px-6 pb-[max(24px,env(safe-area-inset-bottom))] pt-8 text-center sm:px-9 sm:pb-9 sm:pt-10 [@media(max-height:680px)]:pt-6" data-coupon-wheel>
-        {phase !== "won" ? (
+    <Modal open={open} onClose={onClose} labelledBy="coupon-title" center>
+      <div className="px-6 pb-7 pt-8 text-center sm:px-9 sm:pb-9 sm:pt-10 [@media(max-height:680px)]:pb-5 [@media(max-height:680px)]:pt-6" data-coupon-wheel>
+        {!showWon ? (
           <>
             <p className="inline-flex rounded-full border border-sage px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.1em] text-sage-ink">
               {c.badge}
@@ -85,9 +86,9 @@ export function CouponWheel({ open, onClose, onWin }: { open: boolean; onClose: 
   );
 }
 
-/** Roleta em SVG: casas alternando petróleo e creme, todas com o mesmo prêmio. */
+/** Roleta em SVG: casas alternando petróleo e creme (valores em `coupon.slices`). */
 function Wheel({ rotation }: { rotation: number }) {
-  const n = coupon.slices;
+  const n = coupon.slices.length;
   const r = 100;
   const step = (2 * Math.PI) / n;
   const point = (a: number, radius = r) => [r + radius * Math.sin(a), r - radius * Math.cos(a)];
@@ -118,14 +119,14 @@ function Wheel({ rotation }: { rotation: number }) {
                 x={tx}
                 y={ty}
                 fill={dark ? "#fff" : "var(--color-brand)"}
-                fontSize="13"
+                fontSize="16"
                 fontWeight="700"
                 textAnchor="middle"
                 dominantBaseline="middle"
                 transform={`rotate(${(mid * 180) / Math.PI} ${tx} ${ty})`}
                 style={{ fontFamily: "var(--font-sans)" }}
               >
-                {coupon.prize}
+                {coupon.slices[i]}
               </text>
             </g>
           );
@@ -137,8 +138,24 @@ function Wheel({ rotation }: { rotation: number }) {
   );
 }
 
-/** Código do cupom com botão de copiar (roleta e lembrete acima dos planos). */
-export function CouponCode({ className = "", compact = false }: { className?: string; compact?: boolean }) {
+/** Botão flutuante (só ícone) no canto inferior: reabre o cupom depois de ganho. */
+export function CouponButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={landing.couponWheel.reopen}
+      title={landing.couponWheel.reopen}
+      className="fixed bottom-[max(16px,env(safe-area-inset-bottom))] right-4 z-40 grid size-14 place-items-center rounded-full bg-brand text-white shadow-(--shadow-lift) hover:bg-brand-deep sm:bottom-6 sm:right-6"
+      data-coupon-button
+    >
+      <Gift aria-hidden className="size-6" strokeWidth={1.8} />
+    </button>
+  );
+}
+
+/** Código do cupom com botão de copiar. */
+export function CouponCode({ className = "" }: { className?: string }) {
   const c = landing.couponWheel;
   const [copied, setCopied] = useState(false);
 
@@ -158,10 +175,10 @@ export function CouponCode({ className = "", compact = false }: { className?: st
   return (
     // telas estreitas (< 360px): botão abaixo do código, para o código não quebrar no meio
     <div className={`flex flex-col items-stretch gap-2 rounded-[18px] border-2 border-dashed border-sage bg-white p-2 min-[360px]:flex-row ${className}`}>
-      <div className={`min-w-0 flex-1 rounded-xl bg-canvas text-left ${compact ? "px-3 py-2" : "px-4 py-3"}`}>
+      <div className="min-w-0 flex-1 rounded-xl bg-canvas px-4 py-3 text-left">
         <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-sage-ink">{c.codeLabel}</p>
         <p
-          className={`whitespace-nowrap font-semibold tracking-[0.04em] text-brand select-all ${compact ? "text-[17px]" : "text-[19px] sm:text-[22px]"}`}
+          className="whitespace-nowrap text-[19px] font-semibold tracking-[0.04em] text-brand select-all sm:text-[22px]"
           data-coupon-code
         >
           {coupon.code}

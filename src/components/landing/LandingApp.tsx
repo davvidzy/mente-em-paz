@@ -4,7 +4,7 @@ import { bonuses, coupon, expertPublished, media, program, publishedTestimonials
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
 import { read, write } from "../../lib/storage";
-import { CouponWheel } from "./Coupon";
+import { CouponButton, CouponWheel } from "./Coupon";
 import { ConsentBanner } from "../ui/ConsentBanner";
 import type { Tone } from "./shared";
 import { Header } from "./sections/Header";
@@ -42,7 +42,8 @@ export function LandingApp() {
   // só para quem tem o link. Lida após a hidratação (o HTML pré-renderizado não a inclui).
   const [expertPreview, setExpertPreview] = useState(false);
 
-  // Roleta de cupom: abre uma vez por visitante, quando a seção de bônus aparece.
+  // Roleta de cupom: abre após `coupon.delaySeconds`. Fora da fase de teste, uma vez por
+  // visitante e o cupom ganho fica salvo (botão flutuante reabre). Em teste, nada é salvo.
   const [wheelOpen, setWheelOpen] = useState(false);
   const [couponWon, setCouponWon] = useState(false);
 
@@ -54,25 +55,18 @@ export function LandingApp() {
 
   useEffect(() => {
     if (!coupon.enabled) return;
-    setCouponWon(read<boolean>(COUPON_WON, "local") === true);
-    const target = document.getElementById("bonus") ?? document.getElementById("planos");
-    if (read<boolean>(WHEEL_SEEN, "local") || !target || !("IntersectionObserver" in window)) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        write(WHEEL_SEEN, true, "local");
-        setWheelOpen(true);
-      },
-      // a seção de bônus é mais alta que a tela: dispara quando o topo dela passa do meio da tela
-      { rootMargin: "0px 0px -50% 0px" },
-    );
-    io.observe(target);
-    return () => io.disconnect();
+    if (!coupon.testMode) setCouponWon(read<boolean>(COUPON_WON, "local") === true);
+    // "já vista" também é lido na fase de teste: é assim que os testes automáticos a pulam
+    if (read<boolean>(WHEEL_SEEN, "local")) return;
+    const timer = window.setTimeout(() => {
+      if (!coupon.testMode) write(WHEEL_SEEN, true, "local");
+      setWheelOpen(true);
+    }, coupon.delaySeconds * 1000);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const winCoupon = () => {
-    write(COUPON_WON, true, "local");
+    if (!coupon.testMode) write(COUPON_WON, true, "local");
     setCouponWon(true);
   };
 
@@ -89,7 +83,7 @@ export function LandingApp() {
     [program.nights.length > 0, (t) => <Program key="program" tone={t} />],
     [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],
-    [true, (t) => <Plans key="plans" tone={t} onNotice={setNotice} couponWon={couponWon} />],
+    [true, (t) => <Plans key="plans" tone={t} onNotice={setNotice} />],
     [true, (t) => <Guarantee key="guarantee" tone={t} />],
     [true, (t) => <Faq key="faq" tone={t} />],
   ];
@@ -113,7 +107,10 @@ export function LandingApp() {
       </main>
       <Footer />
       <Notice message={notice} onClose={() => setNotice(null)} />
-      {coupon.enabled && <CouponWheel open={wheelOpen} onClose={() => setWheelOpen(false)} onWin={winCoupon} />}
+      {coupon.enabled && (
+        <CouponWheel open={wheelOpen} won={couponWon} onClose={() => setWheelOpen(false)} onWin={winCoupon} />
+      )}
+      {coupon.enabled && couponWon && !wheelOpen && <CouponButton onClick={() => setWheelOpen(true)} />}
       <ConsentBanner />
     </>
   );

@@ -9,6 +9,8 @@ interface Props {
   describedBy?: string;
   /** Celular: painel com altura fixa de 80% da tela (o conteúdo se distribui nela). */
   tall?: boolean;
+  /** Painel suspenso no centro também no celular (padrão: preso à base da tela). */
+  center?: boolean;
   children: ReactNode;
 }
 
@@ -16,7 +18,7 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
 
 /** Modal acessível: foco preso, Esc fecha, scroll de fundo bloqueado, foco devolvido ao fechar. */
-export function Modal({ open, onClose, labelledBy, describedBy, tall, children }: Props) {
+export function Modal({ open, onClose, labelledBy, describedBy, tall, center, children }: Props) {
   const panel = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -64,7 +66,7 @@ export function Modal({ open, onClose, labelledBy, describedBy, tall, children }
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
+    <div className={`fixed inset-0 z-50 flex justify-center sm:items-center sm:p-6 ${center ? "items-center p-4" : "items-end"}`}>
       <div
         className="absolute inset-0 bg-brand-deep/55 backdrop-blur-[2px]"
         onClick={onClose}
@@ -76,7 +78,7 @@ export function Modal({ open, onClose, labelledBy, describedBy, tall, children }
         aria-modal="true"
         aria-labelledby={labelledBy}
         aria-describedby={describedBy}
-        className={`relative w-full overflow-y-auto rounded-t-[24px] bg-canvas shadow-(--shadow-lift) sm:max-w-[540px] sm:rounded-[24px] ${
+        className={`relative w-full overflow-y-auto bg-canvas shadow-(--shadow-lift) sm:max-w-[540px] sm:rounded-[24px] ${center ? "max-w-[440px] rounded-[24px]" : "rounded-t-[24px]"} ${
           tall ? "flex h-[80dvh] flex-col sm:h-auto sm:max-h-[92dvh]" : "max-h-[92dvh]"
         }`}
       >

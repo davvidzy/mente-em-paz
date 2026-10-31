@@ -105,8 +105,8 @@ export const landing = {
     copy: "Copiar",
     copied: "Copiado!",
     cta: "Usar cupom agora",
-    /** Lembrete acima dos planos depois de ganhar. */
-    reminder: "Seu cupom de {premio}: use no checkout.",
+    /** Rótulo (leitores de tela) do botão flutuante que reabre o cupom ganho. */
+    reopen: "Ver meu cupom de desconto",
   },
 
   plans: {

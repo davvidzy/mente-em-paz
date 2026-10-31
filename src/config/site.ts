@@ -168,16 +168,26 @@ export const upgrade = {
 };
 
 // ── Cupom da roleta ─────────────────────────────────────────────────
-// A roleta abre uma vez por visitante (ao chegar nos bônus) e SEMPRE dá o mesmo prêmio:
-// por isso todas as casas mostram o mesmo desconto — nada de prêmios que nunca saem.
+// A roleta abre centralizada após `delaySeconds` na página de vendas e para SEMPRE na
+// casa `winningSlice` (5%: o único cupom que a plataforma de checkout aceita).
 // O cupom precisa existir de verdade no checkout, com este código e este desconto.
 export const coupon = {
   enabled: true,
   code: "QUEROSENTIRPAZ",
-  /** Texto do prêmio (casas da roleta e resultado). */
+  /** Prêmio entregue (resultado da roleta e botão flutuante). */
   prize: "5% OFF",
-  /** Casas da roleta (todas com o mesmo prêmio). */
-  slices: 8,
+  /** Casas da roleta, em sentido horário a partir do topo. */
+  slices: ["5%", "R$ 5", "2%", "R$ 10", "4%", "R$ 5", "2%", "4%"],
+  /** Índice da casa em que a roleta sempre para. */
+  winningSlice: 0,
+  /** Segundos na página até a roleta abrir. */
+  delaySeconds: 5,
+  /**
+   * ⚠ FASE DE TESTE: true = a roleta abre de novo a cada recarregamento e nada fica salvo.
+   * Ao encerrar o teste: false (abre uma vez por visitante; o cupom ganho fica salvo) e
+   * ajustar `delaySeconds`.
+   */
+  testMode: true,
 };
 
 // ── Garantia ─────────────────────────────────────────────────────────

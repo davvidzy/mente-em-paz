@@ -207,21 +207,22 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     expect(moving).toBe("none");
   });
 
-  test("roleta de cupom: abre uma vez ao chegar nos bônus, dá 5% OFF, copia o cupom e leva aos planos", async ({ page, context }) => {
+  test("roleta de cupom: abre centralizada após 5 s, para em 5%, copia o cupom, leva aos planos e fica no botão flutuante", async ({ page, context }) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     const evs = await recordEvents(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/mente-em-paz/");
     await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/mente-em-paz/");
     const dialog = page.getByRole("dialog");
-    await expect(dialog).toHaveCount(0);
-    await page.locator("#bonus").scrollIntoViewIfNeeded();
-    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(3500);
+    await expect(dialog).toHaveCount(0); // ainda não: abre após 5 s
+    await expect(dialog).toBeVisible({ timeout: 4000 });
     await expect(dialog.getByRole("heading")).toContainText("Gire a roleta e ganhe um desconto");
-    // todas as casas com o mesmo prêmio (nenhum prêmio que nunca sai)
-    const labels = await dialog.locator("[data-wheel] text").allTextContents();
-    expect(new Set(labels)).toEqual(new Set(["5% OFF"]));
+    // suspensa no centro da tela, sem rolagem interna
+    const box = (await dialog.boundingBox())!;
+    expect(Math.abs(box.y + box.height / 2 - 844 / 2)).toBeLessThan(4);
     expect(await dialog.evaluate((d) => d.scrollHeight <= d.clientHeight)).toBe(true);
+    expect(await dialog.locator("[data-wheel] text").allTextContents()).toEqual(["5%", "R$ 5", "2%", "R$ 10", "4%", "R$ 5", "2%", "4%"]);
     await dialog.getByRole("button", { name: "Girar agora" }).click();
     await expect(dialog.getByRole("heading")).toHaveText("Parabéns! Você ganhou 5% OFF");
     await expect(dialog.locator("[data-coupon-code]")).toHaveText("QUEROSENTIRPAZ");
@@ -231,14 +232,20 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await dialog.getByRole("button", { name: /Usar cupom agora/ }).click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator("#planos-title")).toBeInViewport();
-    await expect(page.locator("#planos [data-coupon-reminder]")).toContainText("QUEROSENTIRPAZ");
+    // sem cupom "pré-definido" acima dos planos; o cupom fica no botão flutuante (só ícone)
+    await expect(page.locator("#planos")).not.toContainText("QUEROSENTIRPAZ");
+    const reopen = page.getByRole("button", { name: "Ver meu cupom de desconto" });
+    await expect(reopen).toBeVisible();
+    await expect(reopen).toHaveText("");
+    await reopen.click();
+    await expect(dialog.locator("[data-coupon-code]")).toHaveText("QUEROSENTIRPAZ");
     expect(evs).toEqual(expect.arrayContaining(["coupon_wheel_opened", "coupon_wheel_spun", "coupon_copied", "coupon_cta_clicked"]));
-    // não reabre: nem rolando de novo, nem recarregando; o lembrete do cupom continua nos planos
-    await page.reload();
-    await page.locator("#bonus").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(400);
-    await expect(dialog).toHaveCount(0);
-    await expect(page.locator("#planos [data-coupon-reminder]")).toBeVisible();
+    // fase de teste: recarregou → a roleta volta (e nada fica salvo)
+    if (/testMode:s*true/.test(readFileSync("src/config/site.ts", "utf8"))) {
+      await page.reload();
+      await expect(page.getByRole("button", { name: "Ver meu cupom de desconto" })).toHaveCount(0);
+      await expect(dialog.getByRole("button", { name: "Girar agora" })).toBeVisible({ timeout: 7000 });
+    }
   });
 
   test("planos: Completo acima do Essencial no mobile, garantia abaixo de cada CTA; popup com novo texto", async ({ page }) => {
