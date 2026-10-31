@@ -60,14 +60,16 @@ export function Bonus({ tone }: { tone: Tone }) {
 }
 
 /**
- * Capa quadrada ocupando a largura do card (só com a margem interna), selo "Bônus N"
- * metade sobre a capa, metade fora; abaixo: etiqueta, nome, descrição e o preço
+ * Etiqueta acima; capa quadrada ocupando a largura do card (só com a margem interna);
+ * abaixo: nome, descrição e o preço
  * individual riscado (com `bonuses.showValues`) seguido de "GRÁTIS" em destaque.
  */
 function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; tag: string }) {
   return (
     <article className="card flex h-full flex-col p-3 shadow-(--shadow-soft) transition-[transform,box-shadow] duration-300 ease-(--ease-calm) sm:p-3.5 md:hover:-translate-y-0.5 md:hover:shadow-(--shadow-lift)">
-      <div className="relative">
+      <p className="px-2 pb-2.5 pt-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-sage-ink sm:px-2.5">{tag}</p>
+      {/* capa quadrada em todos os cards (a numeração "Bônus N" já vem na imagem) */}
+      <div className="overflow-hidden rounded-[14px]">
         {bonus.image ? (
           // capa repete o nome do título abaixo → decorativa para leitores de tela
           <img
@@ -79,21 +81,18 @@ function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; t
             alt=""
             loading="lazy"
             decoding="async"
-            className="aspect-square w-full rounded-[14px] border border-line object-cover"
+            className="block aspect-square w-full rounded-[14px] object-cover"
           />
         ) : (
           <div className="grid aspect-square w-full place-items-center rounded-[14px] bg-sage/20">
             <Gift aria-hidden className="size-10 text-sage-deep" strokeWidth={1.6} />
+            <span className="sr-only">Bônus {number}</span>
           </div>
         )}
-        <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-4 py-1 text-[14px] font-semibold text-white shadow-(--shadow-soft)">
-          Bônus {number}
-        </span>
       </div>
 
-      <div className="flex flex-1 flex-col px-2 pb-2 pt-7 sm:px-2.5">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-sage-ink">{tag}</p>
-        <h3 className="mt-1.5 font-serif text-[21px] font-semibold leading-snug text-brand">{bonus.name}</h3>
+      <div className="flex flex-1 flex-col px-2 pb-2 pt-4 sm:px-2.5">
+        <h3 className="font-serif text-[21px] font-semibold leading-snug text-brand">{bonus.name}</h3>
         <p className="mt-1.5 text-[15px] leading-normal text-brand/85" data-bonus-desc>
           {bonus.description}
         </p>
