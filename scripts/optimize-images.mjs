@@ -14,6 +14,8 @@ import sharp from "sharp";
 const SRC = "images-src";
 const OUT = "public/img";
 const WIDTHS = [400, 800];
+/** Pastas com imagens largas (mockup do hero) ganham também a versão de 1200px. */
+const WIDE = new Set(["hero"]);
 const EXT = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 
 async function* walk(dir) {
@@ -29,7 +31,7 @@ let count = 0;
 for await (const file of walk(SRC)) {
   const rel = relative(SRC, file).replace(extname(file), "");
   const meta = await sharp(file).metadata();
-  for (const w of WIDTHS) {
+  for (const w of WIDE.has(rel.split(/[\\/]/)[0]) ? [...WIDTHS, 1200] : WIDTHS) {
     const out = join(OUT, `${rel}-${w}.webp`);
     await mkdir(dirname(out), { recursive: true });
     await sharp(file)

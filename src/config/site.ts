@@ -174,26 +174,14 @@ export const guarantee = {
 };
 
 // ── Mídia ────────────────────────────────────────────────────────────
-export interface VideoSource {
-  src: string; // caminho em public/ (ex.: "video/vsl.webm") ou URL absoluta
-  type: "video/webm" | "video/mp4";
-}
-
 export const media = {
-  video: {
-    /** Ordem de preferência. Vazio = vídeo ainda não enviado. */
-    sources: [] as VideoSource[], // PENDENTE — ex.: [{ src: "video/vsl.webm", type: "video/webm" }, { src: "video/vsl.mp4", type: "video/mp4" }]
-    poster: "", // PENDENTE — ex.: "video/vsl-poster.webp"
-    /** Proporção do vídeo: "9/16" (vertical) ou "16/9" (horizontal). */
-    aspect: "9/16" as "9/16" | "16/9",
-    /** Bloquear avanço (não deixa pular para frente do ponto já assistido). */
-    preventSeekForward: true,
-    captionsSrc: "", // opcional — arquivo .vtt de legendas
-    /**
-     * ⚠ TEMPORÁRIO — sem vídeo, mostra no site publicado um espaço reservado discreto
-     * ("Vídeo de apresentação em breve") no lugar do vídeo. false = espaço oculto.
-     */
-    showPlaceholder: true,
+  /**
+   * Mockup do portal no hero (entre a descrição e o CTA). Imagem 3:2, sem sufixo:
+   * "img/hero/mockup-portal" → -400, -800 e -1200.webp. Original em images-src/hero/ → `npm run images`.
+   */
+  mockup: {
+    image: "img/hero/mockup-portal",
+    alt: "O portal Mente em Paz no celular, no tablet e no computador, com o primeiro áudio pronto para ouvir.",
   },
   audioPreview: {
     src: "audio/trecho-demonstracao.mp3",

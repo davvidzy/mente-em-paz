@@ -178,7 +178,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(q2).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("hero mobile: eyebrow em 1 linha, benefícios e vídeo logo abaixo do CTA", async ({ page }) => {
+  test("hero mobile: eyebrow em 1 linha, mockup do portal e benefícios, sem vídeo", async ({ page }) => {
     for (const w of [320, 375]) {
       await page.setViewportSize({ width: w, height: 800 });
       await page.goto("/mente-em-paz/");
@@ -187,7 +187,8 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
       expect(fits, `eyebrow @ ${w}px`).toBe(true);
       const hero = page.locator("[data-hero]");
       await expect(hero.getByRole("list", { name: "Benefícios" })).toBeVisible();
-      await expect(hero.locator("[data-dev-placeholder]")).toContainText("Vídeo de apresentação");
+      await expect(hero.locator("img[data-hero-mockup]")).toBeVisible();
+      await expect(hero.locator("video, [data-dev-placeholder]")).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), `overflow @ ${w}px`).toBeLessThanOrEqual(0);
     }
     await expect(page.locator("#video-title")).toHaveCount(0); // seção de vídeo separada não existe mais

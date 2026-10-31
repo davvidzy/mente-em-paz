@@ -31,12 +31,19 @@ test.describe("Build de produção", () => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
-    // especialista só com expert.verified; depoimentos sem conteúdo → ocultos; vídeo fica no hero
+    // especialista só com expert.verified; depoimentos sem conteúdo → ocultos
     const expertOn = !/verified:\s*false/.test(SITE);
     expect(order).toEqual(["identificacao", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", "planos", "garantia", "faq", "cta-final"]);
     await expect(page.locator("[data-hero] video")).toHaveCount(0);
-    // sem vídeo: espaço reservado discreto só com media.video.showPlaceholder
-    await expect(page.locator("[data-hero] [data-video-soon]")).toHaveCount(/showPlaceholder:\s*true/.test(SITE) ? 1 : 0);
+    // mockup do portal entre a descrição e o CTA, já carregado
+    const mockup = page.locator("[data-hero] img[data-hero-mockup]");
+    await expect.poll(() => mockup.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
+    const [descBottom, mockTop, mockBottom, ctaTop] = await page.evaluate(() => {
+      const r = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+      return [r("#hero-title + p").bottom, r("[data-hero-mockup]").top, r("[data-hero-mockup]").bottom, r("[data-hero] a[href='#planos']").top];
+    });
+    expect(mockTop).toBeGreaterThan(descBottom);
+    expect(ctaTop).toBeGreaterThan(mockBottom);
     await expect(page.locator("[data-dev-placeholder]")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Placeholder");
 

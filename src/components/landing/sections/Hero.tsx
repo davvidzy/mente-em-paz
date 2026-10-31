@@ -1,12 +1,11 @@
-import { BadgeCheck, Clock, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, Video, type LucideIcon } from "lucide-react";
+import { BadgeCheck, Clock, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, type LucideIcon } from "lucide-react";
 import type { ProfileId } from "../../../config/quiz";
 import { landing } from "../../../config/landing";
 import { guarantee, media } from "../../../config/site";
 import { fill } from "../../../lib/format";
+import { routes } from "../../../lib/routes";
 import { ButtonLink } from "../../ui/Button";
-import { DevPlaceholder } from "../../ui/DevPlaceholder";
 import { Emphasis } from "../../ui/Emphasis";
-import { VideoPlayer } from "../../ui/VideoPlayer";
 import { jumpTo } from "../shared";
 
 const benefitIcons: Record<(typeof landing.hero.benefits)[number]["icon"], LucideIcon> = {
@@ -20,7 +19,7 @@ const benefitIcons: Record<(typeof landing.hero.benefits)[number]["icon"], Lucid
 
 export function Hero({ profile }: { profile: ProfileId | null }) {
   const h = landing.hero;
-  const v = media.video;
+  const m = media.mockup;
   const benefits = h.benefits.filter((b) => b.enabled);
 
   return (
@@ -41,7 +40,20 @@ export function Hero({ profile }: { profile: ProfileId | null }) {
             <Emphasis text={h.body} markClass="font-semibold text-brand" />
           </p>
 
-          <div className="mx-auto mt-10 w-full max-w-[400px] md:mt-12">
+          {/* Mockup do portal (celular, tablet e computador) entre a descrição e o CTA */}
+          <img
+            src={routes.asset(`${m.image}-800.webp`)}
+            srcSet={[400, 800, 1200].map((w) => `${routes.asset(`${m.image}-${w}.webp`)} ${w}w`).join(", ")}
+            sizes="(min-width: 768px) 680px, calc(100vw - 32px)"
+            width={1536}
+            height={1024}
+            alt={m.alt}
+            decoding="async"
+            className="mx-auto mt-8 aspect-[3/2] w-full md:mt-10"
+            data-hero-mockup
+          />
+
+          <div className="mx-auto mt-8 w-full max-w-[400px] md:mt-10">
             <ButtonLink href="#planos" size="lg" arrow full onClick={jumpTo("planos")}>
               {h.cta}
             </ButtonLink>
@@ -68,53 +80,9 @@ export function Hero({ profile }: { profile: ProfileId | null }) {
               })}
             </ul>
           )}
-
-          {/* Vídeo de apresentação logo abaixo dos benefícios */}
-          {v.sources.length > 0 ? (
-            <div className="mt-14 md:mt-16" id="video">
-              <VideoPlayer
-                sources={v.sources}
-                poster={v.poster}
-                aspect={v.aspect}
-                preventSeekForward={v.preventSeekForward}
-                captionsSrc={v.captionsSrc}
-                label="Vídeo de apresentação do Mente em Paz"
-              />
-            </div>
-          ) : (
-            (import.meta.env.DEV || v.showPlaceholder) && (
-            <div className={`mx-auto mt-14 md:mt-16 ${v.aspect === "9/16" ? "max-w-[360px]" : ""}`}>
-              <DevPlaceholder
-                title="Vídeo de apresentação (hero)"
-                hint="Adicione os arquivos em public/video/ e preencha media.video em src/config/site.ts. Em produção aparece o espaço reservado (media.video.showPlaceholder) ou nada."
-                className={v.aspect === "9/16" ? "aspect-[9/16]" : "aspect-video"}
-              />
-              {!import.meta.env.DEV && v.showPlaceholder && <VideoSoon aspect={v.aspect} />}
-            </div>
-            )
-          )}
         </div>
       </div>
     </section>
-  );
-}
-
-/**
- * Espaço reservado do vídeo no site publicado (enquanto não há vídeo).
- * Sem botão de play: nada ali é clicável, então nada deve parecer clicável.
- */
-function VideoSoon({ aspect }: { aspect: "9/16" | "16/9" }) {
-  return (
-    <div
-      data-video-soon
-      className={`flex flex-col items-center justify-center gap-3 rounded-(--radius-card) border border-line bg-surface p-6 text-center ${aspect === "9/16" ? "aspect-[9/16]" : "aspect-video"}`}
-    >
-      <span className="grid size-14 place-items-center rounded-full bg-sage/30 text-sage-deep">
-        <Video aria-hidden className="size-6" strokeWidth={1.6} />
-      </span>
-      <p className="font-serif text-[19px] font-semibold text-brand">Vídeo de apresentação</p>
-      <p className="text-[15px] text-sage-ink">Em breve</p>
-    </div>
   );
 }
 

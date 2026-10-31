@@ -50,7 +50,7 @@ npm run images       # converte images-src/ → public/img/ (WebP 400/800)
 |---|---|---|
 | **Checkouts** | Preencher `checkoutEssencialUrl`, `checkoutCompletoUrl` e `checkoutUpgradeUrl` (https://) | Botão desabilitado ("Checkout em configuração"); em dev, aviso de integração pendente |
 | **Meta Pixel** | ID `1701181361725576` e consentimento em `src/config/pixel.ts` (`VITE_META_PIXEL_ID` tem prioridade). Com `REQUIRE_CONSENT = false` o código base vai no `<head>` de todas as páginas (PageView na entrada, sem aviso de cookies); com `true`, só depois do "Aceitar" | — |
-| **Vídeo** (no hero, abaixo dos benefícios) | Arquivos em `public/video/` + `media.video.sources` e `poster` | Espaço oculto |
+| **Mockup do portal** (no hero, entre a descrição e o CTA) | Original 3:2 em `images-src/hero/` → `npm run images`; caminho e texto alternativo em `media.mockup` | — |
 | **Áudio** | Arquivo em `public/audio/` + `media.audioPreview.src` | Seção de demonstração de áudio oculta |
 | **Depoimentos** (carrossel infinito) | Itens reais e autorizados em `testimonials`: `name`, `daysAsClient`, `avatar`, `print` (print do WhatsApp) e `printAlt`. Imagens em `images-src/depoimentos/` → `npm run images` | Seção oculta |
 | **Especialista** (abaixo do áudio) | Dados reais em `expert` (`src/config/site.ts`): nome (persona virtual: sem profissão nem registro), foto 4:5, fala e aviso do rodapé. Depois mude `verified: true` | Seção oculta |

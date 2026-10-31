@@ -24,8 +24,8 @@ import { Notice, type NoticeMessage } from "./Notice";
 const DEV = import.meta.env.DEV;
 
 /**
- * Landing Page. O vídeo de apresentação fica dentro do Hero.
- * Seções opcionais sem conteúdo (vídeo, áudio, depoimentos) ficam ocultas em
+ * Landing Page. O mockup do portal fica dentro do Hero.
+ * Seções opcionais sem conteúdo (áudio, depoimentos) ficam ocultas em
  * produção; em desenvolvimento mostram placeholder identificado.
  * O fundo alterna automaticamente entre as seções visíveis.
  */
