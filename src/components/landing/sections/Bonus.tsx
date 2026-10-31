@@ -22,9 +22,10 @@ export function Bonus({ tone }: { tone: Tone }) {
         <div className="mx-auto max-w-[760px]">
           <SectionHead id="bonus-title" center title={fill(c.title, values)} text={c.text} />
 
-          <ul className="mt-9 space-y-5 md:mt-11 md:space-y-6">
+          {/* 1 coluna no celular; 2 a partir de 640px (o último, ímpar, fica centralizado) */}
+          <ul className="mt-9 flex flex-wrap justify-center gap-5 md:mt-11 md:gap-6">
             {items.map((b, i) => (
-              <Reveal as="li" key={b.name}>
+              <Reveal as="li" key={b.name} className="w-full max-w-[400px] sm:w-[calc(50%-10px)] md:w-[calc(50%-12px)]">
                 <BonusCard bonus={b} number={i + 1} tag={c.tag} />
               </Reveal>
             ))}
@@ -34,7 +35,7 @@ export function Bonus({ tone }: { tone: Tone }) {
             {bonuses.showValues ? (
               <>
                 <p className="text-[15px] text-sage-deep">
-                  {fill(c.totalLabel, values)} <s>{formatBRL(total)}</s>
+                  {fill(c.totalLabel, values)} <s data-bonus-total>{formatBRL(total)}</s>
                 </p>
                 <p className="mt-2 font-serif text-[44px] font-semibold leading-none tracking-tight text-brand md:text-[52px]">
                   <span className="sr-only">por </span>
@@ -59,45 +60,56 @@ export function Bonus({ tone }: { tone: Tone }) {
 }
 
 /**
- * Mobile: capa à esquerda do título; descrição (uma frase) na largura toda, abaixo (≤ 2 linhas).
- * ≥ 640px: capa ocupa as duas linhas à esquerda.
+ * Capa quadrada ocupando a largura do card (só com a margem interna), selo "Bônus N"
+ * metade sobre a capa, metade fora; abaixo: etiqueta, nome, descrição e o preço
+ * individual riscado (com `bonuses.showValues`) seguido de "GRÁTIS" em destaque.
  */
 function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; tag: string }) {
   return (
-    <article className="card grid grid-cols-[88px_minmax(0,1fr)] gap-x-3.5 gap-y-4 p-4 shadow-(--shadow-soft) transition-[transform,box-shadow] duration-300 ease-(--ease-calm) [grid-template-areas:'cover_head'_'desc_desc'] min-[380px]:grid-cols-[96px_minmax(0,1fr)] sm:grid-cols-[128px_minmax(0,1fr)] sm:gap-x-5 sm:gap-y-1 sm:p-5 sm:[grid-template-areas:'cover_head'_'cover_desc'] md:hover:-translate-y-0.5 md:hover:shadow-(--shadow-lift)">
-      <div className="relative self-start [grid-area:cover]">
+    <article className="card flex h-full flex-col p-3 shadow-(--shadow-soft) transition-[transform,box-shadow] duration-300 ease-(--ease-calm) sm:p-3.5 md:hover:-translate-y-0.5 md:hover:shadow-(--shadow-lift)">
+      <div className="relative">
         {bonus.image ? (
-          // capa repete o nome do título ao lado → decorativa para leitores de tela
+          // capa repete o nome do título abaixo → decorativa para leitores de tela
           <img
             src={routes.asset(`${bonus.image}-400.webp`)}
             srcSet={`${routes.asset(`${bonus.image}-400.webp`)} 400w, ${routes.asset(`${bonus.image}-800.webp`)} 800w`}
-            sizes="(min-width: 640px) 128px, 96px"
+            sizes="(min-width: 640px) 360px, calc(100vw - 56px)"
             width={400}
             height={400}
             alt=""
             loading="lazy"
             decoding="async"
-            className="aspect-square w-full rounded-xl border border-line object-cover"
+            className="aspect-square w-full rounded-[14px] border border-line object-cover"
           />
         ) : (
-          <div className="grid aspect-square w-full place-items-center rounded-xl bg-sage/20">
-            <Gift aria-hidden className="size-7 text-sage-deep" strokeWidth={1.6} />
+          <div className="grid aspect-square w-full place-items-center rounded-[14px] bg-sage/20">
+            <Gift aria-hidden className="size-10 text-sage-deep" strokeWidth={1.6} />
           </div>
         )}
-        <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-2.5 py-0.5 text-[12px] font-semibold text-white">
+        <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-4 py-1 text-[14px] font-semibold text-white shadow-(--shadow-soft)">
           Bônus {number}
         </span>
       </div>
 
-      <div className="min-w-0 self-center [grid-area:head] sm:self-end">
-        <p className="inline-flex rounded-full border border-sage px-2.5 py-0.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-brand">
-          {tag}
+      <div className="flex flex-1 flex-col px-2 pb-2 pt-7 sm:px-2.5">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-sage-ink">{tag}</p>
+        <h3 className="mt-1.5 font-serif text-[21px] font-semibold leading-snug text-brand">{bonus.name}</h3>
+        <p className="mt-1.5 text-[15px] leading-normal text-brand/85" data-bonus-desc>
+          {bonus.description}
         </p>
-        <h3 className="mt-2 font-serif text-[19px] font-semibold leading-snug text-brand sm:text-[20px]">{bonus.name}</h3>
+        <p className="mt-auto flex items-center gap-3 pt-4" data-bonus-price>
+          {bonuses.showValues && (
+            <s className="text-[16px] text-sage-ink">
+              <span className="sr-only">De </span>
+              {formatBRL(bonus.valueCents)}
+            </s>
+          )}
+          <span className="rounded-full bg-sage-deep px-4 py-1 text-[15px] font-bold uppercase tracking-[0.08em] text-white">
+            {bonuses.showValues && <span className="sr-only">por </span>}
+            Grátis
+          </span>
+        </p>
       </div>
-      <p className="text-[15px] leading-normal text-brand/85 [grid-area:desc] sm:self-start" data-bonus-desc>
-        {bonus.description}
-      </p>
     </article>
   );
 }

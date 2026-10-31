@@ -186,7 +186,10 @@ test.describe("Build de produção", () => {
       await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     }
     if (/^\s*showValues:\s*true/m.test(SITE)) {
-      await expect(sec.locator("s")).toHaveText("R$ 134,50");
+      await expect(sec.locator("[data-bonus-total]")).toHaveText("R$ 134,50");
+      // cada card: preço individual riscado + GRÁTIS
+      await expect(sec.locator("[data-bonus-price] s")).toHaveText([/R\$ 39,90$/, /R\$ 24,90$/, /R\$ 19,90$/, /R\$ 24,90$/, /R\$ 24,90$/]);
+      await expect(sec.locator("[data-bonus-price]", { hasText: "Grátis" })).toHaveCount(5);
       await expect(sec).toContainText("R$ 0,00");
     } else {
       await expect(sec.locator("s")).toHaveCount(0);
