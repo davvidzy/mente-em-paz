@@ -3,14 +3,11 @@
  * Preços, planos, bônus, depoimentos, garantia e FAQ ficam em `site.ts`.
  * Trechos entre ** ** são exibidos em destaque.
  */
-import type { ProfileId } from "./quiz";
 
 export const landing = {
   header: { cta: "Ver planos" },
 
   hero: {
-    /** Uma linha no mobile (≤ 30 caracteres). */
-    eyebrow: "Pausa noturna para quem cuida",
     title: "Sua noite mais tranquila começa com **um simples play.**",
     body: "Conheça o **Mente em Paz**: 7 áudios guiados para ajudar você a desacelerar os pensamentos e criar um momento de tranquilidade antes de dormir.",
     cta: "Quero descansar melhor",
@@ -27,14 +24,6 @@ export const landing = {
       { icon: "digital", label: "100% digital", enabled: false },
     ] as { icon: "guarantee" | "repeat" | "digital" | "lifetime" | "once" | "duration"; label: string; enabled: boolean }[],
   },
-
-  /** Substitui o eyebrow quando a visitante vem do quiz. Uma linha no mobile (≤ 30 caracteres). */
-  heroWelcome: {
-    pais: "Para quem cuida dos pais",
-    culpa: "Para descansar sem culpa",
-    pensamentos: "Para desacelerar a mente",
-    sobrecarga: "Para um respiro na rotina",
-  } satisfies Record<ProfileId, string>,
 
   identification: {
     title: "Seu corpo está cansado. Mas sua mente não descansa.",

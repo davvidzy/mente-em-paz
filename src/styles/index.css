@@ -145,6 +145,13 @@
     line-height: 1.24;
     letter-spacing: -0.005em;
   }
+  /* Título do hero maior e mais escuro que o h1 padrão: domina a primeira dobra */
+  .hero-title {
+    font-size: clamp(36px, 3.2vw + 24px, 60px);
+    line-height: 1.12;
+    letter-spacing: -0.018em;
+    color: var(--color-brand-deep);
+  }
   /* Destaque do hero: sem itálico e sem marca-texto (legibilidade); só muda o tom */
   .hero-accent {
     display: block; /* a segunda frase sempre começa em nova linha */

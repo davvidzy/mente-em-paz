@@ -1,5 +1,4 @@
 import { BadgeCheck, Clock, Infinity as InfinityIcon, MonitorSmartphone, Repeat, ShieldCheck, type LucideIcon } from "lucide-react";
-import type { ProfileId } from "../../../config/quiz";
 import { landing } from "../../../config/landing";
 import { guarantee, media } from "../../../config/site";
 import { fill } from "../../../lib/format";
@@ -17,7 +16,7 @@ const benefitIcons: Record<(typeof landing.hero.benefits)[number]["icon"], Lucid
   duration: Clock,
 };
 
-export function Hero({ profile }: { profile: ProfileId | null }) {
+export function Hero() {
   const h = landing.hero;
   const m = media.mockup;
   const benefits = h.benefits.filter((b) => b.enabled);
@@ -25,18 +24,15 @@ export function Hero({ profile }: { profile: ProfileId | null }) {
   return (
     <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-canvas" data-hero>
       <HeroArt />
-      <div className="container-page pb-[clamp(72px,9vw,128px)] pt-14 sm:pt-[clamp(64px,7vw,104px)]">
+      {/* topo um pouco menor que o antigo (respiro + eyebrow); o espaço vai para entre título e descrição */}
+      <div className="container-page pb-[clamp(72px,9vw,128px)] pt-[84px] sm:pt-[clamp(88px,9vw,132px)]">
         <div className="anim-enter mx-auto max-w-[680px] text-center">
-          {/* Cabe em uma linha no mobile; com zoom ou fonte grande quebra em vez de cortar o texto */}
-          <p className="t-eyebrow text-balance text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" data-eyebrow>
-            {profile ? landing.heroWelcome[profile] : h.eyebrow}
-          </p>
-
-          <h1 id="hero-title" className="t-h1 t-hero mx-auto mt-6 max-w-[17ch] md:mt-7 md:max-w-[20ch]">
+          <h1 id="hero-title" className="t-h1 t-hero hero-title mx-auto max-w-[15ch] md:max-w-[17ch]">
             <Emphasis text={h.title} markClass="hero-accent" />
           </h1>
 
-          <p className="t-muted mx-auto mt-7 max-w-[34ch] text-[17px] leading-relaxed md:mt-8 md:max-w-[44ch] md:text-lg">
+          {/* descrição discreta: sans menor, entrelinha aberta, coluna estreita */}
+          <p className="mx-auto mt-9 max-w-[32ch] text-[16px] leading-[1.7] text-sage-ink md:mt-11 md:max-w-[42ch] md:text-[17px]">
             <Emphasis text={h.body} markClass="font-semibold text-brand" />
           </p>
 

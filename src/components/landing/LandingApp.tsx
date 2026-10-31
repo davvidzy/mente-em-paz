@@ -71,7 +71,7 @@ export function LandingApp() {
       </a>
       <Header />
       <main id="conteudo" tabIndex={-1}>
-        <Hero profile={profile} />
+        <Hero />
         {sections
           .filter(([visible]) => visible)
           .map(([, render]) => render(i++ % 2 === 0 ? "surface" : "canvas"))}

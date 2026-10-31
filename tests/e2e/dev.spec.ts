@@ -32,8 +32,8 @@ test.describe("Quiz", () => {
     expect(url.searchParams.get("utm_source")).toBe("facebook");
     expect(url.searchParams.get("utm_campaign")).toBe("lancamento");
     expect(url.searchParams.get("fbclid")).toBe("abc123");
-    // frase discreta de acolhimento conforme o perfil
-    await expect(page.locator("[data-eyebrow]")).toHaveText("Para quem cuida dos pais");
+    // identificação personalizada conforme o perfil
+    await expect(page.locator("#identificacao h2")).toContainText("Seus pais dormem. Sua mente, não.");
     expect(errors).toEqual([]);
   });
 
@@ -178,13 +178,14 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(q2).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("hero mobile: eyebrow em 1 linha, mockup do portal e benefícios, sem vídeo", async ({ page }) => {
+  test("hero mobile: hierarquia título > descrição, mockup do portal e benefícios, sem vídeo", async ({ page }) => {
     for (const w of [320, 375]) {
       await page.setViewportSize({ width: w, height: 800 });
       await page.goto("/mente-em-paz/");
-      const eb = page.locator("[data-eyebrow]");
-      const fits = await eb.evaluate((e) => e.scrollWidth <= e.clientWidth && e.clientHeight < 24);
-      expect(fits, `eyebrow @ ${w}px`).toBe(true);
+      const [titleSize, bodySize] = await page.evaluate(() =>
+        ["#hero-title", "#hero-title + p"].map((s) => parseFloat(getComputedStyle(document.querySelector(s)!).fontSize)),
+      );
+      expect(titleSize, `título @ ${w}px`).toBeGreaterThanOrEqual(bodySize * 2);
       const hero = page.locator("[data-hero]");
       await expect(hero.getByRole("list", { name: "Benefícios" })).toBeVisible();
       await expect(hero.locator("img[data-hero-mockup]")).toBeVisible();
