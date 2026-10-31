@@ -169,15 +169,15 @@ export const upgrade = {
 
 // ── Cupom da roleta ─────────────────────────────────────────────────
 // A roleta abre centralizada após `delaySeconds` na página de vendas e para SEMPRE na
-// casa `winningSlice` (5%: o único cupom que a plataforma de checkout aceita).
+// casa `winningSlice` (10%: o único cupom que a plataforma de checkout aceita).
 // O cupom precisa existir de verdade no checkout, com este código e este desconto.
 export const coupon = {
   enabled: true,
   code: "QUEROSENTIRPAZ",
   /** Prêmio entregue (resultado da roleta e botão flutuante). */
-  prize: "5% OFF",
+  prize: "10% OFF",
   /** Casas da roleta, em sentido horário a partir do topo. */
-  slices: ["5%", "R$ 5", "2%", "R$ 10", "4%", "R$ 5", "2%", "4%"],
+  slices: ["10%", "R$ 5", "5%", "R$ 10", "10%", "R$ 5", "5%", "R$ 10"],
   /** Índice da casa em que a roleta sempre para. */
   winningSlice: 0,
   /** Minutos para usar o cupom depois de ganhar. Ao zerar, o cupom some do site (roleta e botão). */

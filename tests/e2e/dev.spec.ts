@@ -207,7 +207,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     expect(moving).toBe("none");
   });
 
-  test("roleta de cupom: abre centralizada após 5 s, para em 5%, copia o cupom, leva aos planos e fica no botão flutuante", async ({ page, context }) => {
+  test("roleta de cupom: abre centralizada após 5 s, para em 10%, copia o cupom, leva aos planos e fica no botão flutuante", async ({ page, context }) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     const evs = await recordEvents(page);
     await page.setViewportSize({ width: 390, height: 844 });
@@ -222,9 +222,9 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     const box = (await dialog.boundingBox())!;
     expect(Math.abs(box.y + box.height / 2 - 844 / 2)).toBeLessThan(4);
     expect(await dialog.evaluate((d) => d.scrollHeight <= d.clientHeight)).toBe(true);
-    expect(await dialog.locator("[data-wheel] text").allTextContents()).toEqual(["5%", "R$ 5", "2%", "R$ 10", "4%", "R$ 5", "2%", "4%"]);
+    expect(await dialog.locator("[data-wheel] text").allTextContents()).toEqual(["10%", "R$ 5", "5%", "R$ 10", "10%", "R$ 5", "5%", "R$ 10"]);
     await dialog.getByRole("button", { name: "Girar agora" }).click();
-    await expect(dialog.getByRole("heading")).toHaveText("Parabéns! Você ganhou 5% OFF");
+    await expect(dialog.getByRole("heading")).toHaveText("Parabéns! Você ganhou 10% OFF");
     await expect(dialog.locator("[data-coupon-code]")).toHaveText("QUEROSENTIRPAZ");
     await dialog.getByRole("button", { name: "Copiar" }).click();
     await expect(dialog.getByRole("button", { name: "Copiado!" })).toBeVisible();
@@ -265,7 +265,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
       expect(await oneLine(), `título @ ${w}`).toBe(true);
       await dialog.getByRole("button", { name: "Girar agora" }).click();
       await page.clock.runFor(300);
-      await expect(dialog.getByRole("heading")).toHaveText("Parabéns! Você ganhou 5% OFF");
+      await expect(dialog.getByRole("heading")).toHaveText("Parabéns! Você ganhou 10% OFF");
       expect(await oneLine(), `resultado @ ${w}`).toBe(true);
       expect(await dialog.evaluate((d) => d.scrollHeight <= d.clientHeight), `rolagem @ ${w}x${h}`).toBe(true);
       await expect(dialog.locator("[data-coupon-timer]")).toContainText("05:00");

@@ -13,7 +13,7 @@ const SPIN_MS = 4200;
 
 /**
  * Roleta de cupom, suspensa no centro da tela (LandingApp controla quando abre).
- * Para sempre na casa `coupon.winningSlice` (5%: único cupom aceito pelo checkout).
+ * Para sempre na casa `coupon.winningSlice` (10%: único cupom aceito pelo checkout).
  * Com `expiresAt` (cupom já ganho), abre direto no resultado, com o tempo restante;
  * ao zerar, o cupom some e fica o aviso de expirado.
  */
