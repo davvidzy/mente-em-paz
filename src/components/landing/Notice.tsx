@@ -16,7 +16,7 @@ export function Notice({ message, onClose }: { message: NoticeMessage | null; on
 
   if (!message) return null;
   return (
-    <div role="status" className="anim-enter fixed inset-x-3 top-20 z-[60] mx-auto max-w-md sm:top-24" data-notice>
+    <div role="status" className="fixed inset-x-3 top-20 z-[60] mx-auto max-w-md sm:top-24" data-notice>
       <div className="flex gap-3 rounded-(--radius-card) border border-accent bg-white p-4 shadow-(--shadow-lift)">
         <Construction aria-hidden className="mt-0.5 size-5 shrink-0 text-sage-deep" strokeWidth={1.7} />
         <div className="min-w-0 flex-1">

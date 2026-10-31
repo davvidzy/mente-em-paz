@@ -46,7 +46,7 @@ export function QuizQuestion({ index, selected, onAnswer, onBack, headingRef }: 
         aria-valuenow={index + (picked ? 1 : 0)}
       >
         <div
-          className="h-full rounded-full bg-brand transition-[width] duration-500 ease-(--ease-calm)"
+          className="h-full rounded-full bg-brand"
           style={{ width: `${Math.max(progress, 4)}%` }}
         />
       </div>
@@ -55,7 +55,7 @@ export function QuizQuestion({ index, selected, onAnswer, onBack, headingRef }: 
 
   return (
     <QuizShell top={top}>
-      <section className="anim-enter flex flex-1 flex-col pt-10 sm:justify-center sm:pb-10 sm:pt-12">
+      <section className="flex flex-1 flex-col pt-10 sm:justify-center sm:pb-10 sm:pt-12">
         <h1 ref={headingRef} tabIndex={-1} className="t-h2 max-w-[22ch]">
           {q.title}
         </h1>
@@ -73,7 +73,7 @@ export function QuizQuestion({ index, selected, onAnswer, onBack, headingRef }: 
                       setPicked(o.id);
                       onAnswer(o.id);
                     }}
-                    className={`group flex min-h-16 w-full items-center gap-4 rounded-(--radius-card) border px-5 py-4 text-left text-[16.5px] leading-snug transition-[background-color,border-color,box-shadow,transform] duration-200 active:scale-[0.99] sm:text-[17px] ${
+                    className={`group flex min-h-16 w-full items-center gap-4 rounded-(--radius-card) border px-5 py-4 text-left text-[16.5px] leading-snug transition-[background-color,border-color,box-shadow] duration-200 sm:text-[17px] ${
                       active
                         ? "border-brand bg-white shadow-(--shadow-soft)"
                         : "border-line bg-white/70 hover:border-sage-deep/60 hover:bg-white"

@@ -13,9 +13,9 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const base =
   "group inline-flex items-center justify-center gap-2.5 text-center font-sans font-semibold leading-snug " +
-  "transition-[background-color,color,border-color,box-shadow,transform] duration-300 ease-(--ease-calm) " +
+  "transition-[background-color,color,border-color,box-shadow] duration-300 ease-(--ease-calm) " +
   "focus-visible:outline-2 focus-visible:outline-offset-3 disabled:cursor-not-allowed disabled:opacity-55 " +
-  "active:scale-[0.985] select-none";
+  "select-none";
 
 const variants: Record<Variant, string> = {
   primary:
@@ -44,7 +44,7 @@ function Content({ arrow, children }: { arrow?: boolean; children: ReactNode }) 
       {arrow && (
         <ArrowRight
           aria-hidden
-          className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-0.5"
+          className="size-[18px] shrink-0"
           strokeWidth={2}
         />
       )}

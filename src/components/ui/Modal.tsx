@@ -66,7 +66,7 @@ export function Modal({ open, onClose, labelledBy, describedBy, tall, children }
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
       <div
-        className="anim-fade absolute inset-0 bg-brand-deep/55 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-brand-deep/55 backdrop-blur-[2px]"
         onClick={onClose}
         aria-hidden
       />
@@ -76,7 +76,7 @@ export function Modal({ open, onClose, labelledBy, describedBy, tall, children }
         aria-modal="true"
         aria-labelledby={labelledBy}
         aria-describedby={describedBy}
-        className={`anim-enter relative w-full overflow-y-auto rounded-t-[24px] bg-canvas shadow-(--shadow-lift) sm:max-w-[540px] sm:rounded-[24px] ${
+        className={`relative w-full overflow-y-auto rounded-t-[24px] bg-canvas shadow-(--shadow-lift) sm:max-w-[540px] sm:rounded-[24px] ${
           tall ? "flex h-[80dvh] flex-col sm:h-auto sm:max-h-[92dvh]" : "max-h-[92dvh]"
         }`}
       >

@@ -27,7 +27,7 @@ export function ConsentBanner() {
     <div
       role="region"
       aria-label="Aviso de cookies"
-      className="anim-enter fixed inset-x-0 bottom-0 z-40 p-3 sm:p-5"
+      className="fixed inset-x-0 bottom-0 z-40 p-3 sm:p-5"
     >
       <div className="mx-auto flex max-w-3xl flex-col gap-3 rounded-(--radius-card) border border-line bg-white/95 p-4 shadow-(--shadow-lift) backdrop-blur sm:flex-row sm:items-center sm:gap-5 sm:p-5">
         <p className="t-small text-brand">

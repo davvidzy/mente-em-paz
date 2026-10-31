@@ -1,7 +1,8 @@
 import { useState, type MouseEvent } from "react";
 import { Check, Lock, Mail, ShieldCheck } from "lucide-react";
 import { landing } from "../../../config/landing";
-import { checkout, guarantee, payment, plans, tracking, upgrade, type Plan } from "../../../config/site";
+import { checkout, coupon, guarantee, payment, plans, tracking, upgrade, type Plan } from "../../../config/site";
+import { CouponCode } from "../Coupon";
 import { track, trackOnce } from "../../../lib/analytics";
 import { checkoutBaseUrl, goToCheckout, hasCheckoutUrl, type CheckoutKind } from "../../../lib/checkout";
 import { fill, priceParts } from "../../../lib/format";
@@ -23,7 +24,7 @@ const CONFIG_FIELD: Record<CheckoutKind, string> = {
   upgrade: "checkoutUpgradeUrl",
 };
 
-export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMessage) => void }) {
+export function Plans({ tone, onNotice, couponWon = false }: { tone: Tone; onNotice: (n: NoticeMessage) => void; couponWon?: boolean }) {
   const c = landing.plans;
   const [modalOpen, setModalOpen] = useState(false);
   const sectionRef = useInView<HTMLDivElement>(() => trackOnce("plan_section_viewed"), 0.25);
@@ -80,6 +81,14 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
     <Section id="planos" tone={tone} labelledBy="planos-title">
       <div ref={sectionRef} className="container-page">
         <SectionHead id="planos-title" title={c.title} center />
+
+        {/* cupom ganho na roleta: lembrete para usar no checkout */}
+        {couponWon && (
+          <div className="mx-auto mt-8 max-w-[440px] text-center" data-coupon-reminder>
+            <p className="text-[15px] font-medium text-brand">{fill(landing.couponWheel.reminder, { premio: coupon.prize })}</p>
+            <CouponCode className="mt-3" compact />
+          </div>
+        )}
 
         <div className="mx-auto mt-12 grid max-w-[920px] gap-5 md:mt-14 md:grid-cols-2 md:items-stretch md:gap-6">
           {/* Completo primeiro: em cima no celular, à esquerda no desktop */}

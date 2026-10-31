@@ -91,6 +91,24 @@ export const landing = {
     since: "Cliente há {dias} dias",
   },
 
+  /** Roleta de cupom (código e prêmio em site.ts → coupon). {premio} = coupon.prize. */
+  couponWheel: {
+    badge: "Oferta misteriosa",
+    title: "Gire a roleta e ganhe",
+    titleAccent: "um desconto",
+    text: "Uma tentativa por pessoa.",
+    spin: "Girar agora",
+    spinning: "Girando…",
+    wonTitle: "Parabéns! Você ganhou",
+    wonText: "Use o cupom abaixo no checkout.",
+    codeLabel: "Seu cupom",
+    copy: "Copiar",
+    copied: "Copiado!",
+    cta: "Usar cupom agora",
+    /** Lembrete acima dos planos depois de ganhar. */
+    reminder: "Seu cupom de {premio}: use no checkout.",
+  },
+
   plans: {
     title: "Escolha seu Mente em Paz.",
     pendingCta: "Checkout em configuração",

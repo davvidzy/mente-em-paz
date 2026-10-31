@@ -26,7 +26,7 @@ export function Accordion({ items }: { items: { q: string; a: ReactNode }[] }) {
                 <span>{item.q}</span>
                 <span
                   aria-hidden
-                  className={`grid size-8 shrink-0 place-items-center rounded-full border transition-[transform,background-color,border-color] duration-300 ${isOpen ? "rotate-45 border-brand bg-brand text-white" : "border-line text-brand"}`}
+                  className={`grid size-8 shrink-0 place-items-center rounded-full border ${isOpen ? "rotate-45 border-brand bg-brand text-white" : "border-line text-brand"}`}
                 >
                   <Plus className="size-4" strokeWidth={2} />
                 </span>
@@ -36,7 +36,7 @@ export function Accordion({ items }: { items: { q: string; a: ReactNode }[] }) {
               id={panel}
               role="region"
               aria-labelledby={btn}
-              className={`grid transition-[grid-template-rows] duration-400 ease-(--ease-calm) ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+              className={`grid ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
               inert={!isOpen}
             >
               <div className="overflow-hidden">

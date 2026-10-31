@@ -66,7 +66,7 @@ export function Bonus({ tone }: { tone: Tone }) {
  */
 function BonusCard({ bonus, number, tag }: { bonus: BonusItem; number: number; tag: string }) {
   return (
-    <article className="card flex h-full flex-col p-3 shadow-(--shadow-soft) transition-[transform,box-shadow] duration-300 ease-(--ease-calm) sm:p-3.5 md:hover:-translate-y-0.5 md:hover:shadow-(--shadow-lift)">
+    <article className="card flex h-full flex-col p-3 shadow-(--shadow-soft) sm:p-3.5">
       <p className="px-2 pb-2.5 pt-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-sage-ink sm:px-2.5">{tag}</p>
       {/* capa quadrada em todos os cards (a numeração "Bônus N" já vem na imagem) */}
       <div className="overflow-hidden rounded-[14px]">

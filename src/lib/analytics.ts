@@ -31,7 +31,12 @@ export type EventName =
   | "upgrade_popup_opened"
   | "upgrade_accepted"
   | "upgrade_declined"
-  | "checkout_redirect";
+  | "checkout_redirect"
+  // roleta de cupom
+  | "coupon_wheel_opened"
+  | "coupon_wheel_spun"
+  | "coupon_copied"
+  | "coupon_cta_clicked";
 
 type Params = Record<string, string | number | boolean | undefined>;
 

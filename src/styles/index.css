@@ -217,47 +217,6 @@
   }
 }
 
-/* ───────────── Carrossel infinito (depoimentos) ───────────── */
-@keyframes mp-marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-.mp-marquee {
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-}
-.mp-marquee-track {
-  display: flex;
-  width: max-content;
-  align-items: flex-start;
-  animation: mp-marquee var(--marquee-duration, 40s) linear infinite;
-}
-.mp-marquee:hover .mp-marquee-track,
-.mp-marquee:focus-within .mp-marquee-track,
-.mp-marquee-track[data-paused] {
-  animation-play-state: paused;
-}
-.mp-marquee-item {
-  padding-right: 16px; /* espaçamento uniforme → o loop em -50% fica perfeito */
-}
-@media (prefers-reduced-motion: reduce) {
-  .mp-marquee {
-    overflow-x: auto;
-    -webkit-mask-image: none;
-    mask-image: none;
-    padding-inline: var(--page-gutter);
-  }
-  .mp-marquee-track {
-    animation: none;
-  }
-  .mp-marquee-item[aria-hidden="true"],
-  .mp-marquee-control {
-    display: none;
-  }
-}
-
 /* Sobre o fundo areia, o sálvia-escuro ganha um tom derivado para manter contraste AA.
    Fora de @layer para prevalecer sobre os utilitários do Tailwind. */
 .bg-surface :is(.t-muted, .text-sage-deep, .t-eyebrow) {
@@ -267,59 +226,9 @@
   color: var(--color-sage-deep);
 }
 
-/* ───────────── Movimento (discreto; desligado em prefers-reduced-motion) ───────────── */
-@keyframes mp-enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes mp-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes mp-breathe {
-  0%,
-  100% {
-    transform: scale(0.92);
-    opacity: 0.55;
-  }
-  50% {
-    transform: scale(1.06);
-    opacity: 1;
-  }
-}
-.anim-enter {
-  animation: mp-enter 520ms var(--ease-calm) both;
-}
-.anim-fade {
-  animation: mp-fade 400ms var(--ease-calm) both;
-}
-.anim-breathe {
-  animation: mp-breathe 2.4s ease-in-out infinite;
-}
-
-/* Revelação ao rolar (classe aplicada pelo hook useReveal) */
-.reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity 700ms var(--ease-calm),
-    transform 700ms var(--ease-calm);
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
+/* ───────────── Movimento ─────────────
+   Site estático: sem animações de entrada, revelação ao rolar ou carrossel.
+   O único movimento é o giro da roleta de cupom (desligado com movimento reduzido). */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -330,10 +239,6 @@
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
-  }
-  .reveal {
-    opacity: 1;
-    transform: none;
   }
 }
 

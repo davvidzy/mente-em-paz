@@ -50,6 +50,17 @@ export async function blockMeta(page: Page): Promise<string[]> {
   return hits;
 }
 
+/** Marca a roleta de cupom como já vista: ela não abre por cima dos outros testes. */
+export async function skipCouponWheel(page: Page) {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("mp_coupon_wheel_seen", "true");
+    } catch {
+      /* sem storage */
+    }
+  });
+}
+
 /** Responde no lugar da Wiapy: o teste confere o destino sem abrir o checkout real. */
 export async function stubCheckout(page: Page) {
   await page.route("https://pay.wiapy.com/**", (route) =>

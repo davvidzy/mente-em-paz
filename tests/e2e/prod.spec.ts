@@ -1,14 +1,17 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { ANSWERS_PAIS, answerQuiz, blockMeta, collectErrors, stubCheckout } from "./helpers";
+import { ANSWERS_PAIS, answerQuiz, blockMeta, collectErrors, skipCouponWheel, stubCheckout } from "./helpers";
 
 const WIDTHS = [320, 360, 375, 390, 430, 768, 1024, 1440];
 const SITE = readFileSync("src/config/site.ts", "utf8");
 const PREVIEW = /previewCheckout:\s*true/.test(SITE);
 const READY = ["checkoutEssencialUrl", "checkoutCompletoUrl", "checkoutUpgradeUrl"].every((k) => new RegExp(`${k}:\\s*"https://`).test(SITE));
 
-test.beforeEach(({ page }) => blockMeta(page));
+test.beforeEach(async ({ page }, info) => {
+  await blockMeta(page);
+  if (!/roleta/.test(info.title)) await skipCouponWheel(page);
+});
 
 test.describe("Build de produção", () => {
   test("sem rolagem horizontal em nenhuma largura (quiz, resultado, LP)", async ({ page }) => {

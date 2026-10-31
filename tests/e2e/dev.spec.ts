@@ -1,8 +1,11 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
-import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, stubCheckout } from "./helpers";
+import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, skipCouponWheel, stubCheckout } from "./helpers";
 
-test.beforeEach(({ page }) => blockMeta(page));
+test.beforeEach(async ({ page }, info) => {
+  await blockMeta(page);
+  if (!/roleta/.test(info.title)) await skipCouponWheel(page);
+});
 
 test.describe("Quiz", () => {
   test("fluxo completo: abre direto na 1ª pergunta, 3 perguntas, sem preços, resultado e CTA para a LP com UTMs", async ({ page }) => {
@@ -195,13 +198,47 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(page.locator("#video-title")).toHaveCount(0); // seção de vídeo separada não existe mais
   });
 
-  test("depoimentos: carrossel infinito com ≥ 4 placeholders (dev)", async ({ page }) => {
+  test("depoimentos: lista estática, sem movimento automático, com ≥ 4 placeholders (dev)", async ({ page }) => {
     await page.goto("/mente-em-paz/");
     const cards = page.locator('[data-testimonial="placeholder"]');
-    expect(await cards.count()).toBeGreaterThanOrEqual(8); // 4 + cópia do loop
+    await expect(cards).toHaveCount(4);
     await expect(page.locator("#depoimentos")).toContainText("Cliente há 7 dias");
-    const anim = await page.locator(".mp-marquee-track").evaluate((e) => getComputedStyle(e).animationName);
-    expect(anim).toBe("mp-marquee");
+    const moving = await page.locator("#depoimentos ul").evaluate((e) => getComputedStyle(e).animationName);
+    expect(moving).toBe("none");
+  });
+
+  test("roleta de cupom: abre uma vez ao chegar nos bônus, dá 5% OFF, copia o cupom e leva aos planos", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    const evs = await recordEvents(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/mente-em-paz/");
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toHaveCount(0);
+    await page.locator("#bonus").scrollIntoViewIfNeeded();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("heading")).toContainText("Gire a roleta e ganhe um desconto");
+    // todas as casas com o mesmo prêmio (nenhum prêmio que nunca sai)
+    const labels = await dialog.locator("[data-wheel] text").allTextContents();
+    expect(new Set(labels)).toEqual(new Set(["5% OFF"]));
+    expect(await dialog.evaluate((d) => d.scrollHeight <= d.clientHeight)).toBe(true);
+    await dialog.getByRole("button", { name: "Girar agora" }).click();
+    await expect(dialog.getByRole("heading")).toHaveText("Parabéns! Você ganhou 5% OFF");
+    await expect(dialog.locator("[data-coupon-code]")).toHaveText("QUEROSENTIRPAZ");
+    await dialog.getByRole("button", { name: "Copiar" }).click();
+    await expect(dialog.getByRole("button", { name: "Copiado!" })).toBeVisible();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("QUEROSENTIRPAZ");
+    await dialog.getByRole("button", { name: /Usar cupom agora/ }).click();
+    await expect(dialog).toHaveCount(0);
+    await expect(page.locator("#planos-title")).toBeInViewport();
+    await expect(page.locator("#planos [data-coupon-reminder]")).toContainText("QUEROSENTIRPAZ");
+    expect(evs).toEqual(expect.arrayContaining(["coupon_wheel_opened", "coupon_wheel_spun", "coupon_copied", "coupon_cta_clicked"]));
+    // não reabre: nem rolando de novo, nem recarregando; o lembrete do cupom continua nos planos
+    await page.reload();
+    await page.locator("#bonus").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    await expect(dialog).toHaveCount(0);
+    await expect(page.locator("#planos [data-coupon-reminder]")).toBeVisible();
   });
 
   test("planos: Completo acima do Essencial no mobile, garantia abaixo de cada CTA; popup com novo texto", async ({ page }) => {

@@ -38,7 +38,7 @@ export function QuizResult({
 
   return (
     <QuizShell fit>
-      <article className="anim-enter flex flex-1 flex-col justify-center py-4" data-result>
+      <article className="flex flex-1 flex-col justify-center py-4" data-result>
         <p className="t-eyebrow">{resultCopy.eyebrow}</p>
         <h1
           ref={headingRef}

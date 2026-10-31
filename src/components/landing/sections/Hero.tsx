@@ -26,7 +26,7 @@ export function Hero() {
       <HeroArt />
       {/* topo um pouco menor que o antigo (respiro + eyebrow); o espaço vai para entre título e descrição */}
       <div className="container-page pb-[clamp(72px,9vw,128px)] pt-[84px] sm:pt-[clamp(88px,9vw,132px)]">
-        <div className="anim-enter mx-auto max-w-[680px] text-center">
+        <div className="mx-auto max-w-[680px] text-center">
           <h1 id="hero-title" className="t-h1 t-hero hero-title mx-auto max-w-[15ch] md:max-w-[17ch]">
             <Emphasis text={h.title} markClass="hero-accent" />
           </h1>

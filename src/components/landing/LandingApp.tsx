@@ -1,8 +1,10 @@
 import { useEffect, useState, type ReactElement } from "react";
 import type { ProfileId } from "../../config/quiz";
-import { bonuses, expertPublished, media, program, publishedTestimonials } from "../../config/site";
+import { bonuses, coupon, expertPublished, media, program, publishedTestimonials } from "../../config/site";
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
+import { read, write } from "../../lib/storage";
+import { CouponWheel } from "./Coupon";
 import { ConsentBanner } from "../ui/ConsentBanner";
 import type { Tone } from "./shared";
 import { Header } from "./sections/Header";
@@ -23,6 +25,8 @@ import { Footer } from "./sections/Footer";
 import { Notice, type NoticeMessage } from "./Notice";
 
 const DEV = import.meta.env.DEV;
+const WHEEL_SEEN = "mp_coupon_wheel_seen";
+const COUPON_WON = "mp_coupon_won";
 
 /**
  * Landing Page. O mockup do portal fica dentro do Hero.
@@ -38,11 +42,39 @@ export function LandingApp() {
   // só para quem tem o link. Lida após a hidratação (o HTML pré-renderizado não a inclui).
   const [expertPreview, setExpertPreview] = useState(false);
 
+  // Roleta de cupom: abre uma vez por visitante, quando a seção de bônus aparece.
+  const [wheelOpen, setWheelOpen] = useState(false);
+  const [couponWon, setCouponWon] = useState(false);
+
   useEffect(() => {
     setProfile(quizSession.getProfile());
     setExpertPreview(new URLSearchParams(window.location.search).get("previa") === "especialista");
     trackOnce("landing_page_viewed", { content_name: "Mente em Paz" });
   }, []);
+
+  useEffect(() => {
+    if (!coupon.enabled) return;
+    setCouponWon(read<boolean>(COUPON_WON, "local") === true);
+    const target = document.getElementById("bonus") ?? document.getElementById("planos");
+    if (read<boolean>(WHEEL_SEEN, "local") || !target || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        write(WHEEL_SEEN, true, "local");
+        setWheelOpen(true);
+      },
+      // a seção de bônus é mais alta que a tela: dispara quando o topo dela passa do meio da tela
+      { rootMargin: "0px 0px -50% 0px" },
+    );
+    io.observe(target);
+    return () => io.disconnect();
+  }, []);
+
+  const winCoupon = () => {
+    write(COUPON_WON, true, "local");
+    setCouponWon(true);
+  };
 
   const hasAudio = Boolean(media.audioPreview.src);
   const hasTestimonials = publishedTestimonials.length > 0;
@@ -57,7 +89,7 @@ export function LandingApp() {
     [program.nights.length > 0, (t) => <Program key="program" tone={t} />],
     [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],
-    [true, (t) => <Plans key="plans" tone={t} onNotice={setNotice} />],
+    [true, (t) => <Plans key="plans" tone={t} onNotice={setNotice} couponWon={couponWon} />],
     [true, (t) => <Guarantee key="guarantee" tone={t} />],
     [true, (t) => <Faq key="faq" tone={t} />],
   ];
@@ -81,6 +113,7 @@ export function LandingApp() {
       </main>
       <Footer />
       <Notice message={notice} onClose={() => setNotice(null)} />
+      {coupon.enabled && <CouponWheel open={wheelOpen} onClose={() => setWheelOpen(false)} onWin={winCoupon} />}
       <ConsentBanner />
     </>
   );

@@ -65,7 +65,7 @@ export function AudioPlayer({ src, title }: { src: string; title: string }) {
           <Play aria-hidden className="ml-0.5 size-5" fill="currentColor" strokeWidth={0} />
         )}
         {playing && (
-          <span aria-hidden className="anim-breathe absolute -inset-1.5 rounded-full border border-sage" />
+          <span aria-hidden className="absolute -inset-1.5 rounded-full border border-sage" />
         )}
       </button>
       <div className="min-w-0 flex-1">

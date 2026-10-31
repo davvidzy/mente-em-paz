@@ -167,6 +167,19 @@ export const upgrade = {
   declineCta: "Prefiro continuar com o Essencial",
 };
 
+// ── Cupom da roleta ─────────────────────────────────────────────────
+// A roleta abre uma vez por visitante (ao chegar nos bônus) e SEMPRE dá o mesmo prêmio:
+// por isso todas as casas mostram o mesmo desconto — nada de prêmios que nunca saem.
+// O cupom precisa existir de verdade no checkout, com este código e este desconto.
+export const coupon = {
+  enabled: true,
+  code: "QUEROSENTIRPAZ",
+  /** Texto do prêmio (casas da roleta e resultado). */
+  prize: "5% OFF",
+  /** Casas da roleta (todas com o mesmo prêmio). */
+  slices: 8,
+};
+
 // ── Garantia ─────────────────────────────────────────────────────────
 export const guarantee = {
   days: 7,

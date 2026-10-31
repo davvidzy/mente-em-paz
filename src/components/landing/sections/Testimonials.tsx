@@ -1,10 +1,9 @@
-import { useState } from "react";
-import { ImageIcon, Pause, Play, UserRound } from "lucide-react";
+import { ImageIcon, UserRound } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { publishedTestimonials, type Testimonial } from "../../../config/site";
 import { fill } from "../../../lib/format";
 import { routes } from "../../../lib/routes";
-import { Reveal, Section, SectionHead, type Tone } from "../shared";
+import { Section, SectionHead, type Tone } from "../shared";
 
 const DEV = import.meta.env.DEV;
 
@@ -17,51 +16,35 @@ const DEV_PLACEHOLDERS: (Testimonial & { placeholder: true })[] = [7, 15, 30, 45
 }));
 
 /**
- * Depoimentos em carrossel infinito lateral (marquee).
- * Pausa ao passar o mouse/focar ou ao tocar um vídeo; com movimento reduzido vira rolagem manual.
+ * Depoimentos em lista estática: no celular, rolagem lateral pelo dedo (com encaixe);
+ * no desktop, quebra em linhas. Sem movimento automático.
  * Lista vazia → seção oculta em produção (LandingApp).
  */
 export function Testimonials({ tone }: { tone: Tone }) {
   const c = landing.testimonials;
-  const [paused, setPaused] = useState(false);
   const items: (Testimonial & { placeholder?: true })[] = publishedTestimonials.length ? publishedTestimonials : DEV ? DEV_PLACEHOLDERS : [];
   if (!items.length) return null;
 
-  const duration = Math.max(24, items.length * 8);
-
   return (
-    <Section id="depoimentos" tone={tone} labelledBy="depo-title" className="overflow-hidden">
+    <Section id="depoimentos" tone={tone} labelledBy="depo-title">
       <div className="container-page">
         <SectionHead id="depo-title" title={c.title} text={c.text} center />
-        {/* Movimento automático precisa poder ser pausado (WCAG 2.2.2) — no celular não há hover */}
-        <div className="mp-marquee-control mt-6 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-4 text-[15px] font-medium text-brand hover:border-brand"
-          >
-            {paused ? <Play aria-hidden className="size-4" /> : <Pause aria-hidden className="size-4" />}
-            {paused ? "Continuar movimento" : "Pausar movimento"}
-          </button>
-        </div>
-      </div>
-
-      <Reveal className="mp-marquee mt-6 md:mt-8">
-        <ul className="mp-marquee-track" data-paused={paused || undefined} style={{ ["--marquee-duration" as string]: `${duration}s` }} aria-label="Depoimentos de clientes">
-          {[0, 1].map((copy) =>
-            items.map((t, i) => (
-              <li key={`${copy}-${i}`} aria-hidden={copy === 1 || undefined} className="mp-marquee-item">
-                <TestimonialCard t={t} hidden={copy === 1} onPlay={() => setPaused(true)} />
-              </li>
-            )),
-          )}
+        <ul
+          className="-mx-(--page-gutter) mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-(--page-gutter) pb-2 md:mx-0 md:flex-wrap md:justify-center md:overflow-visible md:px-0"
+          aria-label="Depoimentos de clientes"
+        >
+          {items.map((t, i) => (
+            <li key={i} className="shrink-0 snap-start">
+              <TestimonialCard t={t} />
+            </li>
+          ))}
         </ul>
-      </Reveal>
+      </div>
     </Section>
   );
 }
 
-function TestimonialCard({ t, hidden, onPlay }: { t: Testimonial & { placeholder?: true }; hidden: boolean; onPlay: () => void }) {
+function TestimonialCard({ t }: { t: Testimonial & { placeholder?: true } }) {
   return (
     <figure className="card flex w-[264px] flex-col overflow-hidden sm:w-[288px]" data-testimonial={t.placeholder ? "placeholder" : "real"}>
       <figcaption className="flex items-center gap-3 px-4 py-3.5">
@@ -93,15 +76,12 @@ function TestimonialCard({ t, hidden, onPlay }: { t: Testimonial & { placeholder
       ) : (
         <>
           {t.video && (
-            // a cópia duplicada do carrossel (hidden) não recebe foco nem toca
             <video
               src={routes.asset(t.video)}
               poster={t.videoPoster ? routes.asset(t.videoPoster) : undefined}
-              controls={!hidden}
-              tabIndex={hidden ? -1 : undefined}
+              controls
               preload="none"
               playsInline
-              onPlay={onPlay}
               aria-label={`Vídeo de depoimento de ${t.name}`}
               className="mx-3 mb-3 aspect-[9/16] w-[calc(100%-1.5rem)] rounded-xl border border-line bg-brand-deep object-cover"
             />
@@ -114,7 +94,7 @@ function TestimonialCard({ t, hidden, onPlay }: { t: Testimonial & { placeholder
           {t.print && (
             <img
               src={routes.asset(t.print)}
-              alt={hidden ? "" : (t.printAlt ?? "")}
+              alt={t.printAlt ?? ""}
               loading="lazy"
               className="mx-3 mb-3 w-[calc(100%-1.5rem)] rounded-xl border border-line"
             />

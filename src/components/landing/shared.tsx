@@ -1,5 +1,4 @@
 import type { MouseEvent, ReactNode } from "react";
-import { useReveal } from "../../hooks/useReveal";
 
 export type Tone = "canvas" | "surface" | "dark";
 
@@ -35,14 +34,9 @@ export function Section({
   );
 }
 
-/** Bloco que aparece suavemente ao rolar. */
+/** Bloco de conteúdo (site estático: sem animação de entrada ao rolar). */
 export function Reveal({ children, className = "", as: Tag = "div" }: { children: ReactNode; className?: string; as?: "div" | "li" }) {
-  const ref = useReveal<HTMLDivElement & HTMLLIElement>();
-  return (
-    <Tag ref={ref} className={className}>
-      {children}
-    </Tag>
-  );
+  return <Tag className={className}>{children}</Tag>;
 }
 
 /** Cabeçalho de seção (título + texto de apoio). */
