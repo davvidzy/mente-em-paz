@@ -229,6 +229,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await dialog.getByRole("button", { name: "Copiar" }).click();
     await expect(dialog.getByRole("button", { name: "Copiado!" })).toBeVisible();
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("QUEROSENTIRPAZ");
+    await expect(dialog.locator("[data-coupon-timer]")).toContainText(/Expira em\s*0[45]:\d\d/);
     await dialog.getByRole("button", { name: /Usar cupom agora/ }).click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator("#planos-title")).toBeInViewport();
@@ -245,6 +246,36 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
       await page.reload();
       await expect(page.getByRole("button", { name: "Ver meu cupom de desconto" })).toHaveCount(0);
       await expect(dialog.getByRole("button", { name: "Girar agora" })).toBeVisible({ timeout: 7000 });
+    }
+  });
+
+  test("roleta de cupom: título e resultado em uma linha, aviso dos 5 minutos e cupom some quando o tempo acaba", async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.clock.install();
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    for (const [w, h] of [[320, 568], [390, 844]]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.goto("/mente-em-paz/");
+      await page.clock.runFor(5500);
+      const dialog = page.getByRole("dialog");
+      await expect(dialog).toBeVisible();
+      await expect(dialog).toContainText("Uma tentativa por pessoa · válido por 5 minutos.");
+      const oneLine = () =>
+        dialog.locator("h2").evaluate((h) => h.getBoundingClientRect().height < parseFloat(getComputedStyle(h).lineHeight) * 1.5 && h.scrollWidth <= h.clientWidth + 1);
+      expect(await oneLine(), `título @ ${w}`).toBe(true);
+      await dialog.getByRole("button", { name: "Girar agora" }).click();
+      await page.clock.runFor(300);
+      await expect(dialog.getByRole("heading")).toHaveText("Parabéns! Você ganhou 5% OFF");
+      expect(await oneLine(), `resultado @ ${w}`).toBe(true);
+      expect(await dialog.evaluate((d) => d.scrollHeight <= d.clientHeight), `rolagem @ ${w}x${h}`).toBe(true);
+      await expect(dialog.locator("[data-coupon-timer]")).toContainText("05:00");
+      await page.clock.fastForward(60_000);
+      await expect(dialog.locator("[data-coupon-timer]")).toContainText("04:00");
+      await page.keyboard.press("Escape");
+      await expect(page.locator("[data-coupon-button]")).toBeVisible();
+      // tempo esgotado: o cupom some (botão flutuante sai) e a roleta não mostra mais o código
+      await page.clock.fastForward(4 * 60_000 + 1000);
+      await expect(page.locator("[data-coupon-button]")).toHaveCount(0);
     }
   });
 

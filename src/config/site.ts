@@ -180,6 +180,8 @@ export const coupon = {
   slices: ["5%", "R$ 5", "2%", "R$ 10", "4%", "R$ 5", "2%", "4%"],
   /** Índice da casa em que a roleta sempre para. */
   winningSlice: 0,
+  /** Minutos para usar o cupom depois de ganhar. Ao zerar, o cupom some do site (roleta e botão). */
+  validMinutes: 5,
   /** Segundos na página até a roleta abrir. */
   delaySeconds: 5,
   /**

@@ -4,6 +4,7 @@ import { bonuses, coupon, expertPublished, media, program, publishedTestimonials
 import { trackOnce } from "../../lib/analytics";
 import { quizSession } from "../../lib/session";
 import { read, write } from "../../lib/storage";
+import { useCountdown } from "../../hooks/useCountdown";
 import { CouponButton, CouponWheel } from "./Coupon";
 import { ConsentBanner } from "../ui/ConsentBanner";
 import type { Tone } from "./shared";
@@ -45,7 +46,9 @@ export function LandingApp() {
   // Roleta de cupom: abre após `coupon.delaySeconds`. Fora da fase de teste, uma vez por
   // visitante e o cupom ganho fica salvo (botão flutuante reabre). Em teste, nada é salvo.
   const [wheelOpen, setWheelOpen] = useState(false);
-  const [couponWon, setCouponWon] = useState(false);
+  // fim do prazo do cupom ganho (ms); null = ainda não ganhou
+  const [couponEnds, setCouponEnds] = useState<number | null>(null);
+  const couponLeft = useCountdown(couponEnds);
 
   useEffect(() => {
     setProfile(quizSession.getProfile());
@@ -55,7 +58,10 @@ export function LandingApp() {
 
   useEffect(() => {
     if (!coupon.enabled) return;
-    if (!coupon.testMode) setCouponWon(read<boolean>(COUPON_WON, "local") === true);
+    if (!coupon.testMode) {
+      const ends = read<unknown>(COUPON_WON, "local");
+      setCouponEnds(typeof ends === "number" ? ends : null); // versões antigas guardavam `true`
+    }
     // "já vista" também é lido na fase de teste: é assim que os testes automáticos a pulam
     if (read<boolean>(WHEEL_SEEN, "local")) return;
     const timer = window.setTimeout(() => {
@@ -66,8 +72,9 @@ export function LandingApp() {
   }, []);
 
   const winCoupon = () => {
-    if (!coupon.testMode) write(COUPON_WON, true, "local");
-    setCouponWon(true);
+    const ends = Date.now() + coupon.validMinutes * 60_000;
+    if (!coupon.testMode) write(COUPON_WON, ends, "local");
+    setCouponEnds(ends);
   };
 
   const hasAudio = Boolean(media.audioPreview.src);
@@ -108,9 +115,9 @@ export function LandingApp() {
       <Footer />
       <Notice message={notice} onClose={() => setNotice(null)} />
       {coupon.enabled && (
-        <CouponWheel open={wheelOpen} won={couponWon} onClose={() => setWheelOpen(false)} onWin={winCoupon} />
+        <CouponWheel open={wheelOpen} expiresAt={couponEnds} onClose={() => setWheelOpen(false)} onWin={winCoupon} />
       )}
-      {coupon.enabled && couponWon && !wheelOpen && <CouponButton onClick={() => setWheelOpen(true)} />}
+      {coupon.enabled && couponEnds !== null && couponLeft !== 0 && !wheelOpen && <CouponButton onClick={() => setWheelOpen(true)} />}
       <ConsentBanner />
     </>
   );

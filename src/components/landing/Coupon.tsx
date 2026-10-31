@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Gift } from "lucide-react";
+import { Check, Clock, Copy, Gift } from "lucide-react";
 import { landing } from "../../config/landing";
 import { coupon } from "../../config/site";
 import { track } from "../../lib/analytics";
+import { fill } from "../../lib/format";
+import { mmss, useCountdown } from "../../hooks/useCountdown";
 import { Button } from "../ui/Button";
 import { Modal } from "../ui/Modal";
 import { scrollToId } from "./shared";
@@ -12,14 +14,28 @@ const SPIN_MS = 4200;
 /**
  * Roleta de cupom, suspensa no centro da tela (LandingApp controla quando abre).
  * Para sempre na casa `coupon.winningSlice` (5%: único cupom aceito pelo checkout).
- * Com `won`, abre direto no resultado (botão flutuante que reabre o cupom).
+ * Com `expiresAt` (cupom já ganho), abre direto no resultado, com o tempo restante;
+ * ao zerar, o cupom some e fica o aviso de expirado.
  */
-export function CouponWheel({ open, won, onClose, onWin }: { open: boolean; won: boolean; onClose: () => void; onWin: () => void }) {
+export function CouponWheel({
+  open,
+  expiresAt,
+  onClose,
+  onWin,
+}: {
+  open: boolean;
+  expiresAt: number | null;
+  onClose: () => void;
+  onWin: () => void;
+}) {
   const c = landing.couponWheel;
   const [rotation, setRotation] = useState(0);
-  const [phase, setPhase] = useState<"idle" | "spinning" | "won">("idle");
+  const [phase, setPhase] = useState<"idle" | "spinning">("idle");
   const timer = useRef<number>(undefined);
-  const showWon = won || phase === "won";
+  const won = expiresAt !== null;
+  const left = useCountdown(expiresAt);
+  const expired = left === 0;
+  const min = { min: coupon.validMinutes };
 
   useEffect(() => {
     if (open && !won) track("coupon_wheel_opened");
@@ -36,7 +52,6 @@ export function CouponWheel({ open, won, onClose, onWin }: { open: boolean; won:
     track("coupon_wheel_spun");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     timer.current = window.setTimeout(() => {
-      setPhase("won");
       onWin();
     }, reduce ? 0 : SPIN_MS + 200);
   };
@@ -49,16 +64,17 @@ export function CouponWheel({ open, won, onClose, onWin }: { open: boolean; won:
 
   return (
     <Modal open={open} onClose={onClose} labelledBy="coupon-title" center>
-      <div className="px-6 pb-7 pt-8 text-center sm:px-9 sm:pb-9 sm:pt-10 [@media(max-height:680px)]:pb-5 [@media(max-height:680px)]:pt-6" data-coupon-wheel>
-        {!showWon ? (
+      <div className="px-5 pb-7 pt-8 text-center min-[360px]:px-6 sm:px-9 sm:pb-9 sm:pt-10 [@media(max-height:680px)]:pb-5 [@media(max-height:680px)]:pt-6" data-coupon-wheel>
+        {!won ? (
           <>
             <p className="inline-flex rounded-full border border-sage px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.1em] text-sage-ink">
               {c.badge}
             </p>
-            <h2 id="coupon-title" className="t-h3 mt-4 text-[24px] leading-tight sm:text-[27px]">
+            {/* uma linha só: o tamanho acompanha a largura da tela */}
+            <h2 id="coupon-title" className="t-h3 mt-4 whitespace-nowrap text-[clamp(14.5px,4.7vw,26px)] leading-tight">
               {c.title} <span className="font-serif italic text-sage-deep">{c.titleAccent}</span>
             </h2>
-            <p className="mt-2 text-[15px] text-sage-ink">{c.text}</p>
+            <p className="mt-2 text-[14px] text-sage-ink sm:text-[15px]">{fill(c.text, min)}</p>
 
             <Wheel rotation={rotation} />
 
@@ -66,16 +82,37 @@ export function CouponWheel({ open, won, onClose, onWin }: { open: boolean; won:
               {phase === "spinning" ? c.spinning : c.spin}
             </Button>
           </>
+        ) : expired ? (
+          <div aria-live="polite" data-coupon-expired>
+            <span className="mx-auto grid size-14 place-items-center rounded-full bg-sage/30 text-brand">
+              <Clock aria-hidden className="size-6" strokeWidth={1.7} />
+            </span>
+            <h2 id="coupon-title" className="t-h3 mt-4 text-[clamp(17px,5.4vw,26px)] leading-tight">
+              {c.expiredTitle}
+            </h2>
+            <p className="mt-2 text-[15px] text-sage-ink">{fill(c.expiredText, min)}</p>
+            <Button size="lg" full arrow onClick={useCoupon} className="mt-6">
+              {c.expiredCta}
+            </Button>
+          </div>
         ) : (
           <div aria-live="polite">
             <span className="mx-auto grid size-14 place-items-center rounded-full bg-sage/30 text-brand">
               <Gift aria-hidden className="size-6" strokeWidth={1.7} />
             </span>
-            <h2 id="coupon-title" className="t-h3 mt-4 text-[23px] leading-tight sm:text-[26px]">
+            <h2 id="coupon-title" className="t-h3 mt-4 whitespace-nowrap text-[clamp(14.5px,4.7vw,26px)] leading-tight">
               {c.wonTitle} <span className="font-serif italic text-sage-deep">{coupon.prize}</span>
             </h2>
             <p className="mt-2 text-[15px] text-sage-ink">{c.wonText}</p>
             <CouponCode className="mt-6" />
+            <div className="mt-3 rounded-[18px] border border-line bg-white px-4 py-3" data-coupon-timer>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-sage-ink">{c.expiresLabel}</p>
+              {/* leitores de tela: sem anunciar a cada segundo */}
+              <p className="mt-1 font-serif text-[28px] font-semibold tabular-nums leading-none text-brand" aria-hidden>
+                {mmss(left ?? 0)}
+              </p>
+              <span className="sr-only">{fill(c.text.split("·")[1]?.trim() ?? "", min)}</span>
+            </div>
             <Button size="lg" full arrow onClick={useCoupon} className="mt-6">
               {c.cta}
             </Button>

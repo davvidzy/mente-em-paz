@@ -96,7 +96,8 @@ export const landing = {
     badge: "Oferta misteriosa",
     title: "Gire a roleta e ganhe",
     titleAccent: "um desconto",
-    text: "Uma tentativa por pessoa.",
+    /** {min} = coupon.validMinutes. */
+    text: "Uma tentativa por pessoa · válido por {min} minutos.",
     spin: "Girar agora",
     spinning: "Girando…",
     wonTitle: "Parabéns! Você ganhou",
@@ -104,6 +105,10 @@ export const landing = {
     codeLabel: "Seu cupom",
     copy: "Copiar",
     copied: "Copiado!",
+    expiresLabel: "Expira em",
+    expiredTitle: "Seu cupom expirou",
+    expiredText: "O prazo de {min} minutos para usar o desconto terminou.",
+    expiredCta: "Ver os planos",
     cta: "Usar cupom agora",
     /** Rótulo (leitores de tela) do botão flutuante que reabre o cupom ganho. */
     reopen: "Ver meu cupom de desconto",
