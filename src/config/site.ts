@@ -228,7 +228,7 @@ export const expert = {
   name: "Clara Martins",
   /** Apresentação curta (sem autoria humana, formação ou vivências inventadas). */
   about: ["Uma voz de acolhimento para acompanhar seus momentos de descanso."],
-  /** Transparência: aparece na própria seção e, discreto, no rodapé. */
+  /** Transparência: aparece, discreto, no rodapé. */
   disclosure: "Clara Martins é a apresentadora virtual do Mente em Paz.",
   /**
    * Retrato 4:5, sem sufixo: "img/expert/clara-martins" → usa -400.webp e -800.webp.

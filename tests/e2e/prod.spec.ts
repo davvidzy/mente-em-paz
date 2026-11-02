@@ -260,7 +260,7 @@ test.describe("Build de produção", () => {
     await check("#hero-title + p", 3);
     await check("main section[data-section] h2:not(#diferencial-title)", 2);
     await check("#diferencial-title + p, #bonus-title + p, #demo-title + p, #programa h2 + p", 2);
-    await check("#identificacao p, #garantia h2 + p, #especialista [data-expert-disclosure]", 2);
+    await check("#identificacao p, #garantia h2 + p", 2);
     await check("#produto li p, #diferencial li span:last-child, #bonus [data-bonus-desc]", 2);
     await check("#planos h3 + p", 2);
   });
@@ -271,7 +271,7 @@ test.describe("Build de produção", () => {
     const sec = page.locator("#especialista");
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(page.locator("body")).not.toContainText(/Psicóloga|CRP/);
-    await expect(sec.locator("[data-expert-disclosure]")).toHaveText("Clara Martins é a apresentadora virtual do Mente em Paz.");
+    await expect(sec.locator("[data-expert-disclosure]")).toHaveCount(0); // aviso só no rodapé
     await expect(page.locator("footer")).toContainText("Clara Martins é a apresentadora virtual do Mente em Paz.");
   });
 });

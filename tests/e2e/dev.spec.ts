@@ -339,7 +339,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
     await expect(sec).not.toContainText(/Psicóloga|CRP/);
     await expect(sec).toContainText("Conheça a apresentadora");
-    await expect(sec.locator("[data-expert-disclosure]")).toHaveText("Clara Martins é a apresentadora virtual do Mente em Paz.");
+    await expect(sec.locator("[data-expert-disclosure]")).toHaveCount(0); // aviso só no rodapé
     // não aprovada: marcada como prévia (e oculta no site publicado — ver prod.spec)
     if (/verified:\s*false/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
   });
