@@ -256,12 +256,38 @@ export interface Testimonial {
 
 export const testimonials = {
   /**
-   * ⚠ TEMPORÁRIO — enquanto não há imagens, mostra no site espaços reservados vazios
-   * (sem nome nem texto) para visualizar a seção. Desligar (false) ao preencher `items`.
+   * Sem imagens, mostra no site espaços reservados vazios (sem nome nem texto)
+   * para visualizar a seção. Desligado: `items` já tem os prints reais.
    */
-  showPlaceholders: true,
+  showPlaceholders: false,
   placeholderCount: 6,
-  items: [] as Testimonial[],
+  items: [
+    {
+      image: "img/depoimentos/camila",
+      alt: "Conversa no WhatsApp com Camila: “Oi Clara, vim te agradecer de verdade. Ontem eu fiz o áudio antes de dormir e foi a 1ª noite em muito tempo que minha cabeça não ficou a mil. Chorei um pouco, respirei e consegui apagar. Me senti acolhida de um jeito que eu tava precisando muito.”",
+      consent: true,
+    },
+    {
+      image: "img/depoimentos/desc",
+      alt: "Conversa no WhatsApp com cliente: “Clara, vim te agradecer. Eu não lembrava a última vez que tinha deitado e realmente relaxado. Ontem fiz o áudio 4 e senti meu corpo desacelerando… parece que alguém finalmente entendeu o que eu vivo.”",
+      consent: true,
+    },
+    {
+      image: "img/depoimentos/marta",
+      alt: "Conversa no WhatsApp com Marta: “Bom dia, Clara. O guia de quando acordo no meio da noite foi o que mais me ajudou. Antes eu despertava e já começava a pensar em tudo. Esta madrugada consegui seguir o passo a passo e voltei a dormir sem desespero.”",
+      consent: true,
+    },
+    {
+      image: "img/depoimentos/pri",
+      alt: "Conversa no WhatsApp com Pri: “Comprei sem esperar muito, mas me ajudou demais. Fiz o SOS de 5 min e deu uma acalmada absurda. Minha mente tava a mil e eu consegui desligar bem mais rápido.”",
+      consent: true,
+    },
+    {
+      image: "img/depoimentos/renata",
+      alt: "Conversa no WhatsApp com Renata: “Clara, gostaria de agradecer. Tenho cuidado do meu pai há alguns meses e vinha encerrando os dias em estado de alerta. O material me ajudou a organizar a noite, reduzir a culpa e desacelerar antes de dormir. Foi uma ajuda real.”",
+      consent: true,
+    },
+  ] as Testimonial[],
 };
 
 /** Só depoimentos com autorização registrada. */
