@@ -218,22 +218,50 @@
 }
 
 /* ───────────── Carrossel infinito (depoimentos) ─────────────
-   Movimento contínuo, sem pausa nem controles. A lista vem duplicada: -50% emenda sem salto. */
+   Movimento contínuo, sem pausa nem controles. A lista vem duplicada: -50% emenda sem salto.
+   Bordas esmaecidas com degradês por cima (não mask-image: no Safari ela redesenha a faixa
+   inteira a cada quadro e o carrossel trava/pisca). */
 @keyframes mp-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 .mp-marquee {
+  --marquee-fade: var(--color-canvas);
+  position: relative;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.bg-surface .mp-marquee {
+  --marquee-fade: var(--color-surface);
+}
+.mp-marquee::before,
+.mp-marquee::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  z-index: 1;
+  width: 6%;
+  pointer-events: none;
+}
+.mp-marquee::before {
+  left: 0;
+  background: linear-gradient(to right, var(--marquee-fade), transparent);
+}
+.mp-marquee::after {
+  right: 0;
+  background: linear-gradient(to left, var(--marquee-fade), transparent);
 }
 .mp-marquee-track {
   display: flex;
   width: max-content;
   align-items: center;
   animation: mp-marquee var(--marquee-duration, 40s) linear infinite;
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 .mp-marquee-item {
   padding-right: 16px; /* espaçamento uniforme → o loop em -50% fica perfeito */

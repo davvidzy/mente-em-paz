@@ -26,7 +26,7 @@ export function Testimonials({ tone }: { tone: Tone }) {
       </div>
 
       <div className="mp-marquee mt-8 md:mt-10">
-        <ul className="mp-marquee-track" style={{ ["--marquee-duration" as string]: `${Math.max(30, items.length * 7)}s` }} aria-label="Depoimentos de clientes">
+        <ul className="mp-marquee-track" style={{ ["--marquee-duration" as string]: `${Math.max(20, items.length * 5)}s` }} aria-label="Depoimentos de clientes">
           {[0, 1].map((copy) =>
             items.map((t, i) => (
               <li key={`${copy}-${i}`} aria-hidden={copy === 1 || undefined} className="mp-marquee-item">
@@ -36,9 +36,10 @@ export function Testimonials({ tone }: { tone: Tone }) {
                     srcSet={`${routes.asset(`${t.image}-400.webp`)} 400w, ${routes.asset(`${t.image}-800.webp`)} 800w`}
                     sizes="260px"
                     alt={copy === 1 ? "" : t.alt}
-                    loading="lazy"
+                    width={941}
+                    height={1672}
                     decoding="async"
-                    className="h-[400px] w-auto max-w-none rounded-[18px] border border-line bg-white md:h-[440px]"
+                    className="h-[400px] w-[225px] max-w-none rounded-[18px] border border-line bg-white object-contain md:h-[440px] md:w-[248px]"
                     data-testimonial="real"
                   />
                 ) : (
