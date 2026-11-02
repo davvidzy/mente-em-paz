@@ -210,6 +210,15 @@ export const media = {
     image: "img/hero/mockup-portal",
     alt: "O portal Mente em Paz no celular, no tablet e no computador, com o primeiro áudio pronto para ouvir.",
   },
+  /**
+   * Vídeo do portal no hero (abaixo dos benefícios). Vertical 9:16, 720×1280, H.264 com
+   * faststart (começa a tocar antes de baixar tudo). Capa = 1º segundo do vídeo, em WebP.
+   */
+  video: {
+    src: "video/apresentacao.mp4",
+    poster: "video/apresentacao-capa.webp",
+    label: "Vídeo: navegando pelo portal Mente em Paz no celular.",
+  },
   audioPreview: {
     src: "audio/trecho-demonstracao.mp3",
     title: "Trecho de um áudio guiado",

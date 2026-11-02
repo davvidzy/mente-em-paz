@@ -38,7 +38,10 @@ test.describe("Build de produção", () => {
     const depoOn = /showPlaceholders:\s*true/.test(SITE) || /consent:\s*true/.test(SITE);
     const expertOn = !/verified:\s*false/.test(SITE);
     expect(order).toEqual(["identificacao", "diferencial", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", ...(depoOn ? ["depoimentos"] : []), "planos", "garantia", "faq", "cta-final"]);
-    await expect(page.locator("[data-hero] video")).toHaveCount(0);
+    // vídeo do portal no fim do hero: só metadados no carregamento (o vídeo baixa ao dar play)
+    const video = page.locator("[data-hero] video[data-hero-video]");
+    await expect(video).toHaveAttribute("preload", "metadata");
+    await expect(video).toHaveAttribute("poster", /apresentacao-capa\.webp$/);
     // mockup do portal entre a descrição e o CTA, já carregado
     const mockup = page.locator("[data-hero] img[data-hero-mockup]");
     await expect.poll(() => mockup.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);

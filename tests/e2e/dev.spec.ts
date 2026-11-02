@@ -189,7 +189,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(q2).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("hero mobile: hierarquia título > descrição, mockup do portal e benefícios, sem vídeo", async ({ page }) => {
+  test("hero mobile: hierarquia título > descrição, mockup do portal, benefícios e vídeo do portal por último", async ({ page }) => {
     for (const w of [320, 375]) {
       await page.setViewportSize({ width: w, height: 800 });
       await page.goto("/mente-em-paz/");
@@ -200,7 +200,18 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
       const hero = page.locator("[data-hero]");
       await expect(hero.getByRole("list", { name: "Benefícios" })).toBeVisible();
       await expect(hero.locator("img[data-hero-mockup]")).toBeVisible();
-      await expect(hero.locator("video, [data-dev-placeholder]")).toHaveCount(0);
+      await expect(hero.locator("[data-dev-placeholder]")).toHaveCount(0);
+      // vídeo: depois dos benefícios, com título e controles nativos (tempo e velocidade)
+      const video = hero.locator("video[data-hero-video]");
+      await expect(video).toHaveAttribute("controls", "");
+      await expect(hero.locator("#hero-video-title")).toBeVisible();
+      expect(
+        await page.evaluate(() => {
+          const list = document.querySelector('[data-hero] [aria-label="Benefícios"]')!;
+          return Boolean(list.compareDocumentPosition(document.querySelector("[data-hero-video]")!) & Node.DOCUMENT_POSITION_FOLLOWING);
+        }),
+      ).toBe(true);
+      expect(await video.evaluate((e: HTMLVideoElement) => e.getBoundingClientRect().width), `vídeo cabe @ ${w}px`).toBeLessThanOrEqual(w - 32);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), `overflow @ ${w}px`).toBeLessThanOrEqual(0);
     }
     await expect(page.locator("#video-title")).toHaveCount(0); // seção de vídeo separada não existe mais
