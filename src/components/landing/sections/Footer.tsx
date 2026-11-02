@@ -10,7 +10,7 @@ export function Footer() {
     <footer className="bg-brand-deep text-white/75">
       <div className="container-page py-14 md:py-16">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
-          <Logo height={30} inverse className="h-[30px] w-auto" />
+          <Logo height={30} inverse lazy className="h-[30px] w-auto" />
           <nav aria-label="Links legais">
             <ul className="flex flex-wrap gap-x-7 gap-y-2 text-[15px]">
               <li>

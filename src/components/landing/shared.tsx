@@ -81,7 +81,13 @@ export function scrollToId(id: string) {
   const el = document.getElementById(id);
   if (!el) return;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Seções fora da tela ficam com altura estimada (content-visibility). Para o destino da
+  // rolagem sair certo, todas são montadas antes de medir; depois o navegador lembra a altura real.
+  const root = document.documentElement;
+  root.classList.add("mp-jump");
+  void el.offsetTop;
   el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  window.setTimeout(() => root.classList.remove("mp-jump"), 1500);
   // move o foco para o título da seção sem rolar de novo (leitores de tela)
   const heading = el.querySelector<HTMLElement>("h2");
   if (heading) {

@@ -18,7 +18,7 @@ export function FinalCta() {
       </svg>
       <div className="container-page relative">
         <Reveal className="mx-auto max-w-[720px] text-center">
-          <Logo variant="symbol" height={56} inverse decorative className="mx-auto size-14" />
+          <Logo variant="symbol" height={56} inverse decorative lazy className="mx-auto size-14" />
           <h2 id="cta-final-title" className="t-h2 mx-auto mt-8 max-w-[22ch] text-white">
             {c.title}
           </h2>

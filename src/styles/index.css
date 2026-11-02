@@ -102,6 +102,16 @@
   }
   .section {
     padding-block: var(--section-space);
+    /* Seções fora da tela não são montadas (estilo/layout/pintura) até chegarem perto:
+       em celular fraco, a primeira tela aparece bem antes. O tamanho real fica lembrado. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+  /* Durante a rolagem suave até uma seção (scrollToId) ou ao abrir um link com #seção,
+     todas têm altura real (com altura estimada, o destino sairia errado). */
+  .mp-jump .section,
+  :root:has(:target) .section {
+    content-visibility: visible;
   }
 
   /* Escala tipográfica (DS §3) */

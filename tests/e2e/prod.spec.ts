@@ -30,6 +30,26 @@ test.describe("Build de produção", () => {
     }
   });
 
+  test("desempenho: seções fora da tela adiadas, mas \"Ver planos\" e links com # param no lugar certo", async ({ page }) => {
+    for (const [w, h] of [[390, 844], [1280, 800]]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.goto("/mente-em-paz/");
+      expect(await page.locator("#faq").evaluate((e) => getComputedStyle(e).contentVisibility)).toBe("auto");
+      // depoimentos: sem imagens (nem pré-carregamento) até a seção se aproximar
+      await expect(page.locator('link[rel="preload"][imagesrcset*="depoimentos"]')).toHaveCount(0);
+      await expect(page.locator("#depoimentos img")).toHaveCount(0);
+      await page.waitForTimeout(500);
+      await page.locator("header a[href='#planos']").click();
+      await expect.poll(() => page.locator("#planos").evaluate((e) => Math.round(e.getBoundingClientRect().top)), { timeout: 5000 }).toBe(64);
+      // passou pelos depoimentos: imagens entraram e carregaram
+      const imgs = page.locator("#depoimentos img");
+      await expect(imgs).toHaveCount(await page.locator("#depoimentos .mp-marquee-item").count());
+      await expect.poll(() => imgs.evaluateAll((els) => els.every((e) => (e as HTMLImageElement).complete && (e as HTMLImageElement).naturalWidth > 0))).toBe(true);
+      await page.goto("/mente-em-paz/#garantia");
+      await expect.poll(() => page.locator("#garantia").evaluate((e) => Math.round(e.getBoundingClientRect().top)), { timeout: 5000 }).toBe(64);
+    }
+  });
+
   test("LP: ordem das seções, opcionais ocultas, sem placeholders, botões de compra conforme o checkout", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");

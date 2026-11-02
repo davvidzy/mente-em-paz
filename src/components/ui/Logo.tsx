@@ -20,9 +20,11 @@ interface Props {
   className?: string;
   /** Logo decorativa (quando o nome já está escrito ao lado). */
   decorative?: boolean;
+  /** Fora da primeira tela (rodapé): sem pré-carregamento no <head>. */
+  lazy?: boolean;
 }
 
-export function Logo({ variant = "horizontal", height, inverse, className, decorative }: Props) {
+export function Logo({ variant = "horizontal", height, inverse, className, decorative, lazy }: Props) {
   const f = FILES[variant];
   return (
     <img
@@ -32,6 +34,7 @@ export function Logo({ variant = "horizontal", height, inverse, className, decor
       alt={decorative ? "" : "Mente em Paz"}
       className={className}
       decoding="async"
+      loading={lazy ? "lazy" : undefined}
       draggable={false}
     />
   );
