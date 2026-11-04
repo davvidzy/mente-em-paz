@@ -231,6 +231,13 @@
    Movimento contínuo, sem pausa nem controles. A lista vem duplicada: -50% emenda sem salto.
    Bordas esmaecidas com degradês por cima (não mask-image: no Safari ela redesenha a faixa
    inteira a cada quadro e o carrossel trava/pisca). */
+/* Vídeo da hero não tem áudio: esconde o botão/controle de volume (Chrome, Edge, Safari) */
+[data-hero-video]::-webkit-media-controls-mute-button,
+[data-hero-video]::-webkit-media-controls-volume-slider,
+[data-hero-video]::-webkit-media-controls-volume-control-container {
+  display: none !important;
+}
+
 @keyframes mp-marquee {
   from {
     transform: translate3d(0, 0, 0);

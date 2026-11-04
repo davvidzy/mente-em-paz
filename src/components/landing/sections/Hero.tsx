@@ -90,6 +90,7 @@ export function Hero() {
               height={1280}
               controls
               playsInline
+              muted
               preload="metadata"
               controlsList="nodownload"
               aria-label={v.label}
