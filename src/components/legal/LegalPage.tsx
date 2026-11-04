@@ -26,7 +26,15 @@ export function LegalPage({ page }: { page: "privacy" | "terms" }) {
               <h2 className="t-h3">{s.h}</h2>
               {s.p.map((p) => (
                 <p key={p} className="mt-3">
-                  {p}
+                  {p.split(/(https:\/\/\S+)/).map((part, i) =>
+                    i % 2 ? (
+                      <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-2">
+                        {part}
+                      </a>
+                    ) : (
+                      part
+                    ),
+                  )}
                 </p>
               ))}
             </section>

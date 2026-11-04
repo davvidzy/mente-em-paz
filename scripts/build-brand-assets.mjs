@@ -30,10 +30,10 @@ const art = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" he
   <circle cx="1080" cy="-40" r="300" fill="none" stroke="#DED9D0" stroke-width="2"/>
   <circle cx="1080" cy="-40" r="230" fill="none" stroke="#DED9D0" stroke-width="1.5"/>
   <line x1="460" y1="150" x2="460" y2="480" stroke="#DED9D0" stroke-width="2"/>
-  <text x="515" y="272" font-family="Georgia, serif" font-size="44" font-weight="600" fill="#253E43">Você cuida de quem ama.</text>
-  <text x="515" y="336" font-family="Georgia, serif" font-size="44" font-style="italic" fill="#253E43">Agora é hora de</text>
-  <text x="515" y="400" font-family="Georgia, serif" font-size="44" font-style="italic" fill="#253E43">cuidar de você.</text>
-  <text x="517" y="462" font-family="Arial, sans-serif" font-size="21" fill="#58736D" letter-spacing="3">MÉTODO DE DESCANSO NOTURNO</text>
+  <text x="515" y="272" font-family="Georgia, serif" font-size="44" font-weight="600" fill="#253E43">Sua noite mais tranquila</text>
+  <text x="515" y="336" font-family="Georgia, serif" font-size="44" font-style="italic" fill="#253E43">começa com</text>
+  <text x="515" y="400" font-family="Georgia, serif" font-size="44" font-style="italic" fill="#253E43">um simples play.</text>
+  <text x="517" y="462" font-family="Arial, sans-serif" font-size="21" fill="#58736D" letter-spacing="3">ÁUDIOS GUIADOS PARA RELAXAR</text>
 </svg>`);
 await sharp(art).composite([{ input: logo, left: 140, top: 125 }]).jpeg({ quality: 86 }).toFile("public/og-image.jpg");
 

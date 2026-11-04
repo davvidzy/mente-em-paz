@@ -22,13 +22,13 @@ export const brand = {
   tagline: "Método de Descanso Noturno Para Quem Cuida",
   /** Domínio final (sem barra no fim). Usado em canonical/OG/sitemap. */
   siteUrl: (import.meta.env.VITE_SITE_URL as string | undefined) ?? "", // PENDENTE — definir VITE_SITE_URL no .env
-  contactEmail: "", // PENDENTE — e-mail de contato exibido no rodapé
+  contactEmail: "claramartinns@protonmail.com", // e-mail de contato (rodapé e textos legais)
   /** WhatsApp de suporte, só dígitos com DDI (rodapé e FAQ). Vazio = oculto. */
   whatsapp: "5561996727795",
   /** Mensagem já escrita ao abrir o WhatsApp. */
   whatsappMessage: "Olá! Comprei o Mente em Paz e preciso de ajuda com o acesso.",
   /** Razão social / CNPJ do responsável, se houver. Nunca inventar. */
-  legalEntity: "", // PENDENTE
+  legalEntity: "", // PENDENTE — enquanto vazio, os textos legais usam o nome da marca
 };
 
 // ── Checkout (plataforma externa) ───────────────────────────────────

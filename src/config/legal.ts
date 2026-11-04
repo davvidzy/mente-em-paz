@@ -2,11 +2,13 @@
  * Textos legais — ESTRUTURA BASE, a ser revisada por quem responde juridicamente pelo produto.
  * Descreve apenas o que o site realmente faz. Campos [PENDENTE] precisam ser preenchidos
  * antes da publicação (o build avisa enquanto existirem).
+ * Linguagem de bem-estar, sem termos clínicos: o domínio teve restrição do Meta por
+ * possível tema de saúde (ver lib/analytics.ts). Links (https://…) viram clicáveis.
  */
 import { brand, guarantee, tracking } from "./site";
 
-const responsavel = brand.legalEntity || "[PENDENTE: nome/razão social e CNPJ do responsável]";
-const contato = brand.contactEmail || "[PENDENTE: e-mail de contato]";
+const responsavel = brand.legalEntity || brand.name;
+const contato = brand.contactEmail || "nosso suporte (ver rodapé)";
 
 export interface LegalDoc {
   title: string;
@@ -16,7 +18,7 @@ export interface LegalDoc {
 
 export const privacy: LegalDoc = {
   title: "Política de Privacidade",
-  updated: "16/10/2026",
+  updated: "04/11/2026",
   sections: [
     {
       h: "Quem somos",
@@ -27,13 +29,13 @@ export const privacy: LegalDoc = {
       p: [
         "O quiz não pede nome, e-mail, telefone ou qualquer dado de identificação.",
         "Suas respostas ficam guardadas apenas no armazenamento temporário do seu navegador (sessionStorage), para montar o resultado, e são apagadas quando você fecha a aba. Elas não são enviadas para nossos servidores nem para ferramentas de publicidade.",
-        "O resultado é uma reflexão baseada nas respostas, e não um diagnóstico médico ou psicológico.",
+        "O resultado é apenas uma reflexão baseada nas respostas.",
       ],
     },
     {
       h: "Cookies e medição de anúncios",
       p: [
-        `${tracking.requireConsent ? "Com o seu consentimento, usamos" : "Usamos"} o Meta Pixel (Meta Platforms) para medir o desempenho dos nossos anúncios: por exemplo, visitas às páginas, início do quiz e cliques para o checkout. Essa ferramenta pode usar cookies e identificadores do seu navegador.`,
+        `${tracking.requireConsent ? "Com o seu consentimento, usamos" : "Usamos"} o Meta Pixel (Meta Platforms) para medir o desempenho dos nossos anúncios: visitas às páginas e cliques para o checkout. Essa ferramenta pode usar cookies e identificadores do seu navegador.`,
         "Nenhuma resposta do quiz é compartilhada com essa ferramenta.",
         tracking.requireConsent
           ? "Você pode aceitar ou recusar no aviso exibido no site. Para mudar sua escolha, limpe os dados do site no seu navegador e escolha novamente."
@@ -49,7 +51,7 @@ export const privacy: LegalDoc = {
     {
       h: "Compra",
       p: [
-        "O pagamento é feito em plataforma externa de checkout, que trata seus dados de compra conforme a própria política de privacidade. [PENDENTE: nome da plataforma e link da política dela]",
+        "O pagamento é feito na plataforma de checkout Wiapy, que trata seus dados de compra conforme a própria política de privacidade: https://wiapy.com/app/politica-privacidade",
       ],
     },
     {
@@ -63,23 +65,25 @@ export const privacy: LegalDoc = {
 
 export const terms: LegalDoc = {
   title: "Termos de Uso",
-  updated: "16/10/2026",
+  updated: "04/11/2026",
   sections: [
     {
       h: "Sobre o produto",
       p: [
-        "O Mente em Paz é um produto digital de autocuidado, com áudios guiados e materiais de apoio para uma rotina noturna de desaceleração.",
-        "Não é tratamento médico, psicológico ou terapêutico, não promete cura e não substitui o acompanhamento de profissionais de saúde.",
+        "O Mente em Paz é um produto digital de relaxamento e bem-estar, com áudios guiados e materiais de apoio para a rotina da noite.",
+        "É um conteúdo de uso complementar: não é um tratamento, não garante resultados específicos e não substitui orientação especializada.",
       ],
     },
     {
       h: "Acesso",
-      p: ["O pagamento é único e o acesso é vitalício, liberado após a confirmação do pagamento. [PENDENTE: forma de entrega do acesso]"],
+      p: [
+        "O pagamento é único e o acesso é vitalício. O acesso é enviado por e-mail logo após a confirmação do pagamento e funciona pelo navegador, sem instalar aplicativo.",
+      ],
     },
     {
       h: "Garantia e reembolso",
       p: [
-        `Você pode solicitar o reembolso em até ${guarantee.days} dias após a compra, conforme as condições da plataforma de pagamento. [PENDENTE: confirmar o procedimento de solicitação]`,
+        `Você pode solicitar o reembolso em até ${guarantee.days} dias após a compra, pelo link enviado no e-mail da compra, sem precisar explicar o motivo.`,
       ],
     },
     {

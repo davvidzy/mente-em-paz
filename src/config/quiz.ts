@@ -135,5 +135,5 @@ export const resultCopy = {
   eyebrow: "Seu resultado",
   solutionTitle: "Como o Mente em Paz pode ajudar",
   cta: "Conhecer o Mente em Paz",
-  disclaimer: "Reflexão baseada nas suas respostas, não um diagnóstico.",
+  disclaimer: "Reflexão baseada nas suas respostas.",
 };

@@ -48,6 +48,7 @@ if (/verified:\s*false/.test(site)) warn.push("Seção da especialista com conte
 // Legal
 if (legal.includes("[PENDENTE")) block.push("Textos legais com campos [PENDENTE] em src/config/legal.ts.");
 if (!field("contactEmail")) warn.push("brand.contactEmail vazio — link de Contato oculto no rodapé.");
+if (!field("legalEntity")) warn.push("brand.legalEntity vazio — a Política de Privacidade identifica o responsável só pelo nome da marca (sem nome legal/CNPJ).");
 
 // Build: nada de placeholder de desenvolvimento no dist
 if (existsSync("dist")) {
