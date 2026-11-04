@@ -105,7 +105,7 @@ export const plans: Record<PlanId, Plan> = {
     itemsLead: "Tudo do Essencial +",
     items: [
       "Noites 5, 6 e 7",
-      "3 áudios para compartilhar",
+      "Desligando do Dia — 3 áudios",
       "SOS Mente Acelerada — 5 min",
       "Áudio para despertares noturnos",
       "Diário do Descarrego Mental",
@@ -155,7 +155,7 @@ export const upgrade = {
   /** O que o Completo acrescenta ao Essencial (curto: o popup não pode rolar no celular). */
   extras: [
     "Noites 5, 6 e 7 do programa",
-    "3 áudios para compartilhar",
+    "Desligando do Dia (3 áudios)",
     "SOS Mente Acelerada (5 min)",
     "Quando Acordo no Meio da Noite",
     "Diário do Descarrego Mental",
@@ -331,11 +331,10 @@ export const bonuses = {
   deadlineDaysAhead: 1,
   items: [
     {
-      name: "Um Momento de Paz para Seus Pais",
-      // PENDENTE (posicionamento): nome e capa ainda falam de "pais" — substituir ou renomear o material
-      description: "3 áudios suaves para ouvir com quem você ama.",
+      name: "Desligando do Dia",
+      description: "3 áudios curtos para sair do ritmo acelerado do dia.",
       valueCents: 3990,
-      image: "img/bonus/um-momento-de-paz-para-seus-pais",
+      image: "img/bonus/desligando-do-dia",
     },
     {
       name: "Plano da Noite Organizada",
