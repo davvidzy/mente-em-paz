@@ -1,7 +1,6 @@
 import { BadgeCheck, BedDouble, Clock, Feather, Infinity as InfinityIcon, ShieldCheck, type LucideIcon } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { guarantee, media } from "../../../config/site";
-import { trackOnce } from "../../../lib/analytics";
 import { fill } from "../../../lib/format";
 import { routes } from "../../../lib/routes";
 import { ButtonLink } from "../../ui/Button";
@@ -94,14 +93,6 @@ export function Hero() {
               preload="metadata"
               controlsList="nodownload"
               aria-label={v.label}
-              onPlay={() => trackOnce("video_started", { content_name: "Apresentação do portal" })}
-              onTimeUpdate={(e) => {
-                const el = e.currentTarget;
-                if (!el.duration) return;
-                const pct = (el.currentTime / el.duration) * 100;
-                for (const p of [25, 50, 75]) if (pct >= p) trackOnce("video_progress", { percent: p }, `video_progress_${p}`);
-              }}
-              onEnded={() => trackOnce("video_completed", { content_name: "Apresentação do portal" })}
               className="mx-auto mt-7 aspect-[9/16] w-full max-w-[340px] rounded-[22px] border border-line bg-brand shadow-[0_18px_40px_-24px_rgba(0,0,0,0.35)] md:mt-9"
               data-hero-video
             />

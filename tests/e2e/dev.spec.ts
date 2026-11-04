@@ -94,20 +94,12 @@ test.describe("Quiz", () => {
     }
   });
 
-  test("eventos do quiz na ordem, sem respostas nos parâmetros e sem Purchase", async ({ page }) => {
+  test("quiz e resultado não disparam nenhum evento (nada sobre respostas sai do site)", async ({ page }) => {
     await page.goto("/");
     await answerQuiz(page, ANSWERS_PAIS);
     await expect(page).toHaveURL(/\/resultado\/$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    const evs = await events(page);
-    expect(evs).toEqual([
-      "quiz_started",
-      ...Array(TOTAL).fill("quiz_question_answered"),
-      "quiz_completed",
-      "quiz_result_viewed",
-    ]);
-    const params = await page.evaluate(() => (window.__mpEvents ?? []).map((e) => e.params));
-    for (const p of params) expect(Object.keys(p).every((k) => k === "question_number")).toBe(true);
+    expect(await events(page)).toEqual([]);
   });
 
   test("acessar /resultado/ sem quiz volta ao início", async ({ page }) => {
@@ -156,9 +148,8 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await page.locator('[data-plan="essencial"]').click(); // não reabre de forma insistente: vai direto
     await expect(page).toHaveURL(/^https:\/\/pay\.wiapy\.com\/RRmfu6Uf2RK/);
 
-    expect(evs).toContain("upgrade_declined");
-    expect(evs.filter((e) => e === "upgrade_popup_opened")).toHaveLength(2);
-    expect(evs).toContain("checkout_redirect");
+    expect(evs.filter((e) => e === "checkout_redirect")).toHaveLength(2);
+    expect(evs.every((e) => e === "landing_page_viewed" || e === "checkout_redirect")).toBe(true);
   });
 
   test("aceitar upgrade → checkout de R$ 57,90; Completo → checkout de R$ 67,90; UTMs repassadas", async ({ page }) => {
@@ -171,7 +162,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await page.goBack();
     await page.locator('[data-plan="completo"]').click();
     await expect(page).toHaveURL("https://pay.wiapy.com/4U-4VtXIgz-e?utm_source=ig");
-    expect(evs).toEqual(expect.arrayContaining(["upgrade_accepted", "completo_clicked", "checkout_redirect"]));
+    expect(evs.filter((e) => e === "checkout_redirect")).toHaveLength(2);
   });
 
   test("FAQ abre uma pergunta por vez", async ({ page }) => {
@@ -270,7 +261,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     await expect(reopen).toHaveText("");
     await reopen.click();
     await expect(dialog.locator("[data-coupon-code]")).toHaveText("QUEROSENTIRPAZ");
-    expect(evs).toEqual(expect.arrayContaining(["coupon_wheel_opened", "coupon_wheel_spun", "coupon_copied", "coupon_cta_clicked"]));
+    expect(evs.filter((e) => e !== "landing_page_viewed")).toEqual([]);
     // recarregou → nada fica salvo: a roleta volta ao chegar de novo nos bônus
     await page.reload();
     await expect(page.getByRole("button", { name: "Ver meu cupom de desconto" })).toHaveCount(0);

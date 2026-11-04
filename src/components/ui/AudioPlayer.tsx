@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
-import { trackOnce } from "../../lib/analytics";
 
 function time(s: number) {
   if (!Number.isFinite(s) || s < 0) return "0:00";
@@ -20,10 +19,7 @@ export function AudioPlayer({ src, title }: { src: string; title: string }) {
     if (!a) return;
     const onTime = () => setCurrent(a.currentTime);
     const onMeta = () => setDuration(a.duration);
-    const onPlay = () => {
-      setPlaying(true);
-      trackOnce("audio_preview_started");
-    };
+    const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
     a.addEventListener("timeupdate", onTime);
     a.addEventListener("loadedmetadata", onMeta);

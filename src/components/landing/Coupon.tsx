@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Clock, Copy, Gift } from "lucide-react";
 import { landing } from "../../config/landing";
 import { coupon } from "../../config/site";
-import { track } from "../../lib/analytics";
 import { fill } from "../../lib/format";
 import { mmss, useCountdown } from "../../hooks/useCountdown";
 import { Button } from "../ui/Button";
@@ -37,9 +36,6 @@ export function CouponWheel({
   const expired = left === 0;
   const min = { min: coupon.validMinutes };
 
-  useEffect(() => {
-    if (open && !won) track("coupon_wheel_opened");
-  }, [open, won]);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const spin = () => {
@@ -49,7 +45,6 @@ export function CouponWheel({
     const jitter = (Math.random() - 0.5) * (step - 12);
     setRotation(360 * 6 + (360 - (coupon.winningSlice * step + step / 2)) + jitter);
     setPhase("spinning");
-    track("coupon_wheel_spun");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     timer.current = window.setTimeout(() => {
       onWin();
@@ -57,7 +52,6 @@ export function CouponWheel({
   };
 
   const useCoupon = () => {
-    track("coupon_cta_clicked");
     onClose();
     window.setTimeout(() => scrollToId("planos"), 0);
   };
@@ -205,7 +199,6 @@ export function CouponCode({ className = "" }: { className?: string }) {
       if (el) window.getSelection()?.selectAllChildren(el);
     }
     setCopied(true);
-    track("coupon_copied");
     window.setTimeout(() => setCopied(false), 2500);
   };
 

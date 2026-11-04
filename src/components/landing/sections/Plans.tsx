@@ -1,12 +1,10 @@
 import { useState, type MouseEvent } from "react";
 import { Check, Lock, Mail, ShieldCheck } from "lucide-react";
 import { landing } from "../../../config/landing";
-import { checkout, guarantee, payment, plans, tracking, upgrade, type Plan } from "../../../config/site";
-import { track, trackOnce } from "../../../lib/analytics";
+import { checkout, guarantee, payment, plans, upgrade, type Plan } from "../../../config/site";
 import { checkoutBaseUrl, goToCheckout, hasCheckoutUrl, type CheckoutKind } from "../../../lib/checkout";
 import { fill, priceParts } from "../../../lib/format";
 import { read, write } from "../../../lib/storage";
-import { useInView } from "../../../hooks/useReveal";
 import { Button, ButtonLink } from "../../ui/Button";
 import type { NoticeMessage } from "../Notice";
 import { Reveal, Section, SectionHead, type Tone } from "../shared";
@@ -26,7 +24,6 @@ const CONFIG_FIELD: Record<CheckoutKind, string> = {
 export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMessage) => void }) {
   const c = landing.plans;
   const [modalOpen, setModalOpen] = useState(false);
-  const sectionRef = useInView<HTMLDivElement>(() => trackOnce("plan_section_viewed"), 0.25);
 
   /** Upgrade só é oferecido se habilitado, com URL real e ainda não recusado nesta visita. */
   const upgradeAvailable = upgrade.enabled && hasCheckoutUrl("upgrade");
@@ -45,29 +42,22 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
   };
 
   const chooseEssencial = () => {
-    track("essencial_clicked", { value: plans.essencial.priceCents / 100, currency: tracking.currency });
     const declined = read<boolean>(DECLINED_KEY) === true;
     if ((upgradeAvailable || (PREVIEW && upgrade.enabled)) && !declined) {
       setModalOpen(true);
-      track("upgrade_popup_opened");
       return;
     }
     go("essencial");
   };
 
-  const chooseCompleto = () => {
-    track("completo_clicked", { value: plans.completo.priceCents / 100, currency: tracking.currency });
-    go("completo");
-  };
+  const chooseCompleto = () => go("completo");
 
   const accept = () => {
-    track("upgrade_accepted", { value: upgrade.priceCents / 100, currency: tracking.currency });
     setModalOpen(false);
     go("upgrade");
   };
 
   const decline = () => {
-    track("upgrade_declined", { value: plans.essencial.priceCents / 100, currency: tracking.currency });
     write(DECLINED_KEY, true);
     setModalOpen(false);
     go("essencial");
@@ -78,7 +68,7 @@ export function Plans({ tone, onNotice }: { tone: Tone; onNotice: (n: NoticeMess
 
   return (
     <Section id="planos" tone={tone} labelledBy="planos-title">
-      <div ref={sectionRef} className="container-page">
+      <div className="container-page">
         <SectionHead id="planos-title" title={c.title} center />
 
         <div className="mx-auto mt-12 grid max-w-[920px] gap-5 md:mt-14 md:grid-cols-2 md:items-stretch md:gap-6">

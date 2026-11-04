@@ -79,7 +79,6 @@ Em `npm run dev`, cada material ausente aparece como **placeholder de desenvolvi
 |---|---|
 | `landing_page_viewed` | `ViewContent` |
 | `checkout_redirect` | `InitiateCheckout` (value, currency) |
-| demais (`quiz_*`, `video_*`, `audio_preview_started`, `plan_section_viewed`, `essencial_clicked`, `completo_clicked`, `upgrade_*`) | `trackCustom` |
 | **Compra** | **Não é disparada no site.** Configure o `Purchase` (com value e currency) na plataforma de checkout ou via API de Conversões |
 
 Para depurar, em desenvolvimento os eventos aparecem no console, e `window.__mpEvents` lista todos.

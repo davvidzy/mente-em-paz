@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { questions } from "../../config/quiz";
 import { classify, isComplete, type Answers } from "../../lib/classifier";
-import { track } from "../../lib/analytics";
 import { routes } from "../../lib/routes";
 import { quizSession } from "../../lib/session";
 import { ConsentBanner } from "../ui/ConsentBanner";
@@ -108,14 +107,11 @@ export function QuizApp() {
   const answer = (index: number, optionId: string) => {
     if (busy.current) return;
     busy.current = true;
-    // sem tela inicial: o quiz "começa" na primeira interação real
-    if (index === 0 && !answers.some(Boolean)) track("quiz_started");
     const next = [...answers];
     next[index] = optionId;
     next.length = Math.max(next.length, index + 1);
     setAnswers(next);
     quizSession.setAnswers(next);
-    track("quiz_question_answered", { question_number: index + 1 });
 
     window.setTimeout(() => {
       busy.current = false;
@@ -129,7 +125,6 @@ export function QuizApp() {
         go({ kind: "question", index: Math.max(0, missing) });
         return;
       }
-      track("quiz_completed");
       setView({ kind: "loading" });
       busy.current = true;
       window.setTimeout(() => {

@@ -1,8 +1,7 @@
-import { useEffect, useRef, type RefObject } from "react";
+import type { RefObject } from "react";
 import { Sparkles } from "lucide-react";
 import { preventiveContent, profiles, resultCopy } from "../../config/quiz";
 import type { QuizResult as Result } from "../../lib/classifier";
-import { track } from "../../lib/analytics";
 import { withParams } from "../../lib/params";
 import { routes } from "../../lib/routes";
 import { Button } from "../ui/Button";
@@ -23,16 +22,7 @@ export function QuizResult({
   // cada frase do título em sua própria linha
   const lines = content.title.split(/(?<=\.)\s+/);
 
-  // ref evita disparo duplo (StrictMode/re-render)
-  const viewed = useRef(false);
-  useEffect(() => {
-    if (viewed.current) return;
-    viewed.current = true;
-    track("quiz_result_viewed");
-  }, []);
-
   const goLanding = () => {
-    track("quiz_result_cta_clicked");
     window.location.assign(withParams(routes.landing()));
   };
 

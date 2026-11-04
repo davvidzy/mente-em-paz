@@ -11,47 +11,21 @@
 import { tracking } from "../config/site";
 import { getConsent, onConsent } from "./consent";
 
-export type EventName =
-  // quiz
-  | "quiz_started"
-  | "quiz_question_answered"
-  | "quiz_completed"
-  | "quiz_result_viewed"
-  | "quiz_result_cta_clicked"
-  // landing
-  | "landing_page_viewed"
-  | "video_started"
-  | "video_progress"
-  | "video_completed"
-  | "audio_preview_started"
-  | "plan_section_viewed"
-  // oferta
-  | "essencial_clicked"
-  | "completo_clicked"
-  | "upgrade_popup_opened"
-  | "upgrade_accepted"
-  | "upgrade_declined"
-  | "checkout_redirect"
-  // roleta de cupom
-  | "coupon_wheel_opened"
-  | "coupon_wheel_spun"
-  | "coupon_copied"
-  | "coupon_cta_clicked";
+/**
+ * Só eventos padrão do Meta (além do PageView da entrada e do Purchase do checkout).
+ * Sem eventos personalizados: o domínio teve restrição do Meta (possível tema de saúde)
+ * e eventos personalizados não otimizam anúncios.
+ */
+export type EventName = "landing_page_viewed" | "checkout_redirect";
 
 type Params = Record<string, string | number | boolean | undefined>;
 
-/**
- * Eventos internos → eventos padrão do Meta. SÓ estes saem para o Meta (além do PageView
- * da entrada e do Purchase do checkout); os demais ficam apenas no registro local.
- * Motivo: domínio restrito pelo Meta (possível tema de saúde) — nomes como
- * quiz_result_viewed reforçam essa leitura e não são usados para otimizar anúncios.
- */
-const META_STANDARD: Partial<Record<EventName, string>> = {
+const META_STANDARD: Record<EventName, string> = {
   landing_page_viewed: "ViewContent",
   checkout_redirect: "InitiateCheckout",
 };
 
-const ALLOWED = new Set(["question_number", "percent", "value", "currency", "plan", "content_name"]);
+const ALLOWED = new Set(["value", "currency", "plan", "content_name"]);
 
 declare global {
   interface Window {
@@ -103,9 +77,8 @@ function loadTools() {
 }
 
 function send(name: EventName, params: Params) {
-  const std = META_STANDARD[name];
-  if (!window.fbq || !std) return;
-  window.fbq("track", std, sanitize(params));
+  if (!window.fbq) return;
+  window.fbq("track", META_STANDARD[name], sanitize(params));
 }
 
 export function track(name: EventName, params: Params = {}) {
