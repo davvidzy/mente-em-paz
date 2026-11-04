@@ -35,7 +35,7 @@ export function Modal({ open, onClose, labelledBy, describedBy, tall, center, ch
 
     const first = panel.current?.querySelector<HTMLElement>("[data-autofocus]") ??
       panel.current?.querySelector<HTMLElement>(FOCUSABLE);
-    first?.focus();
+    first?.focus({ preventScroll: true });
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -59,7 +59,8 @@ export function Modal({ open, onClose, labelledBy, describedBy, tall, center, ch
       document.removeEventListener("keydown", onKey);
       body.style.overflow = prevOverflow;
       body.style.paddingRight = prevPad;
-      previous?.focus?.();
+      // sem rolar: a roleta abre sozinha, e o foco anterior pode estar no topo da página
+      previous?.focus?.({ preventScroll: true });
     };
   }, [open]);
 
