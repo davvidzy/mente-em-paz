@@ -26,7 +26,7 @@ export const landing = {
       { icon: "easy", label: "Sem precisar saber meditar", enabled: false },
     ] as { icon: "guarantee" | "lying" | "easy" | "lifetime" | "once" | "duration"; label: string; enabled: boolean }[],
     /** Título do vídeo do portal (último item do hero). */
-    videoTitle: "Não são apenas áudios. **É um portal feito pra você.**",
+    videoTitle: "Mas não são apenas áudios. **É um portal feito pra você.**",
   },
 
   identification: {
