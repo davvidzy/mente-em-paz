@@ -276,9 +276,17 @@
   width: max-content;
   align-items: center;
   animation: mp-marquee var(--marquee-duration, 40s) linear infinite;
+  animation-play-state: paused;
   will-change: transform;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+}
+/* anda só com as imagens decodificadas e a faixa na tela (ver Testimonials.tsx) */
+.mp-marquee[data-running] .mp-marquee-track {
+  animation-play-state: running;
+}
+/* Fora do content-visibility: no Safari, a seção pulada fora da tela reinicia a animação
+   e descarta as imagens decodificadas — ao voltar, o carrossel "pula" e as imagens piscam. */
+#depoimentos.section {
+  content-visibility: visible;
 }
 .mp-marquee-item {
   padding-right: 16px; /* espaçamento uniforme → o loop em -50% fica perfeito */

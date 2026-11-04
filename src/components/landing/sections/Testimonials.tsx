@@ -23,12 +23,30 @@ export function Testimonials({ tone }: { tone: Tone }) {
   // no <head>, disputando a banda com o mockup do hero em internet lenta.
   const marquee = useRef<HTMLDivElement>(null);
   const [near, setNear] = useState(false);
+  // Safari: o carrossel só anda depois que todas as imagens estão decodificadas (senão trava
+  // e "volta" quadros enquanto decodifica) e pausa fora da tela (em vez de ser descartado).
+  const [ready, setReady] = useState(false);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = marquee.current;
-    if (!el || near) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: "800px 0px" });
-    io.observe(el);
-    return () => io.disconnect();
+    if (!el) return;
+    const pre = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: "800px 0px" });
+    const vis = new IntersectionObserver(([e]) => setVisible(e.isIntersecting));
+    pre.observe(el);
+    vis.observe(el);
+    return () => {
+      pre.disconnect();
+      vis.disconnect();
+    };
+  }, []);
+  useEffect(() => {
+    if (!near) return;
+    const imgs = [...(marquee.current?.querySelectorAll("img") ?? [])];
+    let alive = true;
+    Promise.all(imgs.map((img) => img.decode().catch(() => undefined))).then(() => alive && setReady(true));
+    return () => {
+      alive = false;
+    };
   }, [near]);
 
   if (!items.length) return null;
@@ -39,7 +57,7 @@ export function Testimonials({ tone }: { tone: Tone }) {
         <SectionHead id="depo-title" title={c.title} text={c.text} center />
       </div>
 
-      <div ref={marquee} className="mp-marquee mt-8 md:mt-10">
+      <div ref={marquee} className="mp-marquee mt-8 md:mt-10" data-running={(ready && visible) || undefined}>
         <ul className="mp-marquee-track" style={{ ["--marquee-duration" as string]: `${Math.max(20, items.length * 5)}s` }} aria-label="Depoimentos de clientes">
           {[0, 1].map((copy) =>
             items.map((t, i) => (
@@ -50,7 +68,8 @@ export function Testimonials({ tone }: { tone: Tone }) {
                   <img
                     src={routes.asset(`${t.image}-400.webp`)}
                     srcSet={`${routes.asset(`${t.image}-400.webp`)} 400w, ${routes.asset(`${t.image}-800.webp`)} 800w`}
-                    sizes="(min-width: 768px) 248px, 225px"
+                    // 400w basta até 2x; o 800w em tela 3x estoura a memória de imagens do iOS
+                    sizes="(min-width: 768px) 248px, 180px"
                     alt={copy === 1 ? "" : t.alt}
                     width={941}
                     height={1672}
