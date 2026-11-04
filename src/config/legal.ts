@@ -1,7 +1,7 @@
 /**
  * Textos legais — ESTRUTURA BASE, a ser revisada por quem responde juridicamente pelo produto.
- * Descreve apenas o que o site realmente faz. Campos [PENDENTE] precisam ser preenchidos
- * antes da publicação (o build avisa enquanto existirem).
+ * Descreve apenas o que o site realmente faz. Trechos ainda pendentes devem ser marcados
+ * com colchete + PENDENTE (o build bloqueia enquanto existirem).
  * Linguagem de bem-estar, sem termos clínicos: o domínio teve restrição do Meta por
  * possível tema de saúde (ver lib/analytics.ts). Links (https://…) viram clicáveis.
  */
