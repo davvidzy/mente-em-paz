@@ -412,8 +412,8 @@ export const faq: { q: string; a: string }[] = [
     a: "Pagamento único por Pix ou cartão. Sem mensalidade e com acesso vitalício.",
   },
   {
-    q: "Substitui acompanhamento profissional?",
-    a: "Não. É um recurso de autocuidado, não um tratamento médico ou psicológico.",
+    q: "O Mente em Paz é um tratamento?",
+    a: "Não. É um conteúdo de relaxamento e bem-estar para o fim do dia.",
   },
 ];
 

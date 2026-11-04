@@ -40,7 +40,12 @@ export type EventName =
 
 type Params = Record<string, string | number | boolean | undefined>;
 
-/** Eventos internos → eventos padrão do Meta. Os demais vão como trackCustom. */
+/**
+ * Eventos internos → eventos padrão do Meta. SÓ estes saem para o Meta (além do PageView
+ * da entrada e do Purchase do checkout); os demais ficam apenas no registro local.
+ * Motivo: domínio restrito pelo Meta (possível tema de saúde) — nomes como
+ * quiz_result_viewed reforçam essa leitura e não são usados para otimizar anúncios.
+ */
 const META_STANDARD: Partial<Record<EventName, string>> = {
   landing_page_viewed: "ViewContent",
   checkout_redirect: "InitiateCheckout",
@@ -98,11 +103,9 @@ function loadTools() {
 }
 
 function send(name: EventName, params: Params) {
-  if (!window.fbq) return;
-  const clean = sanitize(params);
   const std = META_STANDARD[name];
-  if (std) window.fbq("track", std, clean);
-  else window.fbq("trackCustom", name, clean);
+  if (!window.fbq || !std) return;
+  window.fbq("track", std, sanitize(params));
 }
 
 export function track(name: EventName, params: Params = {}) {

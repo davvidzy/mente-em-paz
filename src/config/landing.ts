@@ -126,6 +126,6 @@ export const landing = {
 
   footer: {
     disclaimer:
-      "O Mente em Paz é um recurso complementar de autocuidado e bem-estar. Não é tratamento médico ou psicológico e não substitui o acompanhamento de profissionais de saúde.",
+      "O Mente em Paz é um conteúdo de relaxamento e bem-estar, de uso complementar. Não é um tratamento e não substitui orientação especializada.",
   },
 };
