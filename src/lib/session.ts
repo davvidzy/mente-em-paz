@@ -22,6 +22,6 @@ export const quizSession = {
   setProfile: (p: ProfileId) => write(PROFILE, p),
   getProfile: (): ProfileId | null => {
     const p = read<string>(PROFILE);
-    return p === "pais" || p === "culpa" || p === "pensamentos" || p === "sobrecarga" ? p : null;
+    return p === "acelerada" || p === "preocupacao" || p === "sobrecarga" || p === "relaxar" ? p : null;
   },
 };

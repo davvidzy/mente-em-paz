@@ -44,7 +44,7 @@ function strongestProfile(weights: Partial<Record<ProfileId, number>> | undefine
 export function classify(answers: Answers): QuizResult {
   if (!isComplete(answers)) throw new Error("Quiz incompleto: não é possível gerar resultado");
 
-  const scores: Record<ProfileId, number> = { pais: 0, culpa: 0, pensamentos: 0, sobrecarga: 0 };
+  const scores: Record<ProfileId, number> = { acelerada: 0, preocupacao: 0, sobrecarga: 0, relaxar: 0 };
   let calm = 0;
 
   answers.forEach((id, qi) => {
@@ -53,7 +53,8 @@ export function classify(answers: Answers): QuizResult {
     if (opt.calm) calm++;
   });
 
-  const preventive = calm >= CALM_FOR_PREVENTIVE;
+  // sem nenhuma pergunta com resposta "calm", o tom preventivo fica desligado
+  const preventive = CALM_FOR_PREVENTIVE > 0 && calm >= CALM_FOR_PREVENTIVE;
 
   let profile: ProfileId;
   if (preventive) {

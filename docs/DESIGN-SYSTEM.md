@@ -9,7 +9,7 @@
 
 ## 1. Essência da marca
 
-O **Mente em Paz** é um método digital de descanso noturno para **mulheres adultas que cuidam dos pais idosos**: muita carga mental, preocupação constante, culpa ao tirar um tempo para si e dificuldade de desacelerar à noite.
+O **Mente em Paz** é um método digital de descanso noturno para **pessoas mentalmente cansadas e sobrecarregadas** (maior identificação com mulheres adultas, comunicação neutra): o corpo cansa, mas a mente não desliga à noite — pensamentos acelerados, preocupações, peso do dia e dificuldade de relaxar.
 
 O portal é onde ela **usa** o produto (áudios guiados, caderno, checklist, guia). A interface precisa parecer um lugar calmo e seguro, que ela queira abrir à noite.
 

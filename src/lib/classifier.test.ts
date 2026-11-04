@@ -40,25 +40,19 @@ describe("classifier", () => {
     expect(isComplete(["A", "A", "A", "A", "A"])).toBe(false);
   });
 
-  it("respostas positivas não forçam um problema (tom preventivo)", () => {
-    for (const a of combos) {
-      const r = classify(a);
-      const allCalm = a[0] === "D" && a[2] === "D";
-      expect(r.preventive).toBe(allCalm);
-      if (allCalm) expect(r.profile).toBe("sobrecarga");
-    }
+  it("sem respostas \"calm\", o tom preventivo nunca aparece", () => {
+    for (const a of combos) expect(classify(a).preventive).toBe(false);
   });
 
   it("cada perfil só aparece quando há respostas que o sustentam", () => {
     for (const a of combos) {
       const r = classify(a);
-      if (r.preventive) continue;
       const [q1, q2, q3] = a;
       const supports = {
-        pais: q1 === "A" || q2 === "A" || q3 === "B",
-        culpa: q3 === "A" || q3 === "B" || q1 === "C",
-        pensamentos: q1 === "B" || q2 === "B" || q2 === "D" || q3 === "C",
-        sobrecarga: q1 === "C" || q2 === "B" || q2 === "C",
+        acelerada: q1 === "A" || q2 === "A" || q3 === "A",
+        preocupacao: q1 === "B" || q1 === "C" || q2 === "B" || q3 === "B",
+        sobrecarga: q1 === "C" || q2 === "C" || q3 === "C",
+        relaxar: q2 === "D" || q3 === "D",
       }[r.profile];
       expect(supports, `${a.join("")} → ${r.profile}`).toBe(true);
     }
@@ -71,18 +65,18 @@ describe("classifier", () => {
   });
 
   it("casos de referência", () => {
-    expect(classify(["A", "A", "B"]).profile).toBe("pais");
-    expect(classify(["C", "C", "A"]).profile).toBe("sobrecarga"); // empate 5×5 → causa da Q2 (sobrecarga)
-    expect(classify(["D", "C", "A"]).profile).toBe("culpa"); // culpa 4 > sobrecarga 3
-    expect(classify(["B", "B", "C"]).profile).toBe("pensamentos");
-    expect(classify(["D", "B", "D"]).preventive).toBe(true);
+    expect(classify(["A", "A", "A"]).profile).toBe("acelerada");
+    expect(classify(["B", "B", "C"]).profile).toBe("preocupacao");
+    expect(classify(["C", "C", "C"]).profile).toBe("sobrecarga");
+    expect(classify(["D", "D", "A"]).profile).toBe("relaxar"); // relaxar 3 > acelerada 2
+    expect(classify(["C", "A", "C"]).profile).toBe("sobrecarga"); // sobrecarga 4 > acelerada 3
   });
 
   it("empate é resolvido pela causa escolhida na pergunta 2", () => {
-    // Q1 A (pais 3) × Q2 C (sobrecarga 3) × Q3 C (pensamentos 2) → empate pais/sobrecarga → Q2 decide
-    expect(classify(["A", "C", "C"]).profile).toBe("sobrecarga");
-    // Q1 B (pensamentos 3) × Q2 A (pais 3) × Q3 D → empate → Q2 (pais)
-    expect(classify(["B", "A", "D"]).profile).toBe("pais");
+    // Q1 A (acelerada 3) × Q2 C (sobrecarga 3) × Q3 B → empate acelerada/sobrecarga → Q2 decide
+    expect(classify(["A", "C", "B"]).profile).toBe("sobrecarga");
+    // Q1 B (preocupação 3) × Q2 D (relaxar 3) × Q3 A → empate → Q2 (relaxar)
+    expect(classify(["B", "D", "A"]).profile).toBe("relaxar");
   });
 
   it("frases-espelho são literais às respostas dadas", () => {

@@ -1,6 +1,6 @@
 # Mente em Paz — Funil Quiz → Resultado → Landing → Checkout
 
-Site do infoproduto **Mente em Paz** (Método de Descanso Noturno Para Quem Cuida).
+Site do infoproduto **Mente em Paz** (áudios guiados para desacelerar à noite).
 Identidade visual: design system **Refúgio Sereno** (`Mente em Paz - Conteúdo para Claude/`).
 
 | Rota | Página |

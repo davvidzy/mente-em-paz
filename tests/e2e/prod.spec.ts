@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { ANSWERS_PAIS, answerQuiz, blockMeta, collectErrors, skipCouponWheel, stubCheckout } from "./helpers";
+import { ANSWERS_ACELERADA, answerQuiz, blockMeta, collectErrors, skipCouponWheel, stubCheckout } from "./helpers";
 
 const WIDTHS = [320, 360, 375, 390, 430, 768, 1024, 1440];
 const SITE = readFileSync("src/config/site.ts", "utf8");
@@ -23,7 +23,7 @@ test.describe("Build de produção", () => {
         expect(overflow, `${path} @ ${w}px`).toBeLessThanOrEqual(0);
       }
       await page.goto("/");
-      await page.getByText("Continuo pensando nos meus pais.").click(); // vai para a pergunta 2
+      await page.getByText("Minha cabeça não para.").click(); // vai para a pergunta 2
       await page.getByText("Pergunta 2 de 3").waitFor();
       const overflowQ = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflowQ, `pergunta @ ${w}px`).toBeLessThanOrEqual(0);
@@ -109,7 +109,7 @@ test.describe("Build de produção", () => {
     await expect(page.locator("#programa li")).toHaveCount(7);
     // objeções resolvidas antes dos planos
     await expect(page.locator("#diferencial li")).toHaveCount(3);
-    await expect(page.locator("#demonstracao")).toContainText("Experimente um trecho real do Mente em Paz.");
+    await expect(page.locator("#demonstracao")).toContainText("Um trecho real de um dos áudios guiados.");
     await expect(page.locator("#garantia [data-guarantee-notes] li")).toHaveCount(4);
     await expect(page.locator("main")).not.toContainText("esse é o objetivo");
     // sem aviso de cookies na tela (pixel na entrada ou recusado no estado padrão dos testes)
@@ -120,11 +120,11 @@ test.describe("Build de produção", () => {
   test("site em subpasta: quiz → resultado → LP", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("http://localhost:4174/promo/?utm_source=ig");
-    await answerQuiz(page, ANSWERS_PAIS);
+    await answerQuiz(page, ANSWERS_ACELERADA);
     await expect(page).toHaveURL("http://localhost:4174/promo/resultado/");
     await page.getByRole("button", { name: /Conhecer o Mente em Paz/ }).click();
     await expect(page).toHaveURL("http://localhost:4174/promo/mente-em-paz/?utm_source=ig");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Sua noite mais tranquila começa com um simples play.");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("O dia termina. Mas sua mente não desliga?");
     // logo e fontes carregaram
     const logoOk = await page.locator("header img").first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
     expect(logoOk).toBe(true);
@@ -253,7 +253,7 @@ test.describe("Build de produção", () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL: "http://localhost:4174" });
     const page = await ctx.newPage();
     await page.goto("/promo/mente-em-paz/"); // em subpasta: links e assets relativos
-    await expect(page.locator("h1")).toContainText("Sua noite mais tranquila começa com um simples play.");
+    await expect(page.locator("h1")).toContainText("O dia termina. Mas sua mente não desliga?");
     // sem JavaScript: prazo dos bônus já com a data de hoje (script inline) e compra por link
     await expect(page.locator("#bonus [data-deadline]")).toHaveText(/^\d{2}\/\d{2}$/);
     if (READY) await expect(page.locator('#planos a[data-plan="completo"]')).toHaveAttribute("href", /^https:\/\/pay\.wiapy\.com\//);

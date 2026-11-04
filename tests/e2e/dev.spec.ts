@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
-import { ANSWERS_CALM, ANSWERS_PAIS, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, skipCouponWheel, stubCheckout } from "./helpers";
+import { ANSWERS_ACELERADA, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, skipCouponWheel, stubCheckout } from "./helpers";
 
 test.beforeEach(async ({ page }, info) => {
   await blockMeta(page);
@@ -13,21 +13,21 @@ test.describe("Quiz", () => {
     await page.goto("/?utm_source=facebook&utm_campaign=lancamento&fbclid=abc123");
     // sem tela inicial
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Quando você finalmente deita, o que acontece?");
-    await expect(page.getByText("3 perguntas", { exact: true })).toBeVisible();
+    await expect(page.getByText("Leva menos de 2 min", { exact: true })).toBeVisible();
     await expect(page.locator("body")).not.toContainText("sem cadastro");
     await expect(page.getByRole("button", { name: "Voltar" })).toHaveCount(0);
 
-    for (const [i, label] of ANSWERS_PAIS.entries()) {
+    for (const [i, label] of ANSWERS_ACELERADA.entries()) {
       await expect(page.getByText(`Pergunta ${i + 1} de ${TOTAL}`)).toBeVisible();
       await expect(page.locator("body")).not.toContainText("R$");
       await page.getByRole("button", { name: label, exact: true }).click();
     }
     await expect(page).toHaveURL(/\/resultado\/$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seus pais dormem.Sua mente, não.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sua mente parece não desligar.");
     await expect(page.getByText("Como o Mente em Paz pode ajudar")).toBeVisible();
     await expect(page.locator("body")).not.toContainText("R$");
     // respostas não vão para a URL
-    expect(page.url()).not.toMatch(/pais|perfil|answer/);
+    expect(page.url()).not.toMatch(/acelerada|perfil|answer/);
 
     await page.getByRole("button", { name: /Conhecer o Mente em Paz/ }).click();
     await expect(page).toHaveURL(/\/mente-em-paz\/\?/);
@@ -36,18 +36,18 @@ test.describe("Quiz", () => {
     expect(url.searchParams.get("utm_campaign")).toBe("lancamento");
     expect(url.searchParams.get("fbclid")).toBe("abc123");
     // identificação personalizada conforme o perfil
-    await expect(page.locator("#identificacao h2")).toContainText("Seus pais dormem. Sua mente, não.");
+    await expect(page.locator("#identificacao h2")).toContainText("Sua mente parece não desligar.");
     expect(errors).toEqual([]);
   });
 
   test("Voltar (botão e navegador) preserva respostas", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Minha cabeça não para de pensar.", exact: true }).click();
+    await page.getByRole("button", { name: "Minha cabeça não para.", exact: true }).click();
     await expect(page.getByText("Pergunta 2 de 3")).toBeVisible();
 
     await page.getByRole("button", { name: "Voltar" }).click();
     await expect(page.getByText("Pergunta 1 de 3")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Minha cabeça não para de pensar.", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "Minha cabeça não para.", exact: true })).toHaveAttribute("aria-pressed", "true");
 
     await page.goForward();
     await expect(page.getByText("Pergunta 2 de 3")).toBeVisible();
@@ -55,17 +55,11 @@ test.describe("Quiz", () => {
     await expect(page.getByText("Pergunta 1 de 3")).toBeVisible();
   });
 
-  test("respostas diferentes geram resultados diferentes; positivas → tom preventivo", async ({ page }) => {
+  test("respostas diferentes geram resultados diferentes", async ({ page }) => {
     const cases: [string[], string][] = [
-      [ANSWERS_CALM, "Proteja o descanso que você tem."],
-      [
-        ["Minha cabeça não para de pensar.", "Preocupação com o dia seguinte.", "Dificuldade de desligar os pensamentos."],
-        "Seu corpo deita.Sua mente, não.",
-      ],
-      [
-        ["Continuo pensando nos meus pais.", "Sensação de ter responsabilidades demais.", "Culpa por não estar ajudando."],
-        "Você cuida de todos.Menos de você.",
-      ],
+      [["Fico pensando nas preocupações.", "Preocupações com o amanhã.", "Deixar as preocupações de lado."], "Suas preocupações deitam com você."],
+      [["Sinto que deixei coisas por fazer.", "O peso das responsabilidades.", "Aliviar o peso do dia."], "Você leva o peso do dia para a cama."],
+      [["Geralmente consigo relaxar.", "A dificuldade de relaxar.", "Conseguir relaxar de verdade."], "Seu corpo para.Relaxar é difícil."],
     ];
     for (const [answers, title] of cases) {
       await page.goto("/");
@@ -80,7 +74,7 @@ test.describe("Quiz", () => {
     for (const [w, h] of [[320, 568], [375, 667], [390, 844], [1440, 900]]) {
       await page.setViewportSize({ width: w, height: h });
       await page.goto("/");
-      await answerQuiz(page, ANSWERS_PAIS);
+      await answerQuiz(page, ANSWERS_ACELERADA);
       await expect(page.locator("[data-result-title]")).toBeVisible();
       const overflow = await page.evaluate(() => ({
         y: document.documentElement.scrollHeight - innerHeight,
@@ -96,7 +90,7 @@ test.describe("Quiz", () => {
 
   test("quiz e resultado não disparam nenhum evento (nada sobre respostas sai do site)", async ({ page }) => {
     await page.goto("/");
-    await answerQuiz(page, ANSWERS_PAIS);
+    await answerQuiz(page, ANSWERS_ACELERADA);
     await expect(page).toHaveURL(/\/resultado\/$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     expect(await events(page)).toEqual([]);
@@ -348,7 +342,7 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
 
   test("CTA do hero rola até os planos", async ({ page }) => {
     await page.goto("/mente-em-paz/");
-    await page.getByRole("link", { name: /Quero descansar melhor/ }).click();
+    await page.getByRole("link", { name: /Quero desacelerar/ }).click();
     await expect(page.locator("#planos-title")).toBeInViewport();
   });
 });

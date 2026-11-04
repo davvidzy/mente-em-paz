@@ -10,9 +10,9 @@ export const landing = {
   header: { cta: "Ver planos" },
 
   hero: {
-    title: "Sua noite mais tranquila começa com **um simples play.**",
-    body: "Áudios guiados para desacelerar antes de dormir. Sem meditar, sem complicações.",
-    cta: "Quero descansar melhor",
+    title: "O dia termina. **Mas sua mente não desliga?**",
+    body: "Áudios guiados para desacelerar os pensamentos e relaxar antes de dormir.",
+    cta: "Quero desacelerar",
     /**
      * Benefícios abaixo do CTA (discretos). SÓ condições reais e confirmadas.
      * `enabled: false` = não aparece no site.
@@ -30,18 +30,18 @@ export const landing = {
   },
 
   identification: {
-    title: "Seu corpo cansa. Sua mente não para.",
-    thoughts: ["Será que meus pais estão bem?", "E se precisarem de mim?", "Será que fiz tudo hoje?"],
-    after: "Cuidar de você não é abandonar quem ama.",
+    title: "Nem todo cansaço desaparece ao deitar.",
+    thoughts: ["Será que esqueci alguma coisa?", "E se amanhã der errado?", "Por que não consigo desligar?"],
+    after: "Nem tudo precisa ser resolvido hoje.",
   },
 
   /** Diferença para áudios avulsos/gratuitos (logo após a identificação). Bloco compacto. */
   difference: {
     title: "Mais que áudios soltos: um caminho guiado.",
-    text: "Sessões organizadas para preocupações, culpa e pensamentos acelerados.",
+    text: "Sessões organizadas para preocupações, cansaço e pensamentos acelerados.",
     items: [
       { icon: "sequence", text: "Uma sequência pronta para seguir." },
-      { icon: "care", text: "Áudios pensados para a rotina de quem cuida." },
+      { icon: "care", text: "Áudios pensados para o fim de um dia cheio." },
       { icon: "portal", text: "Tudo em um portal, para ouvir no seu ritmo." },
     ] as { icon: "sequence" | "care" | "portal"; text: string }[],
   },
@@ -65,8 +65,8 @@ export const landing = {
   },
 
   audioDemo: {
-    title: "Dê o play e sinta a experiência.",
-    text: "Experimente um trecho real do Mente em Paz.",
+    title: "Ouça um pouco do Mente em Paz.",
+    text: "Um trecho real de um dos áudios guiados.",
   },
 
   /** Bônus do Completo (itens e valores em site.ts). {n} = nº de bônus; {plano} = nome do Completo. */
@@ -74,7 +74,7 @@ export const landing = {
     /** Até 2 linhas no celular. */
     title: "{n} bônus para sua rotina.",
     /** Até 2 linhas no celular. */
-    text: "Mais apoio para você e momentos de paz para seus pais.",
+    text: "Mais apoio para as noites mais difíceis.",
     tag: "Incluso no Completo",
     // com bonuses.showValues = true
     totalLabel: "Valor dos {n} bônus:",
@@ -120,7 +120,7 @@ export const landing = {
   },
 
   finalCta: {
-    title: "Agora, reserve um momento para você.",
+    title: "Sua mente também merece descanso.",
     cta: "Quero meu Mente em Paz",
   },
 

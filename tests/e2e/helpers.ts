@@ -1,15 +1,9 @@
 import { expect, type Page } from "@playwright/test";
 
-export const ANSWERS_PAIS = [
-  "Continuo pensando nos meus pais.",
-  "Medo de acontecer algo com meus pais.",
-  "Consigo aproveitar esse momento.",
-];
-
-export const ANSWERS_CALM = [
-  "Geralmente consigo relaxar.",
-  "Nada específico, só não consigo desacelerar.",
-  "Consigo aproveitar esse momento.",
+export const ANSWERS_ACELERADA = [
+  "Minha cabeça não para.",
+  "Pensamentos que não param.",
+  "Desacelerar meus pensamentos.",
 ];
 
 export const TOTAL = 3;

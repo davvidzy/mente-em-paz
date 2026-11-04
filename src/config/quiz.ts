@@ -4,7 +4,7 @@
  * aqui não exige mexer na lógica. Depois de mudar pesos, rode `npm test`.
  */
 
-export type ProfileId = "pais" | "culpa" | "pensamentos" | "sobrecarga";
+export type ProfileId = "acelerada" | "preocupacao" | "sobrecarga" | "relaxar";
 
 export interface QuizOption {
   id: string; // "A" | "B" | "C" | "D"
@@ -25,76 +25,75 @@ export interface QuizQuestion {
 
 /** O quiz começa direto na pergunta 1; esta linha aparece acima dela. */
 export const quizIntro = {
-  info: "3 perguntas",
+  info: "Leva menos de 2 min",
 };
 
 export const quizLoading = "Organizando suas respostas…";
 
 /**
- * 3 perguntas em ordem crescente de profundidade da dor:
- * 1. a cena (o que acontece ao deitar) → 2. a causa (o que mais pesa) → 3. a culpa.
+ * 3 perguntas: 1. a cena (o que acontece ao deitar) → 2. a causa (o que mais
+ * dificulta) → 3. o desejo (o que mais quer ao fim do dia).
  *
  * MATRIZ DE PONTUAÇÃO (documentada)
  *
- *            pais  culpa  pensam.  sobrec.   calm
- * Q1 A        3
+ *            acelerada  preocup.  sobrec.  relaxar
+ * Q1 A          3
  * Q1 B                     3
- * Q1 C              1               2
- * Q1 D                                        ✓
- * Q2 A        3
- * Q2 B                     2        1
- * Q2 C                              3
- * Q2 D                     2
- * Q3 A              4
- * Q3 B        1     2
- * Q3 C                     2
- * Q3 D                                        ✓
+ * Q1 C                     1         2
+ * Q1 D                                              (nenhum peso: Q2 e Q3 decidem)
+ * Q2 A          3
+ * Q2 B                     3
+ * Q2 C                               3
+ * Q2 D                                        3
+ * Q3 A          2
+ * Q3 B                     2
+ * Q3 C                               2
+ * Q3 D                                        2
  *
  * Regras do motor (ver classifier.ts):
- * 1. 2 respostas "calm" (Q1 D e Q3 D) → perfil "sobrecarga" em tom preventivo.
- * 2. Caso contrário vence a maior pontuação.
- * 3. Empate: vence o perfil mais forte da Q2 (a causa que ela escolheu); persistindo,
- *    a ordem fixa pais → culpa → pensamentos → sobrecarga.
- * Tom preventivo usa `preventiveContent` no lugar do perfil.
+ * 1. Vence a maior pontuação.
+ * 2. Empate: vence o perfil mais forte da Q2 (a causa que ela escolheu); persistindo,
+ *    a ordem fixa acelerada → preocupação → sobrecarga → relaxar.
+ * Sem respostas "calm": o tom preventivo (`preventiveContent`) fica desligado.
  */
 export const questions: QuizQuestion[] = [
   {
     id: "ao_deitar",
     title: "Quando você finalmente deita, o que acontece?",
     options: [
-      { id: "A", label: "Continuo pensando nos meus pais.", weights: { pais: 3 }, mirror: "ao deitar, seus pensamentos continuam nos seus pais" },
-      { id: "B", label: "Minha cabeça não para de pensar.", weights: { pensamentos: 3 }, mirror: "ao deitar, sua cabeça não para de pensar" },
-      { id: "C", label: "Sinto que deixei coisas por fazer.", weights: { sobrecarga: 2, culpa: 1 }, mirror: "ao deitar, fica a sensação de ter deixado coisas por fazer" },
-      { id: "D", label: "Geralmente consigo relaxar.", calm: true, mirror: "geralmente consegue relaxar ao deitar" },
+      { id: "A", label: "Minha cabeça não para.", weights: { acelerada: 3 }, mirror: "ao deitar, sua cabeça não para" },
+      { id: "B", label: "Fico pensando nas preocupações.", weights: { preocupacao: 3 }, mirror: "ao deitar, você fica pensando nas preocupações" },
+      { id: "C", label: "Sinto que deixei coisas por fazer.", weights: { sobrecarga: 2, preocupacao: 1 }, mirror: "ao deitar, fica a sensação de ter deixado coisas por fazer" },
+      { id: "D", label: "Geralmente consigo relaxar.", mirror: "geralmente consegue relaxar ao deitar" },
     ],
   },
   {
-    id: "preocupacao",
-    title: "O que mais tira sua tranquilidade à noite?",
+    id: "dificuldade",
+    title: "O que mais dificulta seu descanso?",
     options: [
-      { id: "A", label: "Medo de acontecer algo com meus pais.", weights: { pais: 3 }, mirror: "o medo de acontecer algo com seus pais é o que mais pesa à noite" },
-      { id: "B", label: "Preocupação com o dia seguinte.", weights: { pensamentos: 2, sobrecarga: 1 }, mirror: "a preocupação com o dia seguinte costuma aparecer à noite" },
-      { id: "C", label: "Sensação de ter responsabilidades demais.", weights: { sobrecarga: 3 }, mirror: "a sensação de ter responsabilidades demais pesa à noite" },
-      { id: "D", label: "Nada específico, só não consigo desacelerar.", weights: { pensamentos: 2 }, mirror: "mesmo sem um motivo específico, é difícil desacelerar" },
+      { id: "A", label: "Pensamentos que não param.", weights: { acelerada: 3 }, mirror: "os pensamentos que não param dificultam seu descanso" },
+      { id: "B", label: "Preocupações com o amanhã.", weights: { preocupacao: 3 }, mirror: "as preocupações com o amanhã dificultam seu descanso" },
+      { id: "C", label: "O peso das responsabilidades.", weights: { sobrecarga: 3 }, mirror: "o peso das responsabilidades dificulta seu descanso" },
+      { id: "D", label: "A dificuldade de relaxar.", weights: { relaxar: 3 }, mirror: "relaxar é o que mais custa" },
     ],
   },
   {
-    id: "culpa",
-    title: "Quando tenta tirar um tempo para você, o que sente?",
+    id: "desejo",
+    title: "O que você mais deseja ao fim do dia?",
     options: [
-      { id: "A", label: "Culpa por não estar ajudando.", weights: { culpa: 4 }, mirror: "sente culpa quando tira um tempo para você" },
-      { id: "B", label: "Preocupação de alguém precisar de mim.", weights: { culpa: 2, pais: 1 }, mirror: "se preocupa com a ideia de alguém precisar de você quando tira um tempo para si" },
-      { id: "C", label: "Dificuldade de desligar os pensamentos.", weights: { pensamentos: 2 }, mirror: "tem dificuldade de desligar os pensamentos mesmo no seu tempo" },
-      { id: "D", label: "Consigo aproveitar esse momento.", calm: true, mirror: "consegue aproveitar o tempo que reserva para si" },
+      { id: "A", label: "Desacelerar meus pensamentos.", weights: { acelerada: 2 }, mirror: "deseja desacelerar os pensamentos" },
+      { id: "B", label: "Deixar as preocupações de lado.", weights: { preocupacao: 2 }, mirror: "deseja deixar as preocupações de lado" },
+      { id: "C", label: "Aliviar o peso do dia.", weights: { sobrecarga: 2 }, mirror: "deseja aliviar o peso do dia" },
+      { id: "D", label: "Conseguir relaxar de verdade.", weights: { relaxar: 2 }, mirror: "deseja relaxar de verdade" },
     ],
   },
 ];
 
-/** Índice da pergunta usada no desempate (a causa: "o que mais pesa"). */
+/** Índice da pergunta usada no desempate (a causa: "o que mais dificulta"). */
 export const tieBreakQuestion = 1;
 
 /** Desempate final (ordem fixa). */
-export const profilePriority: ProfileId[] = ["pais", "culpa", "pensamentos", "sobrecarga"];
+export const profilePriority: ProfileId[] = ["acelerada", "preocupacao", "sobrecarga", "relaxar"];
 
 /**
  * Conteúdo do resultado. Regras de texto (a página não tem rolagem):
@@ -107,25 +106,25 @@ export interface ProfileContent {
 }
 
 export const profiles: Record<ProfileId, ProfileContent> = {
-  pais: {
-    title: "Seus pais dormem. Sua mente, não.",
-    solution: "Áudios guiados para desligar o alerta e descansar sem deixar de cuidar de quem ama.",
+  acelerada: {
+    title: "Sua mente parece não desligar.",
+    solution: "Áudios guiados para desacelerar os pensamentos quando o dia termina.",
   },
-  culpa: {
-    title: "Você cuida de todos. Menos de você.",
-    solution: "Áudios guiados para criar, à noite, um momento só seu. Sem culpa.",
-  },
-  pensamentos: {
-    title: "Seu corpo deita. Sua mente, não.",
-    solution: "Áudios guiados para tirar as tarefas da cabeça e voltar a atenção ao descanso.",
+  preocupacao: {
+    title: "Suas preocupações deitam com você.",
+    solution: "Áudios guiados para deixar o amanhã de lado e relaxar antes de dormir.",
   },
   sobrecarga: {
-    title: "O dia acaba. O peso, não.",
-    solution: "Áudios guiados para soltar o peso do dia e criar um descanso que é só seu.",
+    title: "Você leva o peso do dia para a cama.",
+    solution: "Áudios guiados para soltar o peso do dia e descansar sem culpa.",
+  },
+  relaxar: {
+    title: "Seu corpo para. Relaxar é difícil.",
+    solution: "Áudios guiados para o corpo e a mente encontrarem a calma à noite.",
   },
 };
 
-/** Respostas positivas (já consegue relaxar): não força um problema. */
+/** Tom preventivo (só com respostas "calm" — desligado nas perguntas atuais). */
 export const preventiveContent: ProfileContent = {
   title: "Proteja o descanso que você tem.",
   solution: "Áudios guiados para manter suas noites tranquilas, mesmo nos dias mais cheios.",

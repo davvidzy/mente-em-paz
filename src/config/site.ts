@@ -19,7 +19,7 @@ import { META_PIXEL_ID, REQUIRE_CONSENT } from "./pixel";
 // ── Marca ────────────────────────────────────────────────────────────
 export const brand = {
   name: "Mente em Paz",
-  tagline: "Método de Descanso Noturno Para Quem Cuida",
+  tagline: "Áudios guiados para desacelerar à noite",
   /** Domínio final (sem barra no fim). Usado em canonical/OG/sitemap. */
   siteUrl: (import.meta.env.VITE_SITE_URL as string | undefined) ?? "", // PENDENTE — definir VITE_SITE_URL no .env
   contactEmail: "claramartinns@protonmail.com", // e-mail de contato (rodapé e textos legais)
@@ -105,7 +105,7 @@ export const plans: Record<PlanId, Plan> = {
     itemsLead: "Tudo do Essencial +",
     items: [
       "Noites 5, 6 e 7",
-      "3 áudios para seus pais",
+      "3 áudios para compartilhar",
       "SOS Mente Acelerada — 5 min",
       "Áudio para despertares noturnos",
       "Diário do Descarrego Mental",
@@ -155,7 +155,7 @@ export const upgrade = {
   /** O que o Completo acrescenta ao Essencial (curto: o popup não pode rolar no celular). */
   extras: [
     "Noites 5, 6 e 7 do programa",
-    "3 áudios para seus pais",
+    "3 áudios para compartilhar",
     "SOS Mente Acelerada (5 min)",
     "Quando Acordo no Meio da Noite",
     "Diário do Descarrego Mental",
@@ -332,13 +332,14 @@ export const bonuses = {
   items: [
     {
       name: "Um Momento de Paz para Seus Pais",
-      description: "3 áudios suaves para compartilhar com seus pais.",
+      // PENDENTE (posicionamento): nome e capa ainda falam de "pais" — substituir ou renomear o material
+      description: "3 áudios suaves para ouvir com quem você ama.",
       valueCents: 3990,
       image: "img/bonus/um-momento-de-paz-para-seus-pais",
     },
     {
       name: "Plano da Noite Organizada",
-      description: "Organize cuidados e pendências antes de descansar.",
+      description: "Organize pendências e tire o amanhã da cabeça.",
       valueCents: 2490,
       image: "img/bonus/plano-da-noite-organizada",
     },
@@ -376,8 +377,8 @@ export const faq: { q: string; a: string }[] = [
     a: "De 10 a 17 minutos. Você pode ouvir já na cama. O SOS tem 5 minutos.",
   },
   {
-    q: "E se meus pais precisarem de mim?",
-    a: "Basta pausar e continuar depois. O momento de descanso se adapta à sua rotina.",
+    q: "Preciso ouvir todos os áudios?",
+    a: "Não. Siga a sequência ou escolha o áudio do momento. Pode pausar quando quiser.",
   },
   {
     q: "E se eu dormir durante o áudio?",
