@@ -105,6 +105,8 @@ test.describe("Build de produção", () => {
     await expect(items.nth(0)).toContainText("Tudo do Essencial +");
     await expect(page.locator("#planos")).toContainText("Experiência completa");
     await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
+    await expect(page.locator("#biblioteca [data-library] li")).toHaveCount(4);
+    await page.locator("[data-library-toggle]").click();
     await expect(page.locator("#biblioteca [data-library] li")).toHaveCount(15);
     await expect(page.locator("#demonstracao")).toContainText("Um trecho real de um dos áudios guiados.");
     await expect(page.locator("#garantia [data-guarantee-notes] li")).toHaveCount(4);

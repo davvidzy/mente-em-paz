@@ -9,7 +9,9 @@ import { routes } from "../../../lib/routes";
  */
 export function Expert() {
   return (
-    <div className="mt-8 flex items-center gap-4 text-left" data-expert>
+    <>
+    <p className="mt-8 text-left text-[13px] font-medium text-sage-deep">Criado por</p>
+    <div className="mt-2.5 flex items-center gap-4 text-left" data-expert>
       <div className="relative w-16 shrink-0">
         {expert.photo ? (
           <img
@@ -38,5 +40,6 @@ export function Expert() {
         <p className="mt-0.5 text-[15px] leading-snug text-brand">{expert.about[0]}</p>
       </div>
     </div>
+    </>
   );
 }

@@ -48,6 +48,9 @@ export const landing = {
     steps: ["Escolha seu momento", "Dê o play", "Acompanhe a prática"],
     /** Etiqueta nos áudios que vêm no Essencial. */
     essencialTag: "Também no Essencial",
+    /** Botão que abre/fecha a lista completa. {n} = total de áudios. */
+    showAll: "Ver os {n} áudios",
+    showLess: "Mostrar menos",
     cta: "Quero começar",
   },
 

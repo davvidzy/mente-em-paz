@@ -1,4 +1,5 @@
-import { Headphones, Play, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, Headphones, Play, Sparkles } from "lucide-react";
 import { landing } from "../../../config/landing";
 import { program } from "../../../config/site";
 import { fill } from "../../../lib/format";
@@ -6,6 +7,8 @@ import { ButtonLink } from "../../ui/Button";
 import { jumpTo, Reveal, Section, SectionHead, type Tone } from "../shared";
 
 const stepIcons = [Sparkles, Play, Headphones];
+/** Áudios visíveis antes de abrir a lista. */
+const PREVIEW = 4;
 
 /**
  * Biblioteca: título, 3 passos de uso (o antigo "Como funciona"), a lista de áudios
@@ -13,6 +16,8 @@ const stepIcons = [Sparkles, Play, Headphones];
  */
 export function Program({ tone }: { tone: Tone }) {
   const c = landing.program;
+  // lista começa curta (os primeiros áudios) e abre o restante pelo botão
+  const [open, setOpen] = useState(false);
   return (
     <Section id="biblioteca" tone={tone} labelledBy="biblioteca-title">
       <div className="container-page">
@@ -37,8 +42,8 @@ export function Program({ tone }: { tone: Tone }) {
             })}
           </ol>
 
-          <ol className="mt-9 space-y-3 md:mt-11" data-library>
-            {program.nights.map((n, i) => {
+          <ol id="biblioteca-lista" className="mt-9 space-y-3 md:mt-11" data-library>
+            {program.nights.slice(0, open ? undefined : PREVIEW).map((n, i) => {
               const essencial = i < program.essencialNights;
               const meta = [n.minutes ? `${n.minutes} min` : "", essencial ? c.essencialTag : ""].filter(Boolean).join(" · ");
               return (
@@ -54,6 +59,20 @@ export function Program({ tone }: { tone: Tone }) {
               );
             })}
           </ol>
+
+          {program.nights.length > PREVIEW && (
+            <button
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              aria-expanded={open}
+              aria-controls="biblioteca-lista"
+              className="mx-auto mt-4 flex min-h-11 items-center gap-1.5 rounded-full px-4 text-[15px] font-medium text-sage-deep transition-colors hover:text-brand"
+              data-library-toggle
+            >
+              {open ? c.showLess : fill(c.showAll, { n: program.nights.length })}
+              <ChevronDown aria-hidden className={`size-[18px] transition-transform ${open ? "rotate-180" : ""}`} strokeWidth={2} />
+            </button>
+          )}
 
           <Reveal className="mt-9 flex justify-center md:mt-12">
             <ButtonLink href="#planos" arrow size="lg" onClick={jumpTo("planos")} className="w-full sm:w-auto">
