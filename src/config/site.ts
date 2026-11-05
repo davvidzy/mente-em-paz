@@ -104,7 +104,7 @@ export const plans: Record<PlanId, Plan> = {
     installmentsNote: "até 12x de R$ 8,06",
     itemsLead: "Tudo do Essencial +",
     items: [
-      "Mais 11 áudios guiados",
+      "15 áudios guiados",
       "Desligando do Dia — 3 áudios",
       "SOS Mente Acelerada — 5 min",
       "Áudio para despertares noturnos",
