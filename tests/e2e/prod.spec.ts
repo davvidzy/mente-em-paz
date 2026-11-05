@@ -196,7 +196,9 @@ test.describe("Build de produção", () => {
       await page.goto("/mente-em-paz/");
       const sec = page.locator("#bonus");
       await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(5);
-      await expect(sec.getByText("Incluso no Completo")).toHaveCount(5);
+      await expect(sec.getByText("Incluso no Completo")).toHaveCount(1); // uma faixa para o bloco todo
+      // compacto: lista em vez de 5 cards com capa grande (antes ~3.400px no celular)
+      expect(await sec.evaluate((s) => s.getBoundingClientRect().height), `altura @ ${width}px`).toBeLessThan(1600);
       expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
       expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
       expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(2);
