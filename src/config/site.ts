@@ -144,7 +144,7 @@ export const program = {
     { title: "Deixando o Trabalho para Trás" },
     { title: "Uma Pausa Depois de um Dia Exaustivo" },
     { title: "Preparando a Mente para Descansar" },
-    { title: "Desacelerando em 3 Minutos", minutes: 3 },
+    { title: "Uma Pausa para Desacelerar", minutes: 3 },
     { title: "Quando Tudo Parece Demais" },
     { title: "Uma Pausa Entre Responsabilidades" },
     { title: "Soltando a Tensão do Corpo" },
