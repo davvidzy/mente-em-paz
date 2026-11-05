@@ -54,12 +54,11 @@ test.describe("Build de produção", () => {
     const errors = collectErrors(page);
     await page.goto("/mente-em-paz/");
     const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.getAttribute("data-section")));
-    // especialista só com expert.verified; depoimentos com imagens ou espaços reservados
+    // depoimentos com imagens ou espaços reservados
     const depoOn = /showPlaceholders:\s*true/.test(SITE) || /consent:\s*true/.test(SITE);
-    const expertOn = !/verified:\s*false/.test(SITE);
-    expect(order).toEqual(["identificacao", "diferencial", "produto", "demonstracao", ...(expertOn ? ["especialista"] : []), "programa", "bonus", ...(depoOn ? ["depoimentos"] : []), "planos", "garantia", "faq", "cta-final"]);
-    // vídeo do portal no fim do hero: só metadados no carregamento (o vídeo baixa ao dar play)
-    const video = page.locator("[data-hero] video[data-hero-video]");
+    expect(order).toEqual(["identificacao", "video", "demonstracao", "biblioteca", "bonus", ...(depoOn ? ["depoimentos"] : []), "planos", "garantia", "faq", "cta-final"]);
+    // vídeo do portal (seção própria): só metadados no carregamento (o vídeo baixa ao dar play)
+    const video = page.locator("#video video[data-hero-video]");
     await expect(video).toHaveAttribute("preload", "metadata");
     await expect(video).toHaveAttribute("poster", /apresentacao-capa\.webp$/);
     // mockup do portal entre a descrição e o CTA, já carregado
@@ -106,9 +105,7 @@ test.describe("Build de produção", () => {
     await expect(items.nth(0)).toContainText("Tudo do Essencial +");
     await expect(page.locator("#planos")).toContainText("Experiência completa");
     await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
-    await expect(page.locator("#programa li")).toHaveCount(7);
-    // objeções resolvidas antes dos planos
-    await expect(page.locator("#diferencial li")).toHaveCount(3);
+    await expect(page.locator("#biblioteca [data-library] li")).toHaveCount(15);
     await expect(page.locator("#demonstracao")).toContainText("Um trecho real de um dos áudios guiados.");
     await expect(page.locator("#garantia [data-guarantee-notes] li")).toHaveCount(4);
     await expect(page.locator("main")).not.toContainText("esse é o objetivo");
@@ -281,18 +278,18 @@ test.describe("Build de produção", () => {
     };
     await check("#hero-title", 4);
     await check("#hero-title + p", 3);
-    await check("main section[data-section] h2:not(#diferencial-title)", 2);
-    await check("#diferencial-title + p, #bonus-title + p, #demo-title + p, #programa h2 + p", 2);
+    await check("main section[data-section] h2", 2);
+    await check("#bonus-title + p, #demo-title + p, #biblioteca h2 + p", 2);
     await check("#identificacao p, #garantia h2 + p", 2);
-    await check("#produto li p, #diferencial li span:last-child, #bonus [data-bonus-desc]", 2);
+    await check("#biblioteca ol[aria-label] li span:last-child, #bonus [data-bonus-desc]", 2);
     await check("#planos h3 + p", 2);
   });
 
   test("especialista virtual: sem profissão nem CRP, aviso discreto no rodapé", async ({ page }) => {
     test.skip(/verified:\s*false/.test(SITE), "seção da especialista oculta");
     await page.goto("/mente-em-paz/");
-    const sec = page.locator("#especialista");
-    await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
+    const sec = page.locator("#demonstracao [data-expert]");
+    await expect(sec).toContainText("Clara Martins");
     await expect(page.locator("body")).not.toContainText(/Psicóloga|CRP/);
     await expect(sec.locator("[data-expert-disclosure]")).toHaveCount(0); // aviso só no rodapé
     await expect(page.locator("footer")).toContainText("Clara Martins é a apresentadora virtual do Mente em Paz.");

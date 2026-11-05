@@ -11,11 +11,9 @@ import type { Tone } from "./shared";
 import { Header } from "./sections/Header";
 import { Hero } from "./sections/Hero";
 import { Identification } from "./sections/Identification";
-import { Difference } from "./sections/Difference";
-import { Product } from "./sections/Product";
+import { Video } from "./sections/Video";
 import { AudioDemo } from "./sections/AudioDemo";
 import { Program } from "./sections/Program";
-import { Expert } from "./sections/Expert";
 import { Bonus } from "./sections/Bonus";
 import { Testimonials } from "./sections/Testimonials";
 import { Plans } from "./sections/Plans";
@@ -91,10 +89,9 @@ export function LandingApp() {
   // [visível, render(tone)]
   const sections: [boolean, (tone: Tone) => ReactElement][] = [
     [true, (t) => <Identification key="ident" tone={t} profile={profile} />],
-    [true, (t) => <Difference key="difference" tone={t} />],
-    [true, (t) => <Product key="product" tone={t} />],
-    [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} />],
-    [expertPublished || expertPreview || DEV, (t) => <Expert key="expert" tone={t} />], // só publica com expert.verified
+    [true, (t) => <Video key="video" tone={t} />],
+    // a apresentadora vai compacta dentro da demonstração; só publica com expert.verified
+    [hasAudio || DEV, (t) => <AudioDemo key="audio" tone={t} showExpert={expertPublished || expertPreview || DEV} />],
     [program.nights.length > 0, (t) => <Program key="program" tone={t} />],
     [bonuses.items.length > 0, (t) => <Bonus key="bonus" tone={t} />],
     [hasTestimonials || DEV, (t) => <Testimonials key="test" tone={t} />],

@@ -18,15 +18,18 @@ export const landing = {
      * `enabled: false` = não aparece no site.
      */
     benefits: [
-      { icon: "duration", label: "Áudios de 10 a 17 min", enabled: true },
+      { icon: "duration", label: "Até 15 áudios guiados", enabled: true },
       { icon: "lifetime", label: "Acesso vitalício", enabled: true },
       { icon: "guarantee", label: "Garantia de {dias} dias", enabled: true },
       { icon: "once", label: "Pagamento único", enabled: true },
       { icon: "lying", label: "Ouça já na cama", enabled: false },
       { icon: "easy", label: "Sem precisar saber meditar", enabled: false },
     ] as { icon: "guarantee" | "lying" | "easy" | "lifetime" | "once" | "duration"; label: string; enabled: boolean }[],
-    /** Título do vídeo do portal (último item do hero). */
-    videoTitle: "Mas não são apenas áudios.",
+  },
+
+  /** Vídeo do portal (seção própria, logo após a identificação). */
+  video: {
+    title: "Muito mais que áudios para ouvir.",
   },
 
   identification: {
@@ -35,33 +38,17 @@ export const landing = {
     after: "Nem tudo precisa ser resolvido hoje.",
   },
 
-  /** Diferença para áudios avulsos/gratuitos (logo após a identificação). Bloco compacto. */
-  difference: {
-    title: "Mais que áudios soltos: um caminho guiado.",
-    text: "Sessões organizadas para preocupações, cansaço e pensamentos acelerados.",
-    items: [
-      { icon: "sequence", text: "Uma sequência pronta para seguir." },
-      { icon: "care", text: "Áudios pensados para o fim de um dia cheio." },
-      { icon: "portal", text: "Tudo em um portal, para ouvir no seu ritmo." },
-    ] as { icon: "sequence" | "care" | "portal"; text: string }[],
-  },
-
-  product: {
-    title: "Como funciona?",
-    steps: [
-      "Receba seu acesso e abra o portal no celular.",
-      "Deite, escolha um áudio e dê o play.",
-      "Relaxe no seu ritmo. Pode pausar quando precisar.",
-    ],
-    cta: "Quero começar",
-  },
-
-  /** Lista das 7 noites (títulos e minutos em site.ts → program). */
+  /**
+   * Biblioteca: lista dos áudios (títulos e minutos em site.ts → program) com os
+   * 3 passos de uso e o CTA. Também faz o papel do antigo "Mais que áudios soltos".
+   */
   program: {
-    title: "7 noites para desacelerar.",
-    text: "Um áudio por noite. Depois, repita seus favoritos.",
-    /** Etiqueta nas noites que vêm no Essencial. */
+    title: "{n} áudios para cada momento.",
+    text: "Do fim do expediente à hora de deitar, um caminho guiado para desacelerar.",
+    steps: ["Escolha seu momento", "Dê o play", "Acompanhe a prática"],
+    /** Etiqueta nos áudios que vêm no Essencial. */
     essencialTag: "Também no Essencial",
+    cta: "Quero começar",
   },
 
   audioDemo: {

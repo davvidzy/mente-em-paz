@@ -3,9 +3,11 @@ import { media } from "../../../config/site";
 import { routes } from "../../../lib/routes";
 import { AudioPlayer } from "../../ui/AudioPlayer";
 import { DevPlaceholder } from "../../ui/DevPlaceholder";
+import { Expert } from "./Expert";
 import { Reveal, Section, type Tone } from "../shared";
 
-export function AudioDemo({ tone }: { tone: Tone }) {
+/** Trecho de áudio + a apresentadora (compacta) logo abaixo do player. */
+export function AudioDemo({ tone, showExpert }: { tone: Tone; showExpert: boolean }) {
   const c = landing.audioDemo;
   const audio = media.audioPreview;
   return (
@@ -27,6 +29,7 @@ export function AudioDemo({ tone }: { tone: Tone }) {
               />
             )}
           </div>
+          {showExpert && <Expert />}
         </Reveal>
       </div>
     </Section>

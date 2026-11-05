@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { ANSWERS_ACELERADA, TOTAL, answerQuiz, blockMeta, collectErrors, events, recordEvents, skipCouponWheel, stubCheckout } from "./helpers";
 
@@ -106,8 +105,12 @@ test.describe("Quiz", () => {
 /** Rola até que a fração `at` da seção de bônus esteja no meio da tela. */
 async function scrollBonus(page: Page, at: number) {
   await page.evaluate((at) => {
-    const r = document.getElementById("bonus")!.getBoundingClientRect();
-    window.scrollTo(0, window.scrollY + r.top + r.height * at - window.innerHeight / 2);
+    // 3 passadas: seções com content-visibility ganham a altura real ao serem cruzadas
+    for (let i = 0; i < 3; i++) {
+      const r = document.getElementById("bonus")!.getBoundingClientRect();
+      window.scrollTo(0, window.scrollY + r.top + r.height * at - window.innerHeight / 2);
+      document.documentElement.getBoundingClientRect();
+    }
   }, at);
 }
 
@@ -186,20 +189,13 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
       await expect(hero.getByRole("list", { name: "Benefícios" })).toBeVisible();
       await expect(hero.locator("img[data-hero-mockup]")).toBeVisible();
       await expect(hero.locator("[data-dev-placeholder]")).toHaveCount(0);
-      // vídeo: depois dos benefícios, com título e controles nativos (tempo e velocidade)
-      const video = hero.locator("video[data-hero-video]");
+      // vídeo: seção própria logo após a identificação, com controles nativos (tempo e velocidade)
+      const video = page.locator("#video video[data-hero-video]");
       await expect(video).toHaveAttribute("controls", "");
-      await expect(hero.locator("#hero-video-title")).toBeVisible();
-      expect(
-        await page.evaluate(() => {
-          const list = document.querySelector('[data-hero] [aria-label="Benefícios"]')!;
-          return Boolean(list.compareDocumentPosition(document.querySelector("[data-hero-video]")!) & Node.DOCUMENT_POSITION_FOLLOWING);
-        }),
-      ).toBe(true);
+      await expect(hero.locator("video")).toHaveCount(0);
       expect(await video.evaluate((e: HTMLVideoElement) => e.getBoundingClientRect().width), `vídeo cabe @ ${w}px`).toBeLessThanOrEqual(w - 32);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), `overflow @ ${w}px`).toBeLessThanOrEqual(0);
     }
-    await expect(page.locator("#video-title")).toHaveCount(0); // seção de vídeo separada não existe mais
   });
 
   test("depoimentos: título, descrição e carrossel infinito só de imagens, sem controles", async ({ page }) => {
@@ -327,19 +323,13 @@ test.describe("Landing — ofertas (dev, checkout Wiapy)", () => {
     }
   });
 
-  test("especialista logo abaixo da demonstração de áudio, marcada como provisória (dev)", async ({ page }) => {
+  test("apresentadora compacta dentro da demonstração de áudio, sem profissão (dev)", async ({ page }) => {
     await page.goto("/mente-em-paz/");
-    const order = await page.locator("main [data-section]").evaluateAll((els) => els.map((e) => e.id));
-    expect(order.indexOf("especialista")).toBe(order.indexOf("demonstracao") + 1);
-    const sec = page.locator("#especialista");
-    await expect(sec.getByRole("heading", { level: 2 })).toHaveText("Clara Martins");
-    await expect(sec).not.toContainText(/Psicóloga|CRP/);
-    await expect(sec).toContainText("Conheça a apresentadora");
-    await expect(sec.locator("[data-expert-disclosure]")).toHaveCount(0); // aviso só no rodapé
-    // não aprovada: marcada como prévia (e oculta no site publicado — ver prod.spec)
-    if (/verified:\s*false/.test(readFileSync("src/config/site.ts", "utf8"))) await expect(sec).toContainText("Prévia · não publicada");
+    const box = page.locator("#demonstracao [data-expert]");
+    await expect(box).toContainText("Clara Martins");
+    await expect(box).not.toContainText(/Psicóloga|CRP/);
+    await expect(page.locator("#especialista")).toHaveCount(0);
   });
-
   test("CTA do hero rola até os planos", async ({ page }) => {
     await page.goto("/mente-em-paz/");
     await page.getByRole("link", { name: /Quero desacelerar/ }).click();

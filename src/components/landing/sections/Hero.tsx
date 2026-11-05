@@ -19,7 +19,6 @@ const benefitIcons: Record<(typeof landing.hero.benefits)[number]["icon"], Lucid
 export function Hero() {
   const h = landing.hero;
   const m = media.mockup;
-  const v = media.video;
   const benefits = h.benefits.filter((b) => b.enabled);
 
   return (
@@ -77,27 +76,6 @@ export function Hero() {
               })}
             </ul>
           )}
-
-          {/* Vídeo do portal: último item do hero. Controles nativos (tempo, velocidade, tela cheia). */}
-          <div className="mt-16 md:mt-20">
-            <h2 id="hero-video-title" className="t-h2">
-              <Emphasis text={h.videoTitle} markClass="hero-accent block" />
-            </h2>
-            <video
-              src={routes.asset(v.src)}
-              poster={routes.asset(v.poster)}
-              width={720}
-              height={1280}
-              controls
-              playsInline
-              muted
-              preload="metadata"
-              controlsList="nodownload"
-              aria-label={v.label}
-              className="mx-auto mt-7 aspect-[9/16] w-full max-w-[340px] rounded-[22px] border border-line bg-brand shadow-[0_18px_40px_-24px_rgba(0,0,0,0.35)] md:mt-9"
-              data-hero-video
-            />
-          </div>
         </div>
       </div>
     </section>

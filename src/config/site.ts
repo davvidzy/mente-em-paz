@@ -88,7 +88,7 @@ export const plans: Record<PlanId, Plan> = {
     id: "essencial",
     name: "Mente em Paz Essencial",
     shortName: "Essencial",
-    description: "Comece com as 4 primeiras noites guiadas.",
+    description: "Comece com 4 áudios guiados.",
     priceCents: 3990,
     installmentsNote: "até 10x de R$ 5,36",
     items: ["4 áudios guiados", "Guia para relaxar", "Caderno de reflexão", "Portal no celular"],
@@ -99,12 +99,12 @@ export const plans: Record<PlanId, Plan> = {
     id: "completo",
     name: "Mente em Paz Completo",
     shortName: "Completo",
-    description: "7 noites e 5 bônus para cuidar de você.",
+    description: "15 áudios e 5 bônus para cuidar de você.",
     priceCents: 6790,
     installmentsNote: "até 12x de R$ 8,06",
     itemsLead: "Tudo do Essencial +",
     items: [
-      "Noites 5, 6 e 7",
+      "Mais 11 áudios guiados",
       "Desligando do Dia — 3 áudios",
       "SOS Mente Acelerada — 5 min",
       "Áudio para despertares noturnos",
@@ -127,9 +127,10 @@ export const payment = {
   accessNote: "Acesso enviado por e-mail logo após o pagamento",
 };
 
-// ── Programa de 7 noites (seção "Suas 7 noites" e durações citadas no site) ──
+// ── Biblioteca de áudios (seção "Biblioteca") ───────────────────────
+// `minutes` vazio = duração ainda não informada (o card mostra só a etiqueta, se houver).
 export const program = {
-  /** Quantas noites (a partir da 1ª) estão no Essencial. */
+  /** Quantos áudios (a partir do 1º) estão no Essencial. */
   essencialNights: 4,
   nights: [
     { title: "O dia terminou, você pode descansar", minutes: 17 },
@@ -139,7 +140,16 @@ export const program = {
     { title: "Você também merece cuidado", minutes: 12 },
     { title: "Saindo do estado de alerta", minutes: 13 },
     { title: "Sua prática de Mente em Paz", minutes: 13 },
-  ],
+    // PENDENTE — durações dos áudios abaixo
+    { title: "Deixando o Trabalho para Trás" },
+    { title: "Uma Pausa Depois de um Dia Exaustivo" },
+    { title: "Preparando a Mente para Descansar" },
+    { title: "Desacelerando em 3 Minutos", minutes: 3 },
+    { title: "Quando Tudo Parece Demais" },
+    { title: "Uma Pausa Entre Responsabilidades" },
+    { title: "Soltando a Tensão do Corpo" },
+    { title: "Voltando ao Momento Presente" },
+  ] as { title: string; minutes?: number }[],
 };
 
 // ── Upgrade (popup ao escolher o Essencial) ─────────────────────────
@@ -154,7 +164,7 @@ export const upgrade = {
   extrasLabel: "Você ganha também:",
   /** O que o Completo acrescenta ao Essencial (curto: o popup não pode rolar no celular). */
   extras: [
-    "Noites 5, 6 e 7 do programa",
+    "Mais 11 áudios guiados",
     "Desligando do Dia (3 áudios)",
     "SOS Mente Acelerada (5 min)",
     "Quando Acordo no Meio da Noite",
@@ -236,7 +246,7 @@ export const expert = {
   eyebrow: "Conheça a apresentadora",
   name: "Clara Martins",
   /** Apresentação curta (sem autoria humana, formação ou vivências inventadas). */
-  about: ["Uma voz de acolhimento para acompanhar seus momentos de descanso."],
+  about: ["A voz que guia seus momentos de descanso."],
   /** Transparência: aparece, discreto, no rodapé. */
   disclosure: "Clara Martins é a apresentadora virtual do Mente em Paz.",
   /**
@@ -373,7 +383,7 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "Quanto dura cada áudio?",
-    a: "De 10 a 17 minutos. Você pode ouvir já na cama. O SOS tem 5 minutos.",
+    a: "Há áudios de poucos minutos e sessões de até 17 minutos para ouvir já na cama.",
   },
   {
     q: "Preciso ouvir todos os áudios?",
@@ -385,7 +395,7 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "Qual plano escolher?",
-    a: "O Essencial tem 4 noites. O Completo reúne as 7 noites e 5 bônus exclusivos.",
+    a: "O Essencial tem 4 áudios. O Completo reúne os 15 áudios e 5 bônus exclusivos.",
   },
   {
     q: "Como recebo o acesso?",
