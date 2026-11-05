@@ -75,7 +75,12 @@ export interface Plan {
   /** Linha em destaque acima da lista (ex.: "Tudo do Essencial +"). */
   itemsLead?: string;
   items: string[];
-  /** Frase curta abaixo da lista: a diferença prática do plano, não quantidade. */
+  /** Bônus do plano: mesma lista, com ícone de presente no lugar do check (depois de `items`). */
+  bonusItems?: string[];
+  /**
+   * Frase curta abaixo da lista. {bonus} = soma dos valores dos bônus (bonuses.items);
+   * com {bonus}, só aparece com `bonuses.showValues` (valor real de cada bônus).
+   */
   closing?: string;
   cta: string;
   featured: boolean;
@@ -102,15 +107,16 @@ export const plans: Record<PlanId, Plan> = {
     description: "15 áudios e 5 bônus para cuidar de você.",
     priceCents: 6790,
     installmentsNote: "até 12x de R$ 8,06",
-    itemsLead: "Tudo do Essencial +",
-    items: [
-      "15 áudios guiados",
+    // sem "Tudo do Essencial +": seguido de "15 áudios" dava a entender 4 + 15
+    items: ["15 áudios guiados", "Guia, caderno e portal"],
+    bonusItems: [
       "Desligando do Dia — 3 áudios",
       "SOS Mente Acelerada — 5 min",
       "Áudio para despertares noturnos",
       "Diário do Descarrego Mental",
       "Plano da Noite Organizada",
     ],
+    closing: "Inclui {bonus} em bônus grátis",
     cta: "Quero o Completo",
     featured: true,
     tag: "Experiência completa",

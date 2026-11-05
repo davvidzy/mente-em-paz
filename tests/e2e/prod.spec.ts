@@ -98,12 +98,14 @@ test.describe("Build de produção", () => {
     }
     await expect(page.locator("#planos")).toContainText("39");
     await expect(page.locator("#planos")).toContainText("67");
-    // conteúdo dos planos (Completo primeiro): "Tudo do Essencial +" e 6 itens no Completo, 4 no Essencial
+    // conteúdo dos planos (Completo primeiro): 2 itens + 5 bônus no Completo, 4 itens no Essencial
     const items = page.locator("#planos [data-plan-items]");
     await expect(items.nth(1).getByRole("listitem")).toHaveCount(4);
-    await expect(items.nth(0).getByRole("listitem")).toHaveCount(6);
-    await expect(items.nth(0)).toContainText("Tudo do Essencial +");
+    await expect(items.nth(0).getByRole("listitem")).toHaveCount(7);
+    await expect(items.nth(0)).not.toContainText("Tudo do Essencial"); // "Tudo do Essencial + 15 áudios" lia como 19
     await expect(page.locator("#planos")).toContainText("Experiência completa");
+    // valor dos bônus no momento da escolha (só com o valor real de cada bônus)
+    if (/^\s*showValues:\s*true/m.test(SITE)) await expect(items.nth(0).locator("[data-plan-closing]")).toHaveText("Inclui R$ 134,50 em bônus grátis");
     await expect(page.locator("#planos")).toContainText("5% de desconto no Pix");
     await expect(page.locator("#biblioteca [data-library] li")).toHaveCount(4);
     await page.locator("[data-library-toggle]").click();
