@@ -198,34 +198,27 @@ test.describe("Build de produção", () => {
       await page.goto("/mente-em-paz/");
       const sec = page.locator("#bonus");
       await expect(sec.getByRole("heading", { level: 3 })).toHaveCount(5);
-      await expect(sec.getByText("Incluso no Completo")).toHaveCount(1); // uma faixa para o bloco todo
-      // compacto: galeria de mockups (um por vez) + recibo, em vez de 5 cards com capa grande (antes ~3.400px no celular)
+      await expect(sec.getByText("Incluso no Completo")).toHaveCount(1); // uma vez, acima do título
+      // compacto: cards 2+2+1 com mockup (antes, 5 cards de uma coluna com capa grande: ~3.400px no celular)
       expect(await sec.evaluate((s) => s.getBoundingClientRect().height), `altura @ ${width}px`).toBeLessThan(1800);
+      // 2 colunas no celular: os cards ficam lado a lado
+      const tops = await sec.locator("article").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+      expect(tops[0], `2 colunas @ ${width}px`).toBe(tops[1]);
       expect(Math.max(...(await lines("#bonus-title"))), `título @ ${width}px`).toBeLessThanOrEqual(2);
       expect(Math.max(...(await lines("#bonus-title + p"))), `texto @ ${width}px`).toBeLessThanOrEqual(3);
-      expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(2);
-      // a galeria rola de lado de propósito (os mockups seguintes ficam fora da tela, recortados)
-      const overflow = await sec.evaluate((s) =>
-        [...s.querySelectorAll("*")].filter((e) => !e.closest("[data-bonus-gallery] ul") && e.getBoundingClientRect().right > innerWidth).length,
-      );
+      expect(Math.max(...(await lines("#bonus [data-bonus-desc]"))), `descrições @ ${width}px`).toBeLessThanOrEqual(4);
+      const overflow = await sec.evaluate((s) => [...s.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth).length);
       expect(overflow, `estouro @ ${width}px`).toBe(0);
     }
     const sec = page.locator("#bonus");
     await expect(sec).not.toContainText("estão incluídos no");
-    // mockups carregados ao chegar na galeria (também em subpasta, ver teste sem JS)
-    const shots = sec.locator("[data-bonus-gallery] img");
+    // mockups carregados (também em subpasta, ver teste sem JS)
+    const shots = sec.locator("article img");
     await expect(shots).toHaveCount(5);
     for (const img of await shots.all()) {
       await img.scrollIntoViewIfNeeded();
       await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     }
-    // setas e pontos: o próximo mockup entra e a linha dele no recibo fica destacada
-    const next = sec.getByRole("button", { name: "Próximo bônus" });
-    await next.scrollIntoViewIfNeeded();
-    await sec.getByRole("button", { name: "Ver o bônus 1" }).click();
-    await next.click();
-    await expect(sec.getByRole("button", { name: "Ver o bônus 2" })).toHaveAttribute("aria-current", "true");
-    await expect(sec.locator("article.bg-sage\\/10 h3")).toContainText("Plano da Noite Organizada");
     if (/^\s*showValues:\s*true/m.test(SITE)) {
       await expect(sec.locator("[data-bonus-total]")).toHaveText("R$ 134,50");
       // cada card: preço individual riscado + GRÁTIS
@@ -273,7 +266,7 @@ test.describe("Build de produção", () => {
     await expect(page.locator("#planos")).toContainText("R$ 39,90");
     const logoOk = await page.locator("header img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
     expect(logoOk).toBe(true);
-    const cover = page.locator("#bonus [data-bonus-gallery] img").first();
+    const cover = page.locator("#bonus article img").first();
     await cover.scrollIntoViewIfNeeded();
     await expect.poll(() => cover.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     await page.locator("header a[href='#planos']").click();
@@ -297,7 +290,7 @@ test.describe("Build de produção", () => {
     await check("main section[data-section] h2", 2);
     await check("#bonus-title + p, #demo-title + p, #biblioteca h2 + p", 2);
     await check("#identificacao p, #garantia h2 + p", 2);
-    await check("#biblioteca ol[aria-label] li span:last-child, #bonus [data-bonus-desc]", 2);
+    await check("#biblioteca ol[aria-label] li span:last-child", 2); // descrições dos bônus: ver o teste dos bônus (cards em 2 colunas)
     await check("#planos h3 + p", 2);
   });
 

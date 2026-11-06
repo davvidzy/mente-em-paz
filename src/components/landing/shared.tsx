@@ -39,15 +39,17 @@ export function Reveal({ children, className = "", as: Tag = "div" }: { children
   return <Tag className={className}>{children}</Tag>;
 }
 
-/** Cabeçalho de seção (título + texto de apoio). */
+/** Cabeçalho de seção (sobretítulo opcional + título + texto de apoio). */
 export function SectionHead({
   id,
+  eyebrow,
   title,
   text,
   center = false,
   light = false,
 }: {
   id: string;
+  eyebrow?: ReactNode;
   title: ReactNode;
   text?: string;
   center?: boolean;
@@ -55,6 +57,7 @@ export function SectionHead({
 }) {
   return (
     <Reveal className={`reading ${center ? "mx-auto text-center" : ""}`}>
+      {eyebrow && <p className="t-eyebrow mb-3 inline-flex items-center gap-2">{eyebrow}</p>}
       <h2 id={id} className="t-h2">
         {title}
       </h2>
