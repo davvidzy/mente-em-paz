@@ -326,8 +326,9 @@ export interface Bonus {
   /** Soma exibida riscada no box final (com `showValues: true`). */
   valueCents: number;
   /**
-   * Capa quadrada, sem sufixo: "img/bonus/nome" → usa nome-400.webp e nome-800.webp.
-   * Original em images-src/bonus/nome.jpg → `npm run images`. Vazio = ícone de presente.
+   * Mockup quadrado (o bônus aberto no portal, no celular, + a capa), sem sufixo:
+   * "img/bonus/nome" → usa nome-400, -800 e -1200.webp. Original em images-src/bonus/nome.png
+   * → `npm run images`. Vazio = ícone de presente na galeria.
    */
   image?: string;
 }

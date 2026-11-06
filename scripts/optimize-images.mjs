@@ -14,8 +14,8 @@ import sharp from "sharp";
 const SRC = "images-src";
 const OUT = "public/img";
 const WIDTHS = [400, 800];
-/** Pastas com imagens largas (mockup do hero) ganham também a versão de 1200px. */
-const WIDE = new Set(["hero"]);
+/** Pastas com imagens grandes na tela (mockups do hero e dos bônus) ganham também a versão de 1200px. */
+const WIDE = new Set(["hero", "bonus"]);
 const EXT = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 
 async function* walk(dir) {
