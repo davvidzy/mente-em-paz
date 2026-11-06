@@ -60,7 +60,7 @@ test.describe("Build de produção", () => {
     // vídeo do portal (seção própria): só metadados no carregamento (o vídeo baixa ao dar play)
     const video = page.locator("#video video[data-hero-video]");
     await expect(video).toHaveAttribute("preload", "metadata");
-    await expect(video).toHaveAttribute("poster", /apresentacao-capa\.webp$/);
+    await expect(video).toHaveAttribute("poster", /demonstracao-capa\.webp$/);
     // mockup do portal entre a descrição e o CTA, já carregado
     const mockup = page.locator("[data-hero] img[data-hero-mockup]");
     await expect.poll(() => mockup.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);

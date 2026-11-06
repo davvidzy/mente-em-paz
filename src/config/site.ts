@@ -231,8 +231,9 @@ export const media = {
    * faststart (começa a tocar antes de baixar tudo). Capa = 1º segundo do vídeo, em WebP.
    */
   video: {
-    src: "video/apresentacao.mp4",
-    poster: "video/apresentacao-capa.webp",
+    // nome novo a cada troca de vídeo: .mp4 e .webp ficam 1 ano em cache no navegador (.htaccess)
+    src: "video/demonstracao.mp4",
+    poster: "video/demonstracao-capa.webp",
     label: "Vídeo: navegando pelo portal Mente em Paz no celular.",
   },
   audioPreview: {
